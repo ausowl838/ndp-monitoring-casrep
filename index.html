@@ -34,20 +34,32 @@
 <!-- ═══ AUTH SCREEN ═══ -->
 <div id="authScreen" style="display:block">
   <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
-    <div style="width:420px;max-width:100%">
+    <div style="width:440px;max-width:100%">
       <div style="margin-bottom:28px">
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#e8f0f7;letter-spacing:0.02em;line-height:1.15">MEDICAL COMMAND POST</div>
         <div style="font-family:'DM Mono',monospace;font-weight:400;font-size:13px;color:#4a6a7a;letter-spacing:0.02em;margin-top:4px">CASUALTY DASHBOARD · RESTRICTED, SENSITIVE (NORMAL)</div>
       </div>
       <div style="background:#07111C;border:1px solid #1C3347;border-radius:10px;padding:28px">
-        <div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:18px">Station Login</div>
+        <div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:18px">Station Access</div>
         <div style="margin-bottom:14px">
-          <label class="lbl">Email Address</label>
-          <input class="inp" type="email" id="authEmail" placeholder="station@ndp2026.medops" autocomplete="username"/>
+          <label class="lbl">Select Your Station</label>
+          <select class="inp" id="authStation" style="font-size:0.9rem;padding:8px">
+            <option value="">— Select Station —</option>
+            <option value="CP1">Command Post 1 (CP1)</option>
+            <option value="CP2">Command Post 2 (CP2)</option>
+            <option value="MP North">MP North</option>
+            <option value="MP South">MP South</option>
+            <option value="MP Arena">MP Arena</option>
+            <option value="MP WACA">MP WACA</option>
+            <option value="MP VVIP">MP VVIP</option>
+            <option value="FAP(E) Show">FAP(E) Show</option>
+            <option value="FAP(E) Beneficiaries">FAP(E) Beneficiaries</option>
+            <option value="FAP(E) Celebrations">FAP(E) Celebrations</option>
+          </select>
         </div>
         <div style="margin-bottom:20px">
-          <label class="lbl">Password</label>
-          <input class="inp" type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <label class="lbl">Station PIN</label>
+          <input class="inp" type="password" id="authPin" placeholder="Enter your station PIN" style="font-size:0.9rem;padding:8px;letter-spacing:0.15em" onkeydown="if(event.key==='Enter')doLogin()"/>
         </div>
         <div id="authError" style="font-family:'Courier Prime',monospace;font-size:0.72rem;color:#E74C3C;margin-bottom:14px;display:none"></div>
         <button onclick="doLogin()" id="loginBtn" style="width:100%;padding:11px 0;background:#0A3A5A;border:1px solid #2E86C1;color:#5DADE2;border-radius:6px;cursor:pointer;font-family:'Courier Prime',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.1em">
@@ -81,6 +93,8 @@
         <span id="syncLabel" style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#1DB954">LIVE</span>
       </div>
       <button onclick="toggleLog()" class="btn" style="background:transparent;border-color:#1C3347;color:#4A8AB0;font-size:0.68rem;padding:3px 10px">LOG <span id="logCount"></span></button>
+      <button onclick="exportData()" class="btn" style="background:#0A3A1A;border-color:#1DB954;color:#1DB954;font-size:0.68rem;padding:3px 10px">⬇ Export</button>
+      <span id="resetBtn" class="hidden"><button onclick="resetData()" class="btn" style="background:#3A0A0A;border-color:#C0392B;color:#C0392B;font-size:0.68rem;padding:3px 10px">⚠ Reset Data</button></span>
       <button onclick="doLogout()" class="btn" style="background:#1A0808;border-color:#441111;color:#994444;font-size:0.68rem;padding:3px 10px">⏏ Logout</button>
     </div>
   </div>
@@ -279,11 +293,9 @@
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script>
 // ── Firebase config ───────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyDeIkP-T-KUkAHCCMUl_juB8d_dI9xnKV8",
@@ -294,22 +306,21 @@ const firebaseConfig = {
   messagingSenderId: "580779975259",
   appId: "1:580779975259:web:90f654b4c80c04e8b9557e"
 };
-const app  = initializeApp(firebaseConfig);
-const db   = getDatabase(app);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-// ── Email → Station mapping ───────────────────────────────────────────────
-const EMAIL_TO_STATION = {
-  "cp1@ndp2026.medops":       "CP1",
-  "cp2@ndp2026.medops":       "CP2",
-  "mp.north@ndp2026.medops":  "MP North",
-  "mp.south@ndp2026.medops":  "MP South",
-  "mp.arena@ndp2026.medops":  "MP Arena",
-  "mp.waca@ndp2026.medops":   "MP WACA",
-  "mp.vvip@ndp2026.medops":   "MP VVIP",
-  "fape.show@ndp2026.medops": "FAP(E) Show",
-  "fape.bene@ndp2026.medops": "FAP(E) Beneficiaries",
-  "fape.celeb@ndp2026.medops":"FAP(E) Celebrations",
+// ── Station PIN mapping ── change these PINs before deployment ────────────
+const STATION_PINS = {
+  "CP1":                  "cp1@Ndp2026",
+  "CP2":                  "cp2@Ndp2026",
+  "MP North":             "mpN@Ndp2026",
+  "MP South":             "mpS@Ndp2026",
+  "MP Arena":             "mpA@Ndp2026",
+  "MP WACA":              "mpW@Ndp2026",
+  "MP VVIP":              "mpV@Ndp2026",
+  "FAP(E) Show":          "fapSh@Ndp2026",
+  "FAP(E) Beneficiaries": "fapBe@Ndp2026",
+  "FAP(E) Celebrations":  "fapCe@Ndp2026",
 };
 
 const COMMAND_STATIONS = ["CP1","CP2"];
@@ -377,53 +388,33 @@ const fillSel = (id, arr, blank) => {
   el.innerHTML=(blank?'<option value="">—</option>':'')+arr.map(x=>`<option value="${x}">${x}</option>`).join('');
 };
 
-// ── Force clean state on every page load ─────────────────────────────────
-signOut(auth).catch(()=>{});
-
-// ── Auth ──────────────────────────────────────────────────────────────────
-window.doLogin = async function() {
-  const email=g("authEmail").value.trim().toLowerCase();
-  const pass=g("authPassword").value;
-  const errEl=g("authError"); const btn=g("loginBtn");
-  if(!email||!pass){errEl.textContent="Please enter email and password.";errEl.style.display="block";return;}
-  btn.innerHTML='<span class="spinner"></span>';btn.disabled=true;
-  try {
-    await signInWithEmailAndPassword(auth,email,pass);
-  } catch(e) {
-    errEl.textContent="Invalid credentials. Please check your email and password.";
-    errEl.style.display="block";
-    btn.innerHTML="ENTER COMMAND SYSTEM";btn.disabled=false;
+// ── Auth — PIN only, no Firebase Auth SDK ────────────────────────────────
+window.doLogin = function() {
+  const station = g("authStation").value;
+  const pin     = g("authPin").value;
+  const errEl   = g("authError");
+  errEl.style.display="none";
+  if(!station){ errEl.textContent="Please select your station."; errEl.style.display="block"; return; }
+  if(!pin)    { errEl.textContent="Please enter your station PIN."; errEl.style.display="block"; return; }
+  if(STATION_PINS[station] !== pin){
+    errEl.textContent="Incorrect PIN. Please try again.";
+    errEl.style.display="block"; return;
   }
+  myStation=station;
+  g("authScreen").style.display="none";
+  g("mainApp").style.display="block";
+  g("authPin").value="";
+  initApp();
 };
 
-window.doLogout = async function() {
+window.doLogout = function() {
   if(!confirm("Log out of CASREP?")) return;
   Object.values(elapsedTimers).forEach(clearInterval); elapsedTimers={};
   g("mainApp").style.display="none";
   g("authScreen").style.display="block";
-  g("authEmail").value=""; g("authPassword").value="";
-  await signOut(auth);
+  g("authStation").value=""; g("authPin").value="";
+  myStation=null;
 };
-
-onAuthStateChanged(auth, user => {
-  if(user) {
-    const stationId = EMAIL_TO_STATION[user.email.toLowerCase()];
-    if(!stationId) {
-      alert("Your account is not mapped to a station. Contact your system admin.");
-      signOut(auth); return;
-    }
-    myStation = stationId;
-    g("authScreen").style.display="none";
-    g("mainApp").style.display="block";
-    g("authError").style.display="none";
-    g("authPassword").value="";
-    initApp();
-  } else {
-    g("authScreen").style.display="block";
-    g("mainApp").style.display="none";
-    myStation=null;
-  }
-});
 
 // ── App init ──────────────────────────────────────────────────────────────
 function initApp() {
@@ -432,6 +423,7 @@ function initApp() {
   const badge=g("stationBadge");
   badge.textContent=myStation; badge.style.cssText=`background:${stColor}22;border:1px solid ${stColor}55;border-radius:4px;padding:2px 10px;font-family:'Courier Prime',monospace;font-size:0.75rem;color:${stColor};font-weight:700`;
   g("stationNote").textContent = isCommand?"Full access · All posts":`Editing: ${myStation} only · Viewing: all posts`;
+  if(isCommand) g("resetBtn").style.display="inline";
 
   // Populate selects
   fillSel("fPostSel",POSTS); fillSel("ePost",POSTS);
@@ -457,8 +449,11 @@ function initApp() {
   g("topDate").textContent=todayStr()+" "+nowT();
 
   // Firebase listeners
-  onValue(ref(db,"casualties"),snap=>{ casualties=snap.val()||{}; renderAll(); setSyncState("live"); });
-  onValue(ref(db,"log"),snap=>{ const r=snap.val()||{}; logs=Object.values(r).sort((a,b)=>b.ts-a.ts).slice(0,100); renderLog(); });
+  // Render immediately with empty data so rows show on login
+  renderAll();
+
+  db.ref("casualties").on("value",snap=>{ casualties=snap.val()||{}; renderAll(); setSyncState("live"); });
+  db.ref("log").on("value",snap=>{ const r=snap.val()||{}; logs=Object.values(r).sort((a,b)=>b.ts-a.ts).slice(0,100); renderLog(); });
 }
 
 function setSyncState(s){
@@ -487,7 +482,7 @@ window.registerCasualty = async function() {
     status:"At Post", timeIn:nowT(), createdAt:Date.now(),
     registeredBy:myStation, dischargeTime:"",evacuationTime:"",arrivalTime:"",hospital:""
   };
-  const nr=push(ref(db,"casualties")); await set(nr,c);
+  await db.ref("casualties").push(c);
   await addLog(`[${c.post}] New ${c.priority} ${c.nric||c.name||"casualty"} — ${c.chiefComplaint}`);
   ["fNric","fName","fAge","fMO","fNotes","fOtherUnit"].forEach(id=>g(id).value="");
   g("fGender").value="";g("fPri2").value="P3";g("fToc").value="";g("fOtherWrap").classList.add("hidden");
@@ -495,17 +490,17 @@ window.registerCasualty = async function() {
 };
 
 async function updateCasualty(id,updates){
-  await update(ref(db,`casualties/${id}`),updates);
+  await db.ref(`casualties/${id}`).update(updates);
   const c={...casualties[id],...updates};
   await addLog(`#${id.slice(-5)} → ${updates.status||c.status}${updates.hospital?" → "+updates.hospital.split(" ")[0]:""}${updates.arrivalTime?" (arrived "+updates.arrivalTime+")":""}`);
 }
 window.deleteCasualty = async function(id){
   const c=casualties[id];
   if(!confirm(`Remove ${c?.nric||c?.name||"casualty #"+id.slice(-5)}?`)) return;
-  await remove(ref(db,`casualties/${id}`));
+  await db.ref(`casualties/${id}`).remove();
   await addLog(`${c?.nric||c?.name||"Casualty"} removed by ${myStation}`);
 };
-async function addLog(msg){ await push(ref(db,"log"),{msg,by:myStation,ts:Date.now(),t:nowT()}); }
+async function addLog(msg){ await db.ref("log").push({msg,by:myStation,ts:Date.now(),t:nowT()}); }
 
 // ── Modals ────────────────────────────────────────────────────────────────
 window.closeModal = id => { g(id).style.display="none"; };
@@ -674,8 +669,8 @@ function renderStats(){
   ];
   g("statsRow").innerHTML=stats.map(([l,v,c])=>`
     <div style="text-align:center;padding:7px 6px;background:${c}14;border-radius:6px;border:1px solid ${c}55">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:700;color:${c};line-height:1">${v}</div>
-      <div style="font-family:'Courier Prime',monospace;font-size:0.54rem;color:${c}AA;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px">${l}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:2.55rem;font-weight:700;color:${c};line-height:1">${v}</div>
+      <div style="font-family:'Courier Prime',monospace;font-size:0.81rem;color:${c}AA;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px">${l}</div>
     </div>`).join("");
 }
 
@@ -761,6 +756,69 @@ function renderLog(){
     ?logs.map(l=>`<div style="margin-bottom:5px;border-bottom:1px solid #0A1A27;padding-bottom:4px"><span style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060">${l.t} </span><span style="font-family:'Courier Prime',monospace;font-size:0.62rem;color:#2E86C1;font-weight:700">[${l.by}] </span><span style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#5A8AAA">${l.msg}</span></div>`).join("")
     :`<div style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#0D2133">No activity yet.</div>`;
 }
+
+
+// ── Export to CSV ─────────────────────────────────────────────────────────
+window.exportData = function() {
+  const C = Object.entries(casualties).map(([id,c])=>({...c,_id:id}));
+  if(!C.length){ alert("No casualties to export."); return; }
+
+  const headers = [
+    "Record ID","Partial NRIC","Name Initials","Age","Gender","Medical Post",
+    "Priority","Chief Complaint","Diagnosis","Type of Casualty","Unit / Parent Org",
+    "MO Attending","Status","Time In","Discharge Time","Evacuation Time",
+    "Hospital","Arrival Time","Notes","Registered By"
+  ];
+
+  const escape = v => `"${String(v||"").replace(/"/g,'""')}"`;
+
+  const rows = C
+    .sort((a,b)=>a.createdAt-b.createdAt)
+    .map(c=>[
+      c._id||"", c.nric||"", c.name||"", c.age||"", c.gender||"", c.post||"",
+      c.priority||"", c.chiefComplaint||"", c.diagnosis||"",
+      c.typeOfCasualty||"",
+      c.typeOfCasualty==="Others (NDP Working Party personnel)"?c.otherUnit||"":"",
+      c.mo||"", c.status||"", c.timeIn||"", c.dischargeTime||"",
+      c.evacuationTime||"", c.hospital||"", c.arrivalTime||"",
+      c.notes||"", c.registeredBy||""
+    ].map(escape).join(","));
+
+  const csv = [headers.map(escape).join(","), ...rows].join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  const ts   = new Date().toLocaleString("en-SG",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).replace(/[/:, ]/g,"-");
+  a.href=url; a.download=`CASREP_Export_${ts}.csv`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  addLog(`Data exported by ${myStation} — ${C.length} records`);
+};
+
+// ── Reset Data (command post only) ────────────────────────────────────────
+window.resetData = async function() {
+  const C = Object.values(casualties);
+  if(!C.length){ alert("No data to reset."); return; }
+
+  // Double confirmation
+  const first = confirm(`⚠ RESET ALL DATA?\n\nThis will permanently delete all ${C.length} casualty records and the activity log from the database.\n\nThis action cannot be undone.\n\nClick OK to proceed to final confirmation.`);
+  if(!first) return;
+
+  const code = prompt(`FINAL CONFIRMATION\n\nType  RESET  (all caps) to confirm data reset:`);
+  if(code !== "RESET"){ alert("Reset cancelled — text did not match."); return; }
+
+  try {
+    await db.ref("casualties").remove();
+    await db.ref("log").remove();
+    casualties = {};
+    logs = [];
+    renderAll();
+    renderLog();
+    alert("✓ All data has been reset. Database is now empty.");
+  } catch(e) {
+    alert("Error resetting data: " + e.message);
+  }
+};
 
 window.toggleLog = () => { showLog=!showLog; g("logBox").classList.toggle("hidden",!showLog); };
 window.toggleAddForm = () => { showAddForm=!showAddForm; g("addForm").classList.toggle("hidden",!showAddForm); g("addToggleBtn").textContent=showAddForm?"▲ Hide Form":"▼ New Casualty"; };
