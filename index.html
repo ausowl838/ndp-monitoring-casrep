@@ -494,9 +494,11 @@ window.toggleOtherUnit = function(prefix) {
 
 // ── CRUD ──────────────────────────────────────────────────────────────────
 window.registerCasualty = async function() {
+ window.registerCasualty = async function() {
   const toc=g("fToc").value;
+  const cid=`cas${Date.now()}${Math.random().toString(36).slice(2,6)}`;
   const c = {
-    nric:g("fNric").value.trim(), name:g("fName").value.trim(),
+    id:cid, nric:g("fNric").value.trim(), name:g("fName").value.trim(),
     age:g("fAge").value.trim(), gender:g("fGender").value,
     post:g("fPostSel").value, priority:g("fPri2").value,
     chiefComplaint:g("fComplaint2").value, diagnosis:g("fDiagnosis").value,
@@ -505,10 +507,8 @@ window.registerCasualty = async function() {
     status:"At Post", timeIn:nowT(), createdAt:Date.now(),
     registeredBy:myStation, dischargeTime:"",evacuationTime:"",arrivalTime:"",hospital:""
   };
-  await sbInsert("casualties", c.id, c);
-  casualties[c.id]=c; renderAll();
-  await addLog(`[${c.post}] New ${c.priority} ${c.nric||c.name||"casualty"} — ${c.chiefComplaint}`);
-  setTimeout(pollData, 500);
+  await sbInsert("casualties", cid, c);
+  casualties[cid]=c; renderAll();
   ["fNric","fName","fAge","fMO","fNotes","fOtherUnit"].forEach(id=>g(id).value="");
   g("fGender").value="";g("fPri2").value="P3";g("fToc").value="";g("fOtherWrap").classList.add("hidden");
   g("fDiagnosis").value="Pending";
