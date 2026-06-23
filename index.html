@@ -94,7 +94,7 @@
   /* ── LAYOUT ── */
   .main {
     display:grid; grid-template-columns:1fr 1fr; gap:16px;
-    padding:16px 20px; height:calc(100vh - 76px); max-height:calc(100vh - 76px);
+    padding:16px 20px; height:calc(100vh - var(--hdr-h, 80px)); max-height:calc(100vh - var(--hdr-h, 80px));
   }
 
   /* ── PANEL ── */
@@ -1026,6 +1026,13 @@ document.getElementById('tl-time').addEventListener('input', function(){ this.da
 setInterval(()=>{ const f=document.getElementById('tl-time'); if(!f.dataset.touched) f.value=nowTime(); }, 30000);
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
+function setHeaderHeight() {
+  const hdr = document.querySelector('.header');
+  if (hdr) document.documentElement.style.setProperty('--hdr-h', hdr.offsetHeight + 'px');
+}
+setHeaderHeight();
+window.addEventListener('resize', setHeaderHeight);
+
 setPriority('p-high');
 setQPriority('p-high');
 renderTimeline();
