@@ -93,6 +93,8 @@
         <span id="syncLabel" style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#1DB954">LIVE</span>
       </div>
       <button onclick="toggleLog()" class="btn" style="background:transparent;border-color:#1C3347;color:#4A8AB0;font-size:0.68rem;padding:3px 10px">LOG <span id="logCount"></span></button>
+      <button onclick="exportData()" class="btn" style="background:#0A3A1A;border-color:#1DB954;color:#1DB954;font-size:0.68rem;padding:3px 10px">⬇ Export</button>
+      <span id="resetBtn" class="hidden"><button onclick="resetData()" class="btn" style="background:#3A0A0A;border-color:#C0392B;color:#C0392B;font-size:0.68rem;padding:3px 10px">⚠ Reset Data</button></span>
       <button onclick="doLogout()" class="btn" style="background:#1A0808;border-color:#441111;color:#994444;font-size:0.68rem;padding:3px 10px">⏏ Logout</button>
     </div>
   </div>
@@ -421,6 +423,7 @@ function initApp() {
   const badge=g("stationBadge");
   badge.textContent=myStation; badge.style.cssText=`background:${stColor}22;border:1px solid ${stColor}55;border-radius:4px;padding:2px 10px;font-family:'Courier Prime',monospace;font-size:0.75rem;color:${stColor};font-weight:700`;
   g("stationNote").textContent = isCommand?"Full access · All posts":`Editing: ${myStation} only · Viewing: all posts`;
+  if(isCommand) g("resetBtn").style.display="inline";
 
   // Populate selects
   fillSel("fPostSel",POSTS); fillSel("ePost",POSTS);
@@ -753,6 +756,69 @@ function renderLog(){
     ?logs.map(l=>`<div style="margin-bottom:5px;border-bottom:1px solid #0A1A27;padding-bottom:4px"><span style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060">${l.t} </span><span style="font-family:'Courier Prime',monospace;font-size:0.62rem;color:#2E86C1;font-weight:700">[${l.by}] </span><span style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#5A8AAA">${l.msg}</span></div>`).join("")
     :`<div style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#0D2133">No activity yet.</div>`;
 }
+
+
+// ── Export to CSV ─────────────────────────────────────────────────────────
+window.exportData = function() {
+  const C = Object.entries(casualties).map(([id,c])=>({...c,_id:id}));
+  if(!C.length){ alert("No casualties to export."); return; }
+
+  const headers = [
+    "Record ID","Partial NRIC","Name Initials","Age","Gender","Medical Post",
+    "Priority","Chief Complaint","Diagnosis","Type of Casualty","Unit / Parent Org",
+    "MO Attending","Status","Time In","Discharge Time","Evacuation Time",
+    "Hospital","Arrival Time","Notes","Registered By"
+  ];
+
+  const escape = v => `"${String(v||"").replace(/"/g,'""')}"`;
+
+  const rows = C
+    .sort((a,b)=>a.createdAt-b.createdAt)
+    .map(c=>[
+      c._id||"", c.nric||"", c.name||"", c.age||"", c.gender||"", c.post||"",
+      c.priority||"", c.chiefComplaint||"", c.diagnosis||"",
+      c.typeOfCasualty||"",
+      c.typeOfCasualty==="Others (NDP Working Party personnel)"?c.otherUnit||"":"",
+      c.mo||"", c.status||"", c.timeIn||"", c.dischargeTime||"",
+      c.evacuationTime||"", c.hospital||"", c.arrivalTime||"",
+      c.notes||"", c.registeredBy||""
+    ].map(escape).join(","));
+
+  const csv = [headers.map(escape).join(","), ...rows].join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  const ts   = new Date().toLocaleString("en-SG",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).replace(/[/:, ]/g,"-");
+  a.href=url; a.download=`CASREP_Export_${ts}.csv`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  addLog(`Data exported by ${myStation} — ${C.length} records`);
+};
+
+// ── Reset Data (command post only) ────────────────────────────────────────
+window.resetData = async function() {
+  const C = Object.values(casualties);
+  if(!C.length){ alert("No data to reset."); return; }
+
+  // Double confirmation
+  const first = confirm(`⚠ RESET ALL DATA?\n\nThis will permanently delete all ${C.length} casualty records and the activity log from the database.\n\nThis action cannot be undone.\n\nClick OK to proceed to final confirmation.`);
+  if(!first) return;
+
+  const code = prompt(`FINAL CONFIRMATION\n\nType  RESET  (all caps) to confirm data reset:`);
+  if(code !== "RESET"){ alert("Reset cancelled — text did not match."); return; }
+
+  try {
+    await db.ref("casualties").remove();
+    await db.ref("log").remove();
+    casualties = {};
+    logs = [];
+    renderAll();
+    renderLog();
+    alert("✓ All data has been reset. Database is now empty.");
+  } catch(e) {
+    alert("Error resetting data: " + e.message);
+  }
+};
 
 window.toggleLog = () => { showLog=!showLog; g("logBox").classList.toggle("hidden",!showLog); };
 window.toggleAddForm = () => { showAddForm=!showAddForm; g("addForm").classList.toggle("hidden",!showAddForm); g("addToggleBtn").textContent=showAddForm?"▲ Hide Form":"▼ New Casualty"; };
