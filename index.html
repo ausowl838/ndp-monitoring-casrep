@@ -277,6 +277,13 @@ select option { background:var(--card); }
 .reset-chk { display:flex; align-items:flex-start; gap:10px; margin-top:10px; cursor:pointer; }
 .reset-chk input { width:14px; height:14px; margin-top:2px; cursor:pointer; accent-color:var(--red); flex-shrink:0; }
 .reset-chk span { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--t2); letter-spacing:0.07em; line-height:1.5; }
+.reset-scope-btn {
+  font-family:'Orbitron',monospace; font-size:9px; font-weight:600; letter-spacing:0.12em;
+  padding:6px 14px; border:1px solid var(--bdr); background:transparent; color:var(--t2);
+  cursor:pointer; border-radius:2px; transition:all .15s; flex:1; text-align:center;
+}
+.reset-scope-btn:hover { border-color:var(--red); color:var(--red); background:rgba(255,59,59,0.07); }
+.reset-scope-btn.active { border-color:var(--red); color:var(--red); background:rgba(255,59,59,0.12); }
 </style>
 </head>
 <body>
@@ -479,16 +486,23 @@ select option { background:var(--card); }
       </div>
       <div>
         <div class="sec-ttl">② Reset for Next Rehearsal</div>
-        <div class="reset-warn">⚠ RESET permanently clears ALL timeline events and ops log entries. Export your data first. This cannot be undone.</div>
+        <div class="reset-warn">⚠ RESET permanently clears selected data. Export first. This cannot be undone.</div>
         <label class="reset-chk">
           <input type="checkbox" id="reh-chk" onchange="toggleResetBtn()">
-          <span>I confirm I have exported the data and authorise a full reset.</span>
+          <span>I confirm I have exported the data and authorise the reset below.</span>
         </label>
+        <div id="reset-options" style="display:none;margin-top:10px;display:none;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.12em;color:var(--t3);margin-bottom:6px;">SELECT WHAT TO RESET:</div>
+          <div style="display:flex;gap:8px;">
+            <button class="reset-scope-btn" id="rst-ops-only" onclick="setResetScope('ops')">OPS LOG ONLY</button>
+            <button class="reset-scope-btn" id="rst-all"      onclick="setResetScope('all')">BOTH PANELS</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-foot" style="justify-content:space-between;">
       <button class="btn-cancel" onclick="closeRehearsal()">Close</button>
-      <button class="btn-danger" id="reset-btn" onclick="doReset()" disabled style="opacity:.35;cursor:not-allowed;">RESET ALL DATA</button>
+      <button class="btn-danger" id="reset-btn" onclick="doReset()" disabled style="opacity:.35;cursor:not-allowed;">RESET</button>
     </div>
   </div>
 </div>
@@ -791,20 +805,54 @@ function doClear() {
 }
 
 // ── REHEARSAL EXPORT & RESET ──────────────────────────────────────────────────
-function openRehearsal()  { document.getElementById('reh-chk').checked = false; toggleResetBtn(); document.getElementById('reh-modal').classList.add('show'); }
-function closeRehearsal() { document.getElementById('reh-modal').classList.remove('show'); }
-function toggleResetBtn() {
-  const on = document.getElementById('reh-chk').checked;
-  const btn = document.getElementById('reset-btn');
-  btn.disabled = !on;
-  btn.style.opacity = on ? '1' : '.35';
-  btn.style.cursor  = on ? 'pointer' : 'not-allowed';
+let resetScope = null;
+
+function openRehearsal() {
+  document.getElementById('reh-chk').checked = false;
+  resetScope = null;
+  document.getElementById('reset-options').style.display = 'none';
+  document.querySelectorAll('.reset-scope-btn').forEach(b => b.classList.remove('active'));
+  toggleResetBtn();
+  document.getElementById('reh-modal').classList.add('show');
 }
+function closeRehearsal() { document.getElementById('reh-modal').classList.remove('show'); }
+
+function toggleResetBtn() {
+  const checked = document.getElementById('reh-chk').checked;
+  const optsDiv = document.getElementById('reset-options');
+  optsDiv.style.display = checked ? 'block' : 'none';
+  const btn = document.getElementById('reset-btn');
+  const ready = checked && resetScope !== null;
+  btn.disabled = !ready;
+  btn.style.opacity = ready ? '1' : '.35';
+  btn.style.cursor  = ready ? 'pointer' : 'not-allowed';
+  if (checked && resetScope === null) {
+    btn.textContent = 'SELECT SCOPE ABOVE';
+  } else if (resetScope === 'ops') {
+    btn.textContent = 'RESET OPS LOG';
+  } else if (resetScope === 'all') {
+    btn.textContent = 'RESET BOTH PANELS';
+  } else {
+    btn.textContent = 'RESET';
+  }
+}
+
+function setResetScope(scope) {
+  resetScope = scope;
+  document.getElementById('rst-ops-only').classList.toggle('active', scope === 'ops');
+  document.getElementById('rst-all').classList.toggle('active',      scope === 'all');
+  toggleResetBtn();
+}
+
 function doReset() {
-  if (!document.getElementById('reh-chk').checked) return;
-  tlEvents = []; opsLog = []; opsSeq = 0;
-  Store.del('ndp_tl'); Store.del('ndp_ops');
-  renderTL(); renderOps(); closeRehearsal();
+  if (!document.getElementById('reh-chk').checked || !resetScope) return;
+  if (resetScope === 'ops' || resetScope === 'all') {
+    opsLog = []; opsSeq = 0; Store.del('ndp_ops'); renderOps();
+  }
+  if (resetScope === 'all') {
+    tlEvents = []; Store.del('ndp_tl'); renderTL();
+  }
+  closeRehearsal();
 }
 
 function csvEsc(v) {
