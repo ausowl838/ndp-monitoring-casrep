@@ -250,7 +250,7 @@ async function sbDel(t,id){await fetch(SB+"/"+t+"?id=eq."+id,{method:"DELETE",he
 async function sbDelAll(t){await fetch(SB+"/"+t+"?id=not.is.null",{method:"DELETE",headers:SH});}
 
 // ── STATE ─────────────────────────────────────────────────────────────────
-let myStation=null,casualties={},logs=[],evacId=null,arrId=null,editId=null,showLog=false,showAdd=true,elapsedTimers={};
+let myStation=null,casualties={},logs=[],evacId=null,arrId=null,editId=null,showLog=false,showAdd=true,elapsedTimers={},selectedHosp='';
 const g=id=>document.getElementById(id);
 const nowT=()=>new Date().toLocaleTimeString("en-SG",{hour:"2-digit",minute:"2-digit",hour12:false});
 const todayStr=()=>new Date().toLocaleDateString("en-SG",{day:"2-digit",month:"short",year:"numeric"});
@@ -380,21 +380,20 @@ function openEvacModal(id){
   evacId=id;const c=casualties[id]||{};const pr=PRIORITY[c.priority]||PRIORITY.P3;
   g("evacInner").style.borderTop="4px solid "+pr.bg;
   g("evacSub").textContent=(c.nric||"No NRIC")+" · "+(c.name||"Unknown")+" · "+c.priority;
-  g("evacTime").value=nowT();
+  g("evacTime").value=nowT();selectedHosp="";
   document.querySelectorAll(".hosp-btn").forEach(b=>{b.style.background="#050D14";b.style.border="1px solid #1C3347";b.querySelector("div").style.color="#5D8AA8";});
   g("evacModal").style.display="flex";
 }
 function selectHosp(h){
-  g("evacTime");// ensure exists
+  selectedHosp=h;
   document.querySelectorAll(".hosp-btn").forEach(b=>{const s=b.dataset.hosp===h;b.style.background=s?"#2A1A40":"#050D14";b.style.border=s?"1.5px solid #9B59B6":"1px solid #1C3347";b.querySelector("div").style.color=s?"#C39BD3":"#5D8AA8";});
-  g("evacTime").dataset.hosp=h;
 }
 async function confirmEvac(){
-  const hospital=document.querySelector(".hosp-btn[style*='#2A1A40']")?.dataset.hosp||"";
   const t=g("evacTime").value.trim();
-  if(!hospital){alert("Select a hospital.");return;}
-  await updateCasualty(evacId,{status:"Evacuated",hospital,evacuationTime:t});
+  if(!selectedHosp){alert("Select a hospital.");return;}
+  await updateCasualty(evacId,{status:"Evacuated",hospital:selectedHosp,evacuationTime:t});
   closeModal("evacModal");
+  selectedHosp="";
 }
 function openArrivalModal(id){
   arrId=id;const c=casualties[id]||{};
