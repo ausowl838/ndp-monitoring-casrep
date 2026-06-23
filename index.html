@@ -1,827 +1,1034 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CASREP — NDP Medical Command</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@700&family=Courier+Prime:wght@400;700&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NDP MEDICAL COMMAND POST</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:radial-gradient(ellipse at top left,rgba(74,158,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at bottom right,rgba(167,139,250,0.04) 0%,transparent 60%),#030A12;color:#B8CCE0;font-family:'DM Sans',sans-serif;min-height:100vh}
-  ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#1C3347;border-radius:2px}
-  input::placeholder{color:#1C3A52}select option{background:#050D14}
-  .inp{background:#050D14;border:1px solid #1C3347;border-radius:4px;color:#B8CCE0;padding:5px 8px;font-size:0.82rem;font-family:'Courier Prime',monospace;width:100%;outline:none}
-  .inp:focus{border-color:#2E86C1}
-  .lbl{display:block;font-size:0.6rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.1em;font-family:'Courier Prime',monospace;margin-bottom:3px}
-  .btn{cursor:pointer;border-radius:4px;font-family:'Courier Prime',monospace;font-size:0.78rem;font-weight:700;padding:6px 14px;border:1px solid}
-  .card{background:#07111C;border-radius:6px;padding:10px 13px;margin-bottom:8px;animation:fadeIn 0.2s ease}
-  .hidden{display:none}
-  .modal-bg{position:fixed;inset:0;z-index:999;background:rgba(2,8,14,0.92);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-  .modal{background:#07111C;border-radius:8px;padding:24px;width:500px;max-width:94vw}
-  .sidebar-box{background:#050D14;border:1px solid #0D2133;border-radius:8px;padding:12px;margin-bottom:10px}
-  .sidebar-title{font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px}
-  .tag{border-radius:3px;padding:1px 8px;font-family:'Courier Prime',monospace;font-size:0.7rem;font-weight:700}
-  .quick-btn{border-radius:4px;padding:3px 12px;cursor:pointer;font-family:'Courier Prime',monospace;font-size:0.72rem;font-weight:700;border:1px solid}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .spinner{width:18px;height:18px;border:2px solid #1C3347;border-top-color:#2E86C1;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
-  input[type=password]{font-family:'Courier Prime',monospace}
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;900&family=Rajdhani:wght@300;400;500;600;700&family=Syne:wght@800&family=DM+Mono:wght@400&display=swap');
+
+  :root {
+    --bg-void: #060d14;
+    --bg-panel: #080d12;
+    --bg-card: #0c1318;
+    --bg-elevated: #111b22;
+    --border: #1a2e3a;
+    --border-bright: #1e4060;
+    --accent: #00d4ff;
+    --accent-dim: #007fa0;
+    --accent-glow: rgba(0,212,255,0.12);
+    --amber: #ffb300;
+    --amber-glow: rgba(255,179,0,0.12);
+    --red: #ff3b3b;
+    --red-glow: rgba(255,59,59,0.15);
+    --green: #00ff88;
+    --green-glow: rgba(0,255,136,0.12);
+    --text-primary: #c8dde8;
+    --text-secondary: #5a7a8a;
+    --text-dim: #2e4a58;
+    --scan-line: rgba(0,212,255,0.03);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background:
+      radial-gradient(ellipse at top left,  rgba(74,158,255,0.05) 0%, transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(167,139,250,0.04) 0%, transparent 55%),
+      var(--bg-void);
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content:'';
+    position:fixed; top:0; left:0; right:0; bottom:0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--scan-line) 2px, var(--scan-line) 4px);
+    pointer-events:none; z-index:9999;
+  }
+  body::after {
+    content:'';
+    position:fixed; top:0; left:0; right:0; bottom:0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%);
+    pointer-events:none; z-index:9998;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display:grid; grid-template-columns:0 1fr auto;
+    align-items:center; padding:10px 24px;
+    background:var(--bg-panel); border-bottom:1px solid var(--border);
+    position:relative; overflow:hidden; flex-shrink:0;
+  }
+  .header::after {
+    content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, var(--accent), transparent); opacity:0.6;
+  }
+  .header-left { display:flex; align-items:center; gap:16px; }
+  .header-emblem {
+    width:44px; height:44px; border:1px solid var(--accent-dim); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; position:relative;
+    box-shadow:0 0 12px var(--accent-glow), inset 0 0 8px var(--accent-glow);
+  }
+  .header-emblem svg { width:24px; height:24px; fill:var(--accent); }
+  .header-emblem::before {
+    content:''; position:absolute; inset:-3px; border:1px solid var(--accent-dim);
+    border-radius:50%; opacity:0.4; animation:pulse-ring 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-ring { 0%,100%{opacity:0.4;transform:scale(1)} 50%{opacity:0.1;transform:scale(1.08)} }
+  .header-org .title { font-family:'Orbitron',monospace; font-size:11px; font-weight:600; letter-spacing:0.18em; color:var(--accent); text-transform:uppercase; }
+  .header-org .subtitle { font-family:'Rajdhani',sans-serif; font-size:12px; letter-spacing:0.12em; color:var(--text-secondary); text-transform:uppercase; }
+  .header-center { text-align: left; }
+  .header-center .main-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; letter-spacing:0.05em; color:#e8f0f7; text-shadow:0 0 20px var(--accent-glow); text-transform:uppercase; }
+  .header-center .sub-title { font-family:'DM Mono',monospace; font-size:15px; font-weight:400; letter-spacing:0.04em; color:#4a6a7a; margin-top:2px; text-transform:none; }
+  .header-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+  .clock { font-family:'Share Tech Mono',monospace; font-size:26px; color:var(--accent); letter-spacing:0.05em; text-shadow:0 0 15px rgba(0,212,255,0.5); }
+  .date-display { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-secondary); letter-spacing:0.15em; }
+  .status-indicator { display:flex; align-items:center; gap:6px; font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:0.12em; }
+  .status-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:blink 1.8s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── LAYOUT ── */
+  .main {
+    display:grid; grid-template-columns:1fr 1fr; gap:16px;
+    padding:16px 20px; height:calc(100vh - 76px); max-height:calc(100vh - 76px);
+  }
+
+  /* ── PANEL ── */
+  .panel {
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:2px;
+    display:flex; flex-direction:column; overflow:hidden; position:relative;
+  }
+  .panel::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--accent) 70%, transparent 100%); opacity:0.5;
+  }
+  .panel-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 16px; border-bottom:1px solid var(--border); background:var(--bg-card); flex-shrink:0;
+  }
+  .panel-title { display:flex; align-items:center; gap:10px; }
+  .panel-icon { width:20px; height:20px; border:1px solid var(--accent-dim); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--accent); }
+  .panel-label { font-family:'Orbitron',monospace; font-size:13px; font-weight:600; letter-spacing:0.18em; color:var(--text-primary); text-transform:uppercase; }
+  .panel-badge { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-secondary); background:var(--bg-elevated); border:1px solid var(--border); padding:2px 8px; letter-spacing:0.1em; }
+  .corner-tl,.corner-tr,.corner-bl,.corner-br { position:absolute; width:8px; height:8px; border-color:var(--accent-dim); border-style:solid; opacity:0.5; z-index:1; }
+  .corner-tl{top:0;left:0;border-width:1px 0 0 1px} .corner-tr{top:0;right:0;border-width:1px 1px 0 0}
+  .corner-bl{bottom:0;left:0;border-width:0 0 1px 1px} .corner-br{bottom:0;right:0;border-width:0 1px 1px 0}
+
+  /* ── STATS BAR ── */
+  .stats-bar { display:flex; background:var(--bg-card); border-bottom:1px solid var(--border); flex-shrink:0; }
+  .stat-cell { flex:1; padding:7px 12px; border-right:1px solid var(--border); text-align:center; }
+  .stat-cell:last-child { border-right:none; }
+  .stat-val { font-family:'Orbitron',monospace; font-size:18px; font-weight:700; color:var(--accent); line-height:1; text-shadow:0 0 10px var(--accent-glow); }
+  .stat-val.red { color:var(--red); text-shadow:0 0 10px var(--red-glow); }
+  .stat-val.amber { color:var(--amber); text-shadow:0 0 10px var(--amber-glow); }
+  .stat-val.green { color:var(--green); text-shadow:0 0 10px var(--green-glow); }
+  .stat-lbl { font-family:'Share Tech Mono',monospace; font-size:8px; letter-spacing:0.12em; color:var(--text-dim); margin-top:2px; text-transform:uppercase; }
+
+  /* ── TIMELINE ── */
+  .timeline-body { flex:1; overflow-y:auto; padding:12px 16px; display:flex; flex-direction:column; gap:0; }
+  .timeline-body::-webkit-scrollbar{width:3px} .timeline-body::-webkit-scrollbar-track{background:var(--bg-void)} .timeline-body::-webkit-scrollbar-thumb{background:var(--accent-dim)}
+
+  .tl-entry { display:grid; grid-template-columns:80px 14px 1fr; gap:0 12px; position:relative; padding-bottom:14px; animation:fadeSlide 0.4s ease-out; }
+  @keyframes fadeSlide { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+  .tl-time { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--accent); letter-spacing:0.08em; text-align:right; padding-top:2px; line-height:1.2; }
+  .tl-time .tl-date { display:block; font-size:9px; color:var(--text-dim); margin-top:2px; }
+  .tl-spine { display:flex; flex-direction:column; align-items:center; }
+  .tl-dot { width:12px; height:12px; border-radius:50%; border:2px solid var(--accent); background:var(--bg-void); flex-shrink:0; margin-top:2px; position:relative; z-index:1; }
+  .tl-dot.p-critical { border-color:var(--red); box-shadow:0 0 8px var(--red-glow); background:rgba(255,59,59,0.15); animation:crit-pulse 1.5s ease-in-out infinite; }
+  @keyframes crit-pulse { 0%,100%{box-shadow:0 0 6px var(--red-glow)} 50%{box-shadow:0 0 14px rgba(255,59,59,0.5)} }
+  .tl-dot.p-high { border-color:var(--amber); box-shadow:0 0 6px var(--amber-glow); background:rgba(255,179,0,0.1); }
+  .tl-dot.p-normal { border-color:var(--accent); box-shadow:0 0 6px var(--accent-glow); }
+  .tl-dot.p-info { border-color:var(--text-secondary); background:transparent; }
+  .tl-line { flex:1; width:1px; background:linear-gradient(to bottom, var(--border-bright), var(--border)); margin-top:2px; }
+  .tl-content { padding-bottom:4px; position:relative; }
+  .tl-milestone { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:13px; color:var(--text-primary); letter-spacing:0.05em; line-height:1.3; }
+  .tl-desc { font-size:11px; color:var(--text-secondary); margin-top:2px; letter-spacing:0.03em; line-height:1.4; }
+  .tl-tag { display:inline-block; font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.1em; padding:1px 6px; margin-top:4px; border-radius:1px; text-transform:uppercase; }
+  .tl-tag.p-critical{background:rgba(255,59,59,0.15);color:var(--red);border:1px solid rgba(255,59,59,0.3)}
+  .tl-tag.p-high{background:rgba(255,179,0,0.1);color:var(--amber);border:1px solid rgba(255,179,0,0.3)}
+  .tl-tag.p-normal{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(0,212,255,0.2)}
+  .tl-tag.p-info{background:var(--bg-elevated);color:var(--text-secondary);border:1px solid var(--border)}
+  .tl-entry-actions { position:absolute; right:0; top:0; display:none; gap:4px; }
+  .tl-entry:hover .tl-entry-actions { display:flex; }
+
+  /* ── TIMELINE ADD FORM ── */
+  .timeline-add { padding:10px 16px; border-top:1px solid var(--border); background:var(--bg-card); display:flex; flex-direction:column; gap:7px; flex-shrink:0; }
+  .tl-row1 { display:grid; grid-template-columns:100px 1fr auto; gap:8px; align-items:flex-end; }
+  .tl-row2 { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; }
+  .priority-row { display:flex; gap:5px; align-items:center; }
+
+  /* ── OPS LOG ── */
+  .ops-body { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+  .ops-body::-webkit-scrollbar{width:3px} .ops-body::-webkit-scrollbar-track{background:var(--bg-void)} .ops-body::-webkit-scrollbar-thumb{background:var(--accent-dim)}
+
+  /* Card-style ops entry */
+  .ops-card {
+    border-bottom:1px solid rgba(26,46,58,0.6);
+    border-left: 3px solid transparent;
+    padding:10px 14px;
+    position:relative;
+    transition:background 0.15s, border-left-color 0.15s;
+    animation:cardIn 0.35s ease-out;
+  }
+  @keyframes cardIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+  /* Resolve-based card colouring */
+  .ops-card.card-pending  { background:rgba(255,59,59,0.07);  border-left-color:var(--red); }
+  .ops-card.card-ongoing  { background:rgba(255,179,0,0.06);  border-left-color:var(--amber); }
+  .ops-card.card-resolved { background:rgba(0,255,136,0.04);  border-left-color:var(--green); }
+
+  .ops-card.card-pending:hover  { background:rgba(255,59,59,0.11); }
+  .ops-card.card-ongoing:hover  { background:rgba(255,179,0,0.10); }
+  .ops-card.card-resolved:hover { background:rgba(0,255,136,0.07); }
+  .ops-card-header {
+    display:grid; grid-template-columns:auto auto 1fr auto auto;
+    gap:8px; align-items:center; margin-bottom:6px;
+  }
+  .ops-seq { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-dim); letter-spacing:0.06em; }
+  .ops-time-badge { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.06em; background:rgba(0,212,255,0.07); border:1px solid rgba(0,212,255,0.15); padding:1px 7px; }
+  .ops-priority-badge { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.1em; padding:1px 7px; border-radius:1px; text-transform:uppercase; }
+  .ops-priority-badge.p-critical{background:rgba(255,59,59,0.15);color:var(--red);border:1px solid rgba(255,59,59,0.3)}
+  .ops-priority-badge.p-high{background:rgba(255,179,0,0.1);color:var(--amber);border:1px solid rgba(255,179,0,0.3)}
+  .ops-priority-badge.p-normal{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(0,212,255,0.2)}
+  .ops-priority-badge.p-info{background:var(--bg-elevated);color:var(--text-secondary);border:1px solid var(--border)}
+  .ops-resolved-badge { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.1em; padding:1px 7px; text-transform:uppercase; }
+  .ops-resolved-badge.resolved{color:var(--green);border:1px solid rgba(0,255,136,0.2);background:rgba(0,255,136,0.07)}
+  .ops-resolved-badge.ongoing{color:var(--amber);border:1px solid rgba(255,179,0,0.2);background:rgba(255,179,0,0.05)}
+  .ops-resolved-badge.pending{color:var(--text-secondary);border:1px solid var(--border);background:var(--bg-elevated)}
+
+  .ops-card-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:4px 12px;
+    margin-bottom:5px;
+  }
+  .ops-field { font-size:12px; line-height:1.4; }
+  .ops-field-lbl { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; display:block; margin-bottom:1px; }
+  .ops-field-val { color:var(--text-primary); font-weight:500; }
+  .ops-field.full { grid-column:1 / -1; }
+
+  .ops-card-footer { display:flex; justify-content:space-between; align-items:center; margin-top:4px; border-top:1px solid rgba(26,46,58,0.5); padding-top:4px; }
+  .ops-assigned { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent-dim); letter-spacing:0.08em; }
+  .ops-card-actions { display:none; gap:4px; }
+  .ops-card:hover .ops-card-actions { display:flex; }
+
+  /* ── OPS INPUT FORM ── */
+  .ops-input-area { padding:10px 14px; border-top:1px solid var(--border); background:var(--bg-card); flex-shrink:0; }
+  .ops-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 10px; margin-bottom:6px; }
+  .ops-form-full { grid-column:1 / -1; }
+  .ops-form-row { display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:flex-end; margin-top:4px; }
+
+  /* ── SHARED FORM ── */
+  .field-label { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.15em; color:var(--text-dim); text-transform:uppercase; display:block; margin-bottom:3px; }
+  input[type="text"], input[type="time"], textarea, select {
+    background:var(--bg-void); border:1px solid var(--border-bright); color:var(--text-primary);
+    font-family:'Rajdhani',sans-serif; font-size:12px; padding:5px 8px; outline:none;
+    width:100%; border-radius:1px; transition:border-color 0.2s, box-shadow 0.2s; letter-spacing:0.04em;
+  }
+  input::placeholder, textarea::placeholder { color:var(--text-dim); }
+  textarea { resize:none; line-height:1.5; }
+  input:focus, textarea:focus, select:focus { border-color:var(--accent-dim); box-shadow:0 0 0 1px rgba(0,212,255,0.1), 0 0 8px var(--accent-glow); }
+  select { cursor:pointer; appearance:none; -webkit-appearance:none; }
+  select option { background:var(--bg-card); color:var(--text-primary); }
+
+  /* ── BUTTONS ── */
+  .btn { font-family:'Orbitron',monospace; font-size:10px; font-weight:600; letter-spacing:0.15em; padding:6px 14px; border:1px solid var(--accent-dim); background:transparent; color:var(--accent); cursor:pointer; text-transform:uppercase; transition:all 0.15s; border-radius:1px; white-space:nowrap; }
+  .btn:hover { background:var(--accent-glow); border-color:var(--accent); box-shadow:0 0 10px var(--accent-glow); }
+  .btn:active { transform:scale(0.97); }
+  .btn-ghost { font-family:'Share Tech Mono',monospace; font-size:10px; padding:3px 7px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); cursor:pointer; transition:all 0.15s; border-radius:1px; }
+  .btn-ghost:hover { border-color:var(--red); color:var(--red); }
+  .btn-ghost.edit-btn:hover { border-color:var(--amber); color:var(--amber); }
+  .priority-btn { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.1em; padding:3px 9px; border-radius:1px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
+  .priority-btn.crit{color:var(--red)} .priority-btn.crit.active{background:rgba(255,59,59,0.1);border-color:var(--red)}
+  .priority-btn.high{color:var(--amber)} .priority-btn.high.active{background:rgba(255,179,0,0.1);border-color:var(--amber)}
+  .priority-btn.norm{color:var(--accent)} .priority-btn.norm.active{background:var(--accent-glow);border-color:var(--accent)}
+  .priority-btn.info{color:var(--text-secondary)} .priority-btn.info.active{background:var(--bg-elevated);border-color:var(--text-secondary)}
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align:center; padding:32px 16px; color:var(--text-dim); font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:0.1em; line-height:2; }
+
+  /* ── CONFIRM OVERLAY ── */
+  .confirm-overlay { display:none; position:fixed; inset:0; background:rgba(3,5,8,0.88); z-index:9000; align-items:center; justify-content:center; }
+  .confirm-overlay.show { display:flex; }
+  .confirm-box { background:var(--bg-panel); border:1px solid var(--red); padding:24px 32px; text-align:center; box-shadow:0 0 30px rgba(255,59,59,0.2); min-width:280px; }
+  .confirm-box h3 { font-family:'Orbitron',monospace; font-size:13px; letter-spacing:0.15em; color:var(--red); margin-bottom:8px; }
+  .confirm-box p { font-size:12px; color:var(--text-secondary); margin-bottom:16px; font-family:'Share Tech Mono',monospace; letter-spacing:0.08em; }
+  .confirm-actions { display:flex; gap:8px; justify-content:center; }
+  .btn-danger { font-family:'Orbitron',monospace; font-size:10px; font-weight:600; letter-spacing:0.12em; padding:7px 16px; border:1px solid var(--red); background:rgba(255,59,59,0.1); color:var(--red); cursor:pointer; text-transform:uppercase; border-radius:1px; }
+  .btn-cancel { font-family:'Orbitron',monospace; font-size:10px; font-weight:600; letter-spacing:0.12em; padding:7px 16px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); cursor:pointer; text-transform:uppercase; border-radius:1px; }
+
+  /* ── OPS MODAL ── */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(3,5,8,0.9); z-index:8000; align-items:center; justify-content:center; }
+  .modal-overlay.show { display:flex; }
+  .modal-box {
+    background:var(--bg-panel); border:1px solid var(--border-bright);
+    width:min(680px, 95vw); max-height:90vh; overflow-y:auto;
+    box-shadow:0 0 40px rgba(0,212,255,0.1);
+  }
+  .modal-box::-webkit-scrollbar{width:3px} .modal-box::-webkit-scrollbar-thumb{background:var(--accent-dim)}
+  .modal-header { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid var(--border); background:var(--bg-card); }
+  .modal-title { font-family:'Orbitron',monospace; font-size:12px; font-weight:600; letter-spacing:0.18em; color:var(--accent); }
+  .modal-close { font-family:'Share Tech Mono',monospace; font-size:14px; color:var(--text-secondary); background:transparent; border:none; cursor:pointer; padding:2px 8px; }
+  .modal-close:hover { color:var(--red); }
+  .modal-body { padding:16px 18px; display:flex; flex-direction:column; gap:10px; }
+  .modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; }
+  .modal-full { grid-column:1 / -1; }
+  .modal-footer { display:flex; justify-content:flex-end; gap:8px; padding:12px 18px; border-top:1px solid var(--border); background:var(--bg-card); }
+
+  /* Export button */
+  .btn-export {
+    font-family:'Orbitron',monospace; font-size:9px; font-weight:600; letter-spacing:0.12em;
+    padding:4px 10px; border:1px solid var(--amber); background:rgba(255,179,0,0.07);
+    color:var(--amber); cursor:pointer; text-transform:uppercase; transition:all 0.15s; border-radius:1px;
+    white-space:nowrap;
+  }
+  .btn-export:hover { background:rgba(255,179,0,0.15); box-shadow:0 0 8px rgba(255,179,0,0.2); }
+
+  /* Rehearsal modal specifics */
+  .rehearsal-section { margin-bottom:12px; }
+  .rehearsal-section-title { font-family:'Orbitron',monospace; font-size:10px; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--border); }
+  .export-option { display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--border); background:var(--bg-void); margin-bottom:6px; cursor:pointer; transition:all 0.15s; border-radius:1px; }
+  .export-option:hover { border-color:var(--accent-dim); background:var(--accent-glow); }
+  .export-option-icon { font-size:16px; width:24px; text-align:center; }
+  .export-option-text .eo-title { font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:600; color:var(--text-primary); }
+  .export-option-text .eo-desc  { font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--text-secondary); letter-spacing:0.08em; margin-top:1px; }
+  .reset-warning { background:rgba(255,59,59,0.07); border:1px solid rgba(255,59,59,0.25); padding:10px 12px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--red); letter-spacing:0.08em; line-height:1.6; border-radius:1px; margin-top:6px; }
+  .reset-confirm-check { display:flex; align-items:center; gap:10px; margin-top:10px; cursor:pointer; }
+  .reset-confirm-check input[type="checkbox"] { width:14px; height:14px; accent-color:var(--red); cursor:pointer; flex-shrink:0; }
+  .reset-confirm-check span { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-secondary); letter-spacing:0.08em; line-height:1.4; }
 </style>
 </head>
 <body>
 
-<!-- ═══ AUTH SCREEN ═══ -->
-<div id="authScreen" style="display:block">
-  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
-    <div style="width:440px;max-width:100%">
-      <div style="margin-bottom:28px">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#e8f0f7;letter-spacing:0.02em;line-height:1.15">MEDICAL COMMAND POST</div>
-        <div style="font-family:'DM Mono',monospace;font-weight:400;font-size:13px;color:#4a6a7a;letter-spacing:0.02em;margin-top:4px">CASUALTY DASHBOARD · RESTRICTED, SENSITIVE (NORMAL)</div>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left"></div>
+  <div class="header-center">
+    <div class="main-title">Medical Command Post</div>
+    <div class="sub-title">OPERATIONS COMMAND &amp; CONTROL SYSTEM · RESTRICTED, SENSITIVE (NORMAL)</div>
+  </div>
+  <div class="header-right">
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="date-display" id="dateDisplay">--- -- ----</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:2px;">
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span style="color:var(--green);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0.12em;">SYSTEM ACTIVE</span>
       </div>
-      <div style="background:#07111C;border:1px solid #1C3347;border-radius:10px;padding:28px">
-        <div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:18px">Station Access</div>
-        <div style="margin-bottom:14px">
-          <label class="lbl">Select Your Station</label>
-          <select class="inp" id="authStation" style="font-size:0.9rem;padding:8px">
-            <option value="">— Select Station —</option>
-            <option value="CP1">Command Post 1 (CP1)</option>
-            <option value="CP2">Command Post 2 (CP2)</option>
-            <option value="MP North">MP North</option>
-            <option value="MP South">MP South</option>
-            <option value="MP Arena">MP Arena</option>
-            <option value="MP WACA">MP WACA</option>
-            <option value="MP VVIP">MP VVIP</option>
-            <option value="FAP(E) Show">FAP(E) Show</option>
-            <option value="FAP(E) Beneficiaries">FAP(E) Beneficiaries</option>
-            <option value="FAP(E) Celebrations">FAP(E) Celebrations</option>
-          </select>
-        </div>
-        <div style="margin-bottom:20px">
-          <label class="lbl">Station PIN</label>
-          <input class="inp" type="password" id="authPin" placeholder="Enter your station PIN" style="font-size:0.9rem;padding:8px;letter-spacing:0.15em" onkeydown="if(event.key==='Enter')doLogin()"/>
-        </div>
-        <div id="authError" style="font-family:'Courier Prime',monospace;font-size:0.72rem;color:#E74C3C;margin-bottom:14px;display:none"></div>
-        <button onclick="doLogin()" id="loginBtn" style="width:100%;padding:11px 0;background:#0A3A5A;border:1px solid #2E86C1;color:#5DADE2;border-radius:6px;cursor:pointer;font-family:'Courier Prime',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.1em">
-          ENTER COMMAND SYSTEM
-        </button>
-      </div>
-      <div style="text-align:center;margin-top:12px;font-family:'Courier Prime',monospace;font-size:0.58rem;color:#0D2133">
-        Authorised personnel only · All access is logged · NDP 2026 Medical Operations
-      </div>
+      <button class="btn-export" onclick="openRehearsalModal()">⬇ EXPORT &amp; RESET</button>
     </div>
   </div>
-</div>
+</header>
 
-<!-- ═══ MAIN APP ═══ -->
-<div id="mainApp" style="display:none">
+<main class="main">
 
-  <!-- Topbar -->
-  <div style="background:rgba(3,10,18,0.92);border-bottom:1px solid #0D2133;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)">
-    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#e8f0f7;letter-spacing:0.02em;line-height:1.15">MEDICAL COMMAND POST</div>
-      <div style="font-family:'DM Mono',monospace;font-weight:400;font-size:13px;color:#4a6a7a;letter-spacing:0.02em">CASUALTY DASHBOARD · RESTRICTED, SENSITIVE (NORMAL)</div>
-      <div style="display:flex;gap:8px;margin-top:3px">
-        <div id="stationBadge" style="border-radius:4px;padding:2px 10px;border:1px solid"></div>
-        <span id="stationNote" style="font-family:'Courier Prime',monospace;font-size:0.62rem;color:#1A4060;padding-top:2px"></span>
+  <!-- ═══════════════════ TIMELINE ═══════════════════ -->
+  <section class="panel">
+    <div class="corner-tl"></div><div class="corner-tr"></div><div class="corner-bl"></div><div class="corner-br"></div>
+
+    <div class="panel-header">
+      <div class="panel-title">
+        <div class="panel-icon">◈</div>
+        <span class="panel-label">Critical Event Timeline</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="panel-badge" id="tl-count">0 EVENTS</span>
+        <button class="btn-ghost" onclick="confirmClear('timeline')">CLR</button>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:14px">
-      <span id="topDate" style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#1A4060"></span>
-      <div style="display:flex;align-items:center;gap:5px">
-        <div id="syncDot" style="width:7px;height:7px;border-radius:50%;background:#1DB954;box-shadow:0 0 6px #1DB954;transition:all 0.3s"></div>
-        <span id="syncLabel" style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#1DB954">LIVE</span>
-      </div>
-      <button onclick="toggleLog()" class="btn" style="background:transparent;border-color:#1C3347;color:#4A8AB0;font-size:0.68rem;padding:3px 10px">LOG <span id="logCount"></span></button>
-      <button onclick="exportData()" class="btn" style="background:#0A3A1A;border-color:#1DB954;color:#1DB954;font-size:0.68rem;padding:3px 10px">⬇ Export</button>
-      <span id="resetBtn" class="hidden"><button onclick="resetData()" class="btn" style="background:#3A0A0A;border-color:#C0392B;color:#C0392B;font-size:0.68rem;padding:3px 10px">⚠ Reset Data</button></span>
-      <button onclick="doLogout()" class="btn" style="background:#1A0808;border-color:#441111;color:#994444;font-size:0.68rem;padding:3px 10px">⏏ Logout</button>
-    </div>
-  </div>
 
-  <div style="max-width:1380px;margin:0 auto;padding:12px 16px">
-
-    <!-- Row 1: Stats -->
-    <div style="display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-bottom:12px" id="statsRow"></div>
-
-    <!-- Row 2: Post strips -->
-    <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:12px" id="postStrips"></div>
-
-    <!-- Row 3: Diagnosis breakdown (all posts) — 2 rows of 8 -->
-    <div style="background:#05111C;border:1px solid #0D2133;border-radius:8px;padding:10px 12px;margin-bottom:8px">
-      <div style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px">Diagnosis Breakdown — All Posts · Sorted by Count</div>
-      <div id="diagRow" style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px"></div>
+    <div class="stats-bar">
+      <div class="stat-cell"><div class="stat-val red" id="tl-critical">0</div><div class="stat-lbl">Critical</div></div>
+      <div class="stat-cell"><div class="stat-val amber" id="tl-high">0</div><div class="stat-lbl">High</div></div>
+      <div class="stat-cell"><div class="stat-val" id="tl-normal">0</div><div class="stat-lbl">Normal</div></div>
+      <div class="stat-cell"><div class="stat-val green" id="tl-info">0</div><div class="stat-lbl">Info</div></div>
     </div>
 
-    <!-- Row 4: Per-post diagnosis (only when post selected) -->
-    <div id="postDiagRow" style="display:none" style="background:#05111C;border:1px solid #1A3A5A;border-radius:8px;padding:10px 12px;margin-bottom:12px;box-shadow:0 0 16px rgba(74,158,255,0.06)">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <div style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#2E86C1;text-transform:uppercase;letter-spacing:0.12em">Diagnosis Breakdown</div>
-        <div id="postDiagLabel" style="background:#2E86C122;border:1px solid #2E86C155;border-radius:3px;padding:1px 8px;font-family:'Courier Prime',monospace;font-size:0.62rem;color:#2E86C1;font-weight:700"></div>
-        <div id="postDiagCount" style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060"></div>
-      </div>
-      <div id="postDiagGrid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px"></div>
+    <div class="timeline-body" id="timeline-body">
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 290px;gap:12px">
-
-      <!-- Main panel -->
-      <div>
-        <!-- Filters -->
-        <div style="display:flex;gap:7px;margin-bottom:10px;align-items:center;flex-wrap:wrap">
-          <select class="inp" id="fPost" onchange="applyFilters()" style="width:auto">
-            <option value="ALL">All Posts</option>
-          </select>
-          <select class="inp" id="fPri" onchange="applyFilters()" style="width:auto">
-            <option value="ALL">All Priority</option>
-            <option value="P1">P1 — Immediate</option><option value="P2">P2 — Delayed</option>
-            <option value="P3">P3 — Minor</option><option value="P4">P4 — Expectant</option>
-          </select>
-          <select class="inp" id="fSt" onchange="applyFilters()" style="width:auto">
-            <option value="ALL">All Status</option>
-            <option>At Post</option><option>Discharged from Post</option>
-            <option>Evacuated</option><option>Arrived at Hospital</option>
-          </select>
-          <select class="inp" id="fComplaint" onchange="applyFilters()" style="width:auto">
-            <option value="ALL">All Chief Complaints</option>
-          </select>
-          <span id="countLabel" style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#1A4060;margin-left:auto"></span>
-          <button onclick="toggleAddForm()" class="btn" id="addToggleBtn" style="background:#0A2A40;border-color:#1A4A6A;color:#4A90D9;font-size:0.68rem;padding:4px 10px">▲ Hide Form</button>
+    <div class="timeline-add">
+      <div class="tl-row1">
+        <div>
+          <span class="field-label">Time (HH:MM)</span>
+          <input type="time" id="tl-time"/>
         </div>
-
-        <!-- Add form -->
-        <div id="addForm" style="display:block;background:#050D14;border:1px solid #1C3347;border-radius:8px;padding:14px;margin-bottom:14px">
-          <div style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#2E86C1;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.12em">⊕ Register New Casualty</div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px 12px;margin-bottom:8px">
-            <div><label class="lbl">Partial NRIC</label><input class="inp" id="fNric" placeholder="XXXX123A" maxlength="9" oninput="this.value=this.value.toUpperCase()"/></div>
-            <div><label class="lbl">Name Initials</label><input class="inp" id="fName" placeholder="T.A.B." maxlength="12"/></div>
-            <div><label class="lbl">Age</label><input class="inp" id="fAge" type="number" min="0" max="120"/></div>
-            <div><label class="lbl">Gender</label><select class="inp" id="fGender"><option value="">—</option><option>Male</option><option>Female</option></select></div>
-            <div><label class="lbl">Medical Post</label><select class="inp" id="fPostSel"></select></div>
-            <div><label class="lbl">Priority</label>
-              <select class="inp" id="fPri2">
-                <option value="P1">P1 — Immediate</option><option value="P2">P2 — Delayed</option>
-                <option value="P3" selected>P3 — Minor</option><option value="P4">P4 — Expectant</option>
-              </select>
-            </div>
-            <div><label class="lbl">Chief Complaint</label><select class="inp" id="fComplaint2"></select></div>
-            <div><label class="lbl">Diagnosis</label><select class="inp" id="fDiagnosis"></select></div>
+        <div>
+          <span class="field-label">Milestone / Event</span>
+          <input type="text" id="tl-milestone" placeholder="e.g. Alpha Team deployed to Sector 3" maxlength="120"/>
+        </div>
+        <div style="padding-top:18px;">
+          <button class="btn" onclick="addTimelineEvent()">+ LOG</button>
+        </div>
+      </div>
+      <div class="tl-row2">
+        <div>
+          <span class="field-label">Notes (optional)</span>
+          <input type="text" id="tl-desc" placeholder="Additional details..." maxlength="200"/>
+        </div>
+        <div>
+          <span class="field-label">Priority</span>
+          <div class="priority-row">
+            <button class="priority-btn crit" id="pb-p-critical" onclick="setPriority('p-critical')">CRIT</button>
+            <button class="priority-btn high" id="pb-p-high" onclick="setPriority('p-high')">HIGH</button>
+            <button class="priority-btn norm" id="pb-p-normal" onclick="setPriority('p-normal')">NORM</button>
+            <button class="priority-btn info" id="pb-p-info" onclick="setPriority('p-info')">INFO</button>
           </div>
-          <div id="fTocWrap" style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:8px">
-            <div>
-              <label class="lbl">Type of Casualty</label>
-              <select class="inp" id="fToc" onchange="toggleOtherUnit('f')">
-                <option value="">—</option>
-                <option>Show</option><option>P&amp;C</option><option>Spectator</option>
-                <option value="Others (NDP Working Party personnel)">Others (NDP Working Party personnel)</option>
-              </select>
-            </div>
-            <div id="fOtherWrap" class="hidden">
-              <label class="lbl">Unit / Parent Organisation</label>
-              <input class="inp" id="fOtherUnit" placeholder="e.g. 3 SIR, MINDEF OPS"/>
-            </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ OPS LOG ═══════════════════ -->
+  <section class="panel">
+    <div class="corner-tl"></div><div class="corner-tr"></div><div class="corner-bl"></div><div class="corner-br"></div>
+
+    <div class="panel-header">
+      <div class="panel-title">
+        <div class="panel-icon">▣</div>
+        <span class="panel-label">Operations Log</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="panel-badge" id="ops-count">0 ENTRIES</span>
+        <button class="btn-ghost" onclick="confirmClear('ops')">CLR</button>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-cell"><div class="stat-val green" id="ops-total">0</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-cell"><div class="stat-val red" id="ops-open">0</div><div class="stat-lbl">Open</div></div>
+      <div class="stat-cell"><div class="stat-val amber" id="ops-ongoing">0</div><div class="stat-lbl">Ongoing</div></div>
+      <div class="stat-cell"><div class="stat-val" id="ops-resolved">0</div><div class="stat-lbl">Resolved</div></div>
+    </div>
+
+    <div class="ops-body" id="ops-body">
+    </div>
+
+    <!-- Quick-add trigger -->
+    <div class="ops-input-area">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.15em;color:var(--text-dim);">QUICK LOG ENTRY</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:flex-end;">
+        <div>
+          <span class="field-label">Issue / Title</span>
+          <input type="text" id="qi-issue" placeholder="Brief issue title..." maxlength="80"/>
+        </div>
+        <div>
+          <span class="field-label">Location</span>
+          <input type="text" id="qi-location" placeholder="e.g. Sector B / Gate 3" maxlength="60"/>
+        </div>
+        <div style="padding-top:18px;">
+          <button class="btn" onclick="openOpsModal(null)" style="white-space:nowrap;">+ FULL LOG</button>
+        </div>
+      </div>
+      <div style="margin-top:6px;display:flex;gap:8px;align-items:flex-end;">
+        <div style="flex:1;">
+          <span class="field-label">Assigned To</span>
+          <input type="text" id="qi-assigned" placeholder="Callsign / Name" maxlength="60"/>
+        </div>
+        <div>
+          <span class="field-label">Priority</span>
+          <div class="priority-row">
+            <button class="priority-btn crit" id="qpb-p-critical" onclick="setQPriority('p-critical')">CRIT</button>
+            <button class="priority-btn high active" id="qpb-p-high" onclick="setQPriority('p-high')">HIGH</button>
+            <button class="priority-btn norm" id="qpb-p-normal" onclick="setQPriority('p-normal')">NORM</button>
+            <button class="priority-btn info" id="qpb-p-info" onclick="setQPriority('p-info')">INFO</button>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:10px">
-            <div><label class="lbl">MO Attending</label><input class="inp" id="fMO" placeholder="Dr. Name"/></div>
-            <div><label class="lbl">Notes / Observations</label><input class="inp" id="fNotes"/></div>
+        </div>
+        <div>
+          <button class="btn" onclick="quickAddOps()" style="padding:6px 12px;">SUBMIT</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- OPS MODAL (Full Entry) -->
+<div class="modal-overlay" id="ops-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-label">NEW OPS LOG ENTRY</span>
+      <button class="modal-close" onclick="closeOpsModal()">✕ CLOSE</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid">
+        <div>
+          <span class="field-label">Issue / Title *</span>
+          <input type="text" id="m-issue" placeholder="Brief issue title..." maxlength="100"/>
+        </div>
+        <div>
+          <span class="field-label">Location *</span>
+          <input type="text" id="m-location" placeholder="e.g. Sector B, Gate 3, VIP Zone" maxlength="80"/>
+        </div>
+        <div class="modal-full">
+          <span class="field-label">Description</span>
+          <textarea id="m-desc" rows="2" placeholder="Detailed description of the situation / observation..."></textarea>
+        </div>
+        <div class="modal-full">
+          <span class="field-label">Actions Taken / To Be Taken</span>
+          <textarea id="m-actions" rows="2" placeholder="Actions taken or planned response..."></textarea>
+        </div>
+        <div>
+          <span class="field-label">Assigned To</span>
+          <input type="text" id="m-assigned" placeholder="Callsign / Name / Unit" maxlength="80"/>
+        </div>
+        <div>
+          <span class="field-label">Logged By</span>
+          <input type="text" id="m-loggedby" placeholder="Your name / callsign" maxlength="60"/>
+        </div>
+        <div>
+          <span class="field-label">Priority</span>
+          <select id="m-priority">
+            <option value="p-critical">CRITICAL</option>
+            <option value="p-high" selected>HIGH</option>
+            <option value="p-normal">NORMAL</option>
+            <option value="p-info">INFO</option>
+          </select>
+        </div>
+        <div>
+          <span class="field-label">Status / Resolve</span>
+          <select id="m-resolve">
+            <option value="pending">PENDING</option>
+            <option value="ongoing" selected>ONGOING</option>
+            <option value="resolved">RESOLVED</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeOpsModal()">Cancel</button>
+      <button class="btn" onclick="submitOpsModal()">SUBMIT ENTRY</button>
+    </div>
+  </div>
+</div>
+
+<!-- REHEARSAL EXPORT + RESET MODAL -->
+<div class="modal-overlay" id="rehearsal-modal">
+  <div class="modal-box" style="max-width:500px;">
+    <div class="modal-header">
+      <span class="modal-title">REHEARSAL EXPORT &amp; RESET</span>
+      <button class="modal-close" onclick="closeRehearsalModal()">✕ CLOSE</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="rehearsal-section">
+        <div class="rehearsal-section-title">① Export Current Data</div>
+        <div class="export-option" onclick="exportCSV('timeline')">
+          <div class="export-option-icon">📋</div>
+          <div class="export-option-text">
+            <div class="eo-title">Export Critical Event Timeline (CSV)</div>
+            <div class="eo-desc">Downloads all timeline entries as a spreadsheet-ready CSV file</div>
           </div>
-          <button onclick="registerCasualty()" class="btn" style="width:100%;background:#0A2A40;border-color:#2E86C1;color:#5DADE2;padding:7px 0;letter-spacing:0.1em;font-size:0.82rem">REGISTER CASUALTY</button>
         </div>
-
-        <div id="casualtyList"></div>
-      </div>
-
-      <!-- Sidebar -->
-      <div>
-        <!-- Pie chart -->
-        <div class="sidebar-box">
-          <div class="sidebar-title">Diagnosis Distribution</div>
-          <canvas id="diagPie" width="250" height="250" style="display:block;margin:0 auto"></canvas>
-          <div id="pieLegend" style="margin-top:10px"></div>
-        </div>
-        <!-- Log -->
-        <div class="sidebar-box" id="logBox" style="display:none">
-          <div class="sidebar-title">Shared Activity Log</div>
-          <div id="logList" style="max-height:320px;overflow-y:auto"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ EVAC MODAL ═══ -->
-<div id="evacModal" class="modal-bg" style="display:none">
-  <div class="modal" id="evacModalInner" style="max-height:90vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;margin-bottom:16px">
-      <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;color:#9B59B6;letter-spacing:0.12em">🚑 EVACUATE CASUALTY</div>
-        <div id="evacSub" style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#4A7090;margin-top:2px"></div>
-      </div>
-      <button onclick="closeModal('evacModal')" style="background:none;border:none;color:#4A7090;cursor:pointer;font-size:1rem">✕</button>
-    </div>
-    <div style="margin-bottom:14px">
-      <label class="lbl">Select Destination Hospital *</label>
-      <div id="hospBtns" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px"></div>
-      <input class="inp" id="evacHosp" list="evacHospList" placeholder="Or type destination..."/>
-      <datalist id="evacHospList"></datalist>
-    </div>
-    <div style="margin-bottom:14px"><label class="lbl">Evacuation Time</label><input class="inp" id="evacTime"/></div>
-    <div style="display:flex;gap:8px">
-      <button onclick="closeModal('evacModal')" class="btn" style="flex:1;background:#0D1E2E;border-color:#1C3347;color:#4A7090">Cancel</button>
-      <button onclick="confirmEvac()" class="btn" id="evacConfirmBtn" style="flex:2;background:#1A0A30;border-color:#9B59B6;color:#C39BD3">🚑 CONFIRM EVACUATION</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ ARRIVAL MODAL ═══ -->
-<div id="arrivalModal" class="modal-bg" style="display:none">
-  <div class="modal">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;color:#E67E22;letter-spacing:0.12em;margin-bottom:6px">🏥 CONFIRM HOSPITAL ARRIVAL</div>
-    <div id="arrivalSub" style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#4A7090;margin-bottom:16px"></div>
-    <div style="margin-bottom:14px"><label class="lbl">Time Arrived at Hospital</label><input class="inp" id="arrivalTime"/></div>
-    <div style="display:flex;gap:8px">
-      <button onclick="closeModal('arrivalModal')" class="btn" style="flex:1;background:#0D1E2E;border-color:#1C3347;color:#4A7090">Cancel</button>
-      <button onclick="confirmArrival()" class="btn" id="arrivalConfirmBtn" style="flex:2;background:#200E00;border-color:#E67E22;color:#E67E22">✓ CONFIRM ARRIVAL</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ EDIT MODAL ═══ -->
-<div id="editModal" class="modal-bg" style="display:none">
-  <div class="modal" style="width:640px;max-height:90vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;color:#2E86C1;letter-spacing:0.12em">✎ EDIT CASUALTY RECORD</div>
-      <button onclick="closeModal('editModal')" style="background:none;border:none;color:#4A7090;cursor:pointer;font-size:1rem">✕</button>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 12px;margin-bottom:8px">
-      <div><label class="lbl">Partial NRIC</label><input class="inp" id="eNric" maxlength="9" oninput="this.value=this.value.toUpperCase()"/></div>
-      <div><label class="lbl">Name Initials</label><input class="inp" id="eName" maxlength="12"/></div>
-      <div><label class="lbl">Age</label><input class="inp" id="eAge" type="number" min="0" max="120"/></div>
-      <div><label class="lbl">Gender</label><select class="inp" id="eGender"><option value="">—</option><option>Male</option><option>Female</option></select></div>
-      <div><label class="lbl">Priority</label><select class="inp" id="ePri"><option value="P1">P1 — Immediate</option><option value="P2">P2 — Delayed</option><option value="P3">P3 — Minor</option><option value="P4">P4 — Expectant</option></select></div>
-      <div><label class="lbl">Medical Post</label><select class="inp" id="ePost"></select></div>
-      <div><label class="lbl">Chief Complaint</label><select class="inp" id="eComplaint"></select></div>
-      <div><label class="lbl">Diagnosis</label><select class="inp" id="eDiagnosis"></select></div>
-      <div><label class="lbl">MO Attending</label><input class="inp" id="eMO"/></div>
-      <div style="grid-column:1/-1">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <div><label class="lbl">Type of Casualty</label>
-            <select class="inp" id="eToc" onchange="toggleOtherUnit('e')">
-              <option value="">—</option>
-              <option>Show</option><option>P&amp;C</option><option>Spectator</option>
-              <option value="Others (NDP Working Party personnel)">Others (NDP Working Party personnel)</option>
-            </select>
+        <div class="export-option" onclick="exportCSV('ops')">
+          <div class="export-option-icon">📋</div>
+          <div class="export-option-text">
+            <div class="eo-title">Export Operations Log (CSV)</div>
+            <div class="eo-desc">Downloads all ops entries including issue, location, actions, status</div>
           </div>
-          <div id="eOtherWrap" class="hidden"><label class="lbl">Unit / Parent Organisation</label><input class="inp" id="eOtherUnit" placeholder="e.g. 3 SIR, MINDEF OPS"/></div>
+        </div>
+        <div class="export-option" onclick="exportCSV('all')">
+          <div class="export-option-icon">📦</div>
+          <div class="export-option-text">
+            <div class="eo-title">Export All Data (Combined CSV)</div>
+            <div class="eo-desc">Exports both timeline and ops log into a single combined CSV file</div>
+          </div>
+        </div>
+        <div class="export-option" onclick="exportJSON()">
+          <div class="export-option-icon">💾</div>
+          <div class="export-option-text">
+            <div class="eo-title">Export Raw Backup (JSON)</div>
+            <div class="eo-desc">Full data backup — can be used to restore a session later</div>
+          </div>
         </div>
       </div>
-      <div><label class="lbl">Status</label>
-        <select class="inp" id="eStatus" onchange="toggleEditFields()">
-          <option>At Post</option><option>Discharged from Post</option><option>Evacuated</option><option>Arrived at Hospital</option>
-        </select>
+
+      <div class="rehearsal-section">
+        <div class="rehearsal-section-title">② Reset for Next Rehearsal</div>
+        <div class="reset-warning">
+          ⚠ RESET will permanently clear ALL timeline events and ops log entries.<br>
+          Ensure you have exported your data before proceeding.<br>
+          This action cannot be undone.
+        </div>
+        <label class="reset-confirm-check">
+          <input type="checkbox" id="reset-confirm-checkbox" onchange="toggleResetBtn()"/>
+          <span>I confirm I have exported the data and authorise a full reset for the next rehearsal.</span>
+        </label>
       </div>
-      <div id="eDischargeWrap" class="hidden"><label class="lbl">Discharge Time</label><input class="inp" id="eDischargeTime" placeholder="HH:MM"/></div>
-      <div id="eEvacWrap" class="hidden"><label class="lbl">Evacuation Time</label><input class="inp" id="eEvacTime" placeholder="HH:MM"/></div>
-      <div id="eHospWrap" class="hidden" style="grid-column:1/-1"><label class="lbl">Destination Hospital</label><input class="inp" id="eHospital" list="editHospList"/><datalist id="editHospList"></datalist></div>
-      <div id="eArrivalWrap" class="hidden"><label class="lbl">Arrival Time</label><input class="inp" id="eArrivalTime" placeholder="HH:MM"/></div>
-      <div style="grid-column:1/-1"><label class="lbl">Notes / Treatment</label><input class="inp" id="eNotes"/></div>
+
     </div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button onclick="closeModal('editModal')" class="btn" style="flex:1;background:#0D1E2E;border-color:#1C3347;color:#4A7090">Cancel</button>
-      <button onclick="saveEdit()" class="btn" style="flex:2;background:#0A3A1A;border-color:#1DB954;color:#1DB954">✓ SAVE RECORD</button>
+    <div class="modal-footer" style="justify-content:space-between;">
+      <button class="btn-cancel" onclick="closeRehearsalModal()">Close</button>
+      <button class="btn-danger" id="reset-exec-btn" onclick="executeRehearsalReset()" disabled style="opacity:0.35;cursor:not-allowed;">RESET ALL DATA</button>
     </div>
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<!-- CONFIRM OVERLAY -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <h3>⚠ CONFIRM CLEAR</h3>
+    <p id="confirm-msg">This will permanently clear all entries.</p>
+    <div class="confirm-actions">
+      <button class="btn-danger" onclick="executeClear()">CONFIRM CLEAR</button>
+      <button class="btn-cancel" onclick="closeConfirm()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ── Firebase config ───────────────────────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyDeIkP-T-KUkAHCCMUl_juB8d_dI9xnKV8",
-  authDomain: "ndp-monitoring-casrep.firebaseapp.com",
-  databaseURL: "https://ndp-monitoring-casrep-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "ndp-monitoring-casrep",
-  storageBucket: "ndp-monitoring-casrep.firebasestorage.app",
-  messagingSenderId: "580779975259",
-  appId: "1:580779975259:web:90f654b4c80c04e8b9557e"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// ─── SAMPLE DATA ──────────────────────────────────────────────────────────────
+const SAMPLE_TIMELINE = [];
 
-// ── Station PIN mapping ── change these PINs before deployment ────────────
-const STATION_PINS = {
-  "CP1":                  "cp1@Ndp2026",
-  "CP2":                  "cp2@Ndp2026",
-  "MP North":             "mpN@Ndp2026",
-  "MP South":             "mpS@Ndp2026",
-  "MP Arena":             "mpA@Ndp2026",
-  "MP WACA":              "mpW@Ndp2026",
-  "MP VVIP":              "mpV@Ndp2026",
-  "FAP(E) Show":          "fapSh@Ndp2026",
-  "FAP(E) Beneficiaries": "fapBe@Ndp2026",
-  "FAP(E) Celebrations":  "fapCe@Ndp2026",
-};
+const SAMPLE_OPS = [];
 
-const COMMAND_STATIONS = ["CP1","CP2"];
-const POSTS = ["MP North","MP South","MP Arena","MP WACA","MP VVIP","FAP(E) Show","FAP(E) Beneficiaries","FAP(E) Celebrations"];
-
-const PRIORITY = {
-  P1:{bg:"#C0392B",text:"#fff",border:"#922B21",glow:"#C0392B44"},
-  P2:{bg:"#D35400",text:"#fff",border:"#A04000",glow:"#D3540044"},
-  P3:{bg:"#1E8449",text:"#fff",border:"#196F3D",glow:"#1E844944"},
-  P4:{bg:"#424949",text:"#AAB7B8",border:"#616A6B",glow:"#42494922"},
-};
-
-const HOSPITALS = [
-  "SGH (Singapore General Hospital)",
-  "TTSH (Tan Tock Seng Hospital)",
-  "NUH (National University Hospital)",
-  "KKH (KK Women's and Children's Hospital)",
-  "AH (Alexandra Hospital)",
-  "CGH (Changi General Hospital)",
-  "KTPH (Khoo Teck Puat Hospital)",
-  "NTFGH (Ng Teng Fong General Hospital)",
-  "SKH (Sengkang General Hospital)",
-  "WC (Woodlands Health)",
-];
-
-// ── CHIEF COMPLAINTS (15) ── update here when list changes
-const CHIEF_COMPLAINTS = [
-  "Abdominal Pain","Back Pain","Body Ache",
-  "Chest Pain or Discomfort","Eye Symptoms","Fatigue",
-  "Fever / Chills","Giddiness","Headache",
-  "Joint Pain / MSK Pain","Nausea / Vomiting","Others",
-  "Respiratory Symptoms","Shortness of Breath","Wounds / Bruises",
-];
-
-// ── DIAGNOSES (16) ── update here when list changes
-const DIAGNOSES = [
-  "Pending",
-  "Cardiac","Respiratory","Dermatology","Dental",
-  "Gastroenterology","Neurological (inc Headaches)","Musculoskeletal",
-  "Ophthalmology","Otolaryngology","Physical Exhaustion",
-  "Heat-related Illnesses","Wounds / Bruises","Psychiatric","Gynae",
-  "Others",
-];
-const DIAGNOSIS_COLORS = [
-  "#4A5568","#E74C3C","#E67E22","#F39C12","#2ECC71",
-  "#1ABC9C","#3498DB","#9B59B6","#E84393","#16A085",
-  "#95A5A6","#F1C40F","#C0392B","#7D3C98","#E91E8C","#7F8C8D",
-];
-
-const STAT_COLORS = {
-  total:"#4A90D9",p1:"#C0392B",p2:"#D35400",p3:"#1E8449",p4:"#8E44AD",
-  atPost:"#16A085",discharged:"#1DB954",evacuated:"#2980B9",hospital:"#E67E22"
-};
-
-// ── State ─────────────────────────────────────────────────────────────────
-let myStation=null, casualties={}, logs=[], elapsedTimers={};
-let evacId=null, arrivalId=null, editId=null;
-let showLog=false, showAddForm=true;
-
-const nowT = () => new Date().toLocaleTimeString("en-SG",{hour:"2-digit",minute:"2-digit",hour12:false});
-const todayStr = () => new Date().toLocaleDateString("en-SG",{day:"2-digit",month:"short",year:"numeric"});
-const g = id => document.getElementById(id);
-const fillSel = (id, arr, blank) => {
-  const el=g(id); if(!el) return;
-  el.innerHTML=(blank?'<option value="">—</option>':'')+arr.map(x=>`<option value="${x}">${x}</option>`).join('');
-};
-
-// ── Auth — PIN only, no Firebase Auth SDK ────────────────────────────────
-window.doLogin = function() {
-  const station = g("authStation").value;
-  const pin     = g("authPin").value;
-  const errEl   = g("authError");
-  errEl.style.display="none";
-  if(!station){ errEl.textContent="Please select your station."; errEl.style.display="block"; return; }
-  if(!pin)    { errEl.textContent="Please enter your station PIN."; errEl.style.display="block"; return; }
-  if(STATION_PINS[station] !== pin){
-    errEl.textContent="Incorrect PIN. Please try again.";
-    errEl.style.display="block"; return;
+// ─── STORAGE SAFE WRAPPER ─────────────────────────────────────────────────────
+const Store = (() => {
+  let _ok = null;
+  function _test() {
+    if (_ok !== null) return _ok;
+    try { localStorage.setItem('__t','1'); localStorage.removeItem('__t'); _ok = true; }
+    catch(e) { _ok = false; }
+    return _ok;
   }
-  myStation=station;
-  g("authScreen").style.display="none";
-  g("mainApp").style.display="block";
-  g("authPin").value="";
-  initApp();
-};
-
-window.doLogout = function() {
-  if(!confirm("Log out of CASREP?")) return;
-  Object.values(elapsedTimers).forEach(clearInterval); elapsedTimers={};
-  g("mainApp").style.display="none";
-  g("authScreen").style.display="block";
-  g("authStation").value=""; g("authPin").value="";
-  myStation=null;
-};
-
-// ── App init ──────────────────────────────────────────────────────────────
-function initApp() {
-  const isCommand = COMMAND_STATIONS.includes(myStation);
-  const stColor = isCommand?"#F1C40F":"#2E86C1";
-  const badge=g("stationBadge");
-  badge.textContent=myStation; badge.style.cssText=`background:${stColor}22;border:1px solid ${stColor}55;border-radius:4px;padding:2px 10px;font-family:'Courier Prime',monospace;font-size:0.75rem;color:${stColor};font-weight:700`;
-  g("stationNote").textContent = isCommand?"Full access · All posts":`Editing: ${myStation} only · Viewing: all posts`;
-  if(isCommand) g("resetBtn").style.display="inline";
-
-  // Populate selects
-  fillSel("fPostSel",POSTS); fillSel("ePost",POSTS);
-  fillSel("fComplaint2",CHIEF_COMPLAINTS); fillSel("eComplaint",CHIEF_COMPLAINTS);
-  fillSel("fDiagnosis",DIAGNOSES); fillSel("eDiagnosis",DIAGNOSES);
-  g("fPost").innerHTML='<option value="ALL">All Posts</option>'+POSTS.map(p=>`<option>${p}</option>`).join('');
-  g("fComplaint").innerHTML='<option value="ALL">All Chief Complaints</option>'+CHIEF_COMPLAINTS.map(c=>`<option>${c}</option>`).join('');
-
-  if(!isCommand) g("fPostSel").value=myStation;
-
-  // Hospital datalists + evac buttons
-  ["evacHospList","editHospList"].forEach(id=>{ const dl=g(id); HOSPITALS.forEach(h=>{const o=document.createElement("option");o.value=h;dl.appendChild(o);}); });
-  const hb=g("hospBtns");
-  HOSPITALS.forEach(h=>{
-    const abbr=h.split(" ")[0],full=h.replace(/^[^ ]+ /,"").replace(/[()]/g,"");
-    const b=document.createElement("button"); b.className="hosp-btn"; b.dataset.hosp=h;
-    b.style.cssText="background:#050D14;border:1px solid #1C3347;border-radius:5px;padding:7px 10px;cursor:pointer;text-align:left;width:100%";
-    b.innerHTML=`<div style="font-family:'Courier Prime',monospace;font-size:0.78rem;font-weight:700;color:#5D8AA8">${abbr}</div><div style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:#2E5A7A;margin-top:1px">${full}</div>`;
-    b.onclick=()=>selectHosp(h); hb.appendChild(b);
-  });
-
-  setInterval(()=>g("topDate").textContent=todayStr()+" "+nowT(),15000);
-  g("topDate").textContent=todayStr()+" "+nowT();
-
-  // Firebase listeners
-  // Render immediately with empty data so rows show on login
-  renderAll();
-
-  db.ref("casualties").on("value",snap=>{ casualties=snap.val()||{}; renderAll(); setSyncState("live"); });
-  db.ref("log").on("value",snap=>{ const r=snap.val()||{}; logs=Object.values(r).sort((a,b)=>b.ts-a.ts).slice(0,100); renderLog(); });
-}
-
-function setSyncState(s){
-  const d=g("syncDot"),l=g("syncLabel");
-  d.style.background="#1DB954";d.style.boxShadow="0 0 6px #1DB954";l.style.color="#1DB954";l.textContent="LIVE · "+nowT();
-}
-
-// ── Other unit toggle ─────────────────────────────────────────────────────
-window.toggleOtherUnit = function(prefix) {
-  const toc=g(prefix+"Toc").value;
-  const wrap=g(prefix+"OtherWrap");
-  if(toc==="Others (NDP Working Party personnel)") wrap.classList.remove("hidden");
-  else { wrap.classList.add("hidden"); g(prefix+"OtherUnit").value=""; }
-};
-
-// ── CRUD ──────────────────────────────────────────────────────────────────
-window.registerCasualty = async function() {
-  const toc=g("fToc").value;
-  const c = {
-    nric:g("fNric").value.trim(), name:g("fName").value.trim(),
-    age:g("fAge").value.trim(), gender:g("fGender").value,
-    post:g("fPostSel").value, priority:g("fPri2").value,
-    chiefComplaint:g("fComplaint2").value, diagnosis:g("fDiagnosis").value,
-    typeOfCasualty:toc, otherUnit:toc==="Others (NDP Working Party personnel)"?g("fOtherUnit").value.trim():"",
-    mo:g("fMO").value.trim(), notes:g("fNotes").value.trim(),
-    status:"At Post", timeIn:nowT(), createdAt:Date.now(),
-    registeredBy:myStation, dischargeTime:"",evacuationTime:"",arrivalTime:"",hospital:""
+  return {
+    get(key) {
+      if (!_test()) return null;
+      try { return localStorage.getItem(key); } catch(e) { return null; }
+    },
+    set(key, val) {
+      if (!_test()) return;
+      try { localStorage.setItem(key, val); } catch(e) { /* silent */ }
+    }
   };
-  await db.ref("casualties").push(c);
-  await addLog(`[${c.post}] New ${c.priority} ${c.nric||c.name||"casualty"} — ${c.chiefComplaint}`);
-  ["fNric","fName","fAge","fMO","fNotes","fOtherUnit"].forEach(id=>g(id).value="");
-  g("fGender").value="";g("fPri2").value="P3";g("fToc").value="";g("fOtherWrap").classList.add("hidden");
-  g("fDiagnosis").value="Pending";
-};
+})();
 
-async function updateCasualty(id,updates){
-  await db.ref(`casualties/${id}`).update(updates);
-  const c={...casualties[id],...updates};
-  await addLog(`#${id.slice(-5)} → ${updates.status||c.status}${updates.hospital?" → "+updates.hospital.split(" ")[0]:""}${updates.arrivalTime?" (arrived "+updates.arrivalTime+")":""}`);
+// ─── STATE ────────────────────────────────────────────────────────────────────
+Store.set('ndp_tl', null); let timelineEvents = JSON.parse(Store.get('ndp_tl') || 'null') || [...SAMPLE_TIMELINE];
+Store.set('ndp_ops2', null); let opsEntries     = JSON.parse(Store.get('ndp_ops2') || 'null') || [...SAMPLE_OPS];
+let selectedPriority = 'p-high';
+let qSelectedPriority = 'p-high';
+let clearTarget = null;
+let editingOpsId = null;
+let opsSeq = opsEntries.length > 0 ? Math.max(...opsEntries.map(e=>e.seq)) : 0;
+let sessionStart = Date.now();
+
+// ─── CLOCK ────────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${hh}:${mm}:${ss}`;
+  const days=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  document.getElementById('dateDisplay').textContent = `${days[now.getDay()]} ${String(now.getDate()).padStart(2,'0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  const el = Math.floor((Date.now()-sessionStart)/1000);
+  const sh = String(Math.floor(el/3600)).padStart(2,'0');
+  const sm = String(Math.floor((el%3600)/60)).padStart(2,'0');
 }
-window.deleteCasualty = async function(id){
-  const c=casualties[id];
-  if(!confirm(`Remove ${c?.nric||c?.name||"casualty #"+id.slice(-5)}?`)) return;
-  await db.ref(`casualties/${id}`).remove();
-  await addLog(`${c?.nric||c?.name||"Casualty"} removed by ${myStation}`);
-};
-async function addLog(msg){ await db.ref("log").push({msg,by:myStation,ts:Date.now(),t:nowT()}); }
+setInterval(updateClock, 1000); updateClock();
 
-// ── Modals ────────────────────────────────────────────────────────────────
-window.closeModal = id => { g(id).style.display="none"; };
-
-window.openEvacModal = function(id){
-  evacId=id; const c=casualties[id]; const pr=PRIORITY[c.priority];
-  g("evacModalInner").style.borderTop=`4px solid ${pr.bg}`;
-  g("evacSub").textContent=`${c.nric||"No NRIC"} · ${c.name||"Unknown"} · ${c.priority}`;
-  g("evacTime").value=nowT(); g("evacHosp").value="";
-  document.querySelectorAll(".hosp-btn").forEach(b=>{b.style.background="#050D14";b.style.border="1px solid #1C3347";b.querySelector("div").style.color="#5D8AA8";});
-  g("evacModal").style.display="flex";
-};
-window.selectHosp = function(h){
-  g("evacHosp").value=h;
-  document.querySelectorAll(".hosp-btn").forEach(b=>{
-    const s=b.dataset.hosp===h;
-    b.style.background=s?"#2A1A40":"#050D14";b.style.border=s?"1.5px solid #9B59B6":"1px solid #1C3347";
-    b.querySelector("div").style.color=s?"#C39BD3":"#5D8AA8";
+// ─── PRIORITY ─────────────────────────────────────────────────────────────────
+function setPriority(p) {
+  selectedPriority = p;
+  ['p-critical','p-high','p-normal','p-info'].forEach(x => {
+    const el = document.getElementById('pb-'+x); if(el) el.classList.toggle('active', x===p);
   });
-};
-window.confirmEvac = async function(){
-  const hospital=g("evacHosp").value.trim(),evacTime=g("evacTime").value.trim();
-  if(!hospital){alert("Select a hospital destination.");return;}
-  await updateCasualty(evacId,{status:"Evacuated",hospital,evacuationTime:evacTime});
-  closeModal("evacModal");
-};
-window.openArrivalModal = function(id){
-  arrivalId=id; const c=casualties[id];
-  g("arrivalSub").textContent=`${c.nric||"No NRIC"} · ${c.name||"Unknown"} · ${c.hospital||"Unknown hospital"}`;
-  g("arrivalConfirmBtn").textContent=`✓ ARRIVED AT ${(c.hospital||"HOSPITAL").split(" ")[0]}`;
-  g("arrivalTime").value=nowT(); g("arrivalModal").style.display="flex";
-};
-window.confirmArrival = async function(){
-  await updateCasualty(arrivalId,{status:"Arrived at Hospital",arrivalTime:g("arrivalTime").value.trim()});
-  closeModal("arrivalModal");
-};
-window.openEditModal = function(id){
-  editId=id; const c=casualties[id];
-  const sv=(el,v)=>g(el).value=v||"";
-  sv("eNric",c.nric);sv("eName",c.name);sv("eAge",c.age);sv("eGender",c.gender);
-  g("ePri").value=c.priority; g("ePost").value=c.post;
-  g("eComplaint").value=c.chiefComplaint||CHIEF_COMPLAINTS[0];
-  g("eDiagnosis").value=c.diagnosis||"Pending";
-  sv("eMO",c.mo); g("eToc").value=c.typeOfCasualty||"";
-  sv("eOtherUnit",c.otherUnit);
-  toggleOtherUnit("e");
-  g("eStatus").value=c.status;
-  sv("eDischargeTime",c.dischargeTime);sv("eEvacTime",c.evacuationTime);
-  sv("eHospital",c.hospital);sv("eArrivalTime",c.arrivalTime);sv("eNotes",c.notes);
-  toggleEditFields(); g("editModal").style.display="flex";
-};
-window.toggleEditFields = function(){
-  const s=g("eStatus").value;
-  g("eDischargeWrap").classList.toggle("hidden",s!=="Discharged from Post");
-  g("eEvacWrap").classList.toggle("hidden",s!=="Evacuated"&&s!=="Arrived at Hospital");
-  g("eHospWrap").classList.toggle("hidden",s!=="Evacuated"&&s!=="Arrived at Hospital");
-  g("eArrivalWrap").classList.toggle("hidden",s!=="Arrived at Hospital");
-};
-window.saveEdit = async function(){
-  const toc=g("eToc").value;
-  const updates={
-    nric:g("eNric").value.trim(),name:g("eName").value.trim(),age:g("eAge").value.trim(),
-    gender:g("eGender").value,priority:g("ePri").value,post:g("ePost").value,
-    chiefComplaint:g("eComplaint").value,diagnosis:g("eDiagnosis").value,
-    mo:g("eMO").value.trim(),typeOfCasualty:toc,
-    otherUnit:toc==="Others (NDP Working Party personnel)"?g("eOtherUnit").value.trim():"",
-    status:g("eStatus").value,dischargeTime:g("eDischargeTime").value.trim(),
-    evacuationTime:g("eEvacTime").value.trim(),hospital:g("eHospital").value.trim(),
-    arrivalTime:g("eArrivalTime").value.trim(),notes:g("eNotes").value.trim(),
-  };
-  await updateCasualty(editId,updates); closeModal("editModal");
-};
-window.dischargeQuick = async id => updateCasualty(id,{status:"Discharged from Post",dischargeTime:nowT()});
+}
+function setQPriority(p) {
+  qSelectedPriority = p;
+  ['p-critical','p-high','p-normal','p-info'].forEach(x => {
+    const el = document.getElementById('qpb-'+x); if(el) el.classList.toggle('active', x===p);
+  });
+}
 
-// ── Render ────────────────────────────────────────────────────────────────
-function renderAll(){ renderStats();renderPostStrips();renderDiagRow();renderCasualties();renderPie(); }
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function nowTime() {
+  const n=new Date(); return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+}
+function nowDate() {
+  const n=new Date(); const m=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  return `${String(n.getDate()).padStart(2,'0')} ${m[n.getMonth()]}`;
+}
 
-window.applyFilters = function(){ renderCasualties();renderDiagRow();renderPostStrips(); };
-window.filterPost = function(p){
-  const sel=g("fPost"); sel.value=sel.value===p?"ALL":p; applyFilters();
-};
+// ─── SAVE ─────────────────────────────────────────────────────────────────────
+function saveTL()  { Store.set('ndp_tl',   JSON.stringify(timelineEvents)); }
+function saveOps() { Store.set('ndp_ops2', JSON.stringify(opsEntries)); }
 
-window.renderCasualties = function(){
-  const fPost=g("fPost")?.value||"ALL",fPri=g("fPri")?.value||"ALL";
-  const fSt=g("fSt")?.value||"ALL",fComp=g("fComplaint")?.value||"ALL";
-  const isCommand=COMMAND_STATIONS.includes(myStation);
+// ─── TIMELINE RENDER ──────────────────────────────────────────────────────────
+const P_LABELS = {'p-critical':'CRITICAL','p-high':'HIGH','p-normal':'NORMAL','p-info':'INFO'};
 
-  const list=Object.entries(casualties).map(([id,c])=>({...c,_id:id}))
-    .filter(c=>(fPost==="ALL"||c.post===fPost)&&(fPri==="ALL"||c.priority===fPri)
-      &&(fSt==="ALL"||c.status===fSt)&&(fComp==="ALL"||c.chiefComplaint===fComp))
-    .sort((a,b)=>({P1:0,P2:1,P3:2,P4:3}[a.priority]||9)-({P1:0,P2:1,P3:2,P4:3}[b.priority]||9)||b.createdAt-a.createdAt);
+function renderTimeline() {
+  const body = document.getElementById('timeline-body');
+  const st = {'p-critical':0,'p-high':0,'p-normal':0,'p-info':0};
+  timelineEvents.forEach(e => { if(st[e.priority]!==undefined) st[e.priority]++; });
+  document.getElementById('tl-critical').textContent = st['p-critical'];
+  document.getElementById('tl-high').textContent     = st['p-high'];
+  document.getElementById('tl-normal').textContent   = st['p-normal'];
+  document.getElementById('tl-info').textContent     = st['p-info'];
+  document.getElementById('tl-count').textContent    = `${timelineEvents.length} EVENT${timelineEvents.length!==1?'S':''}`;
 
-  g("countLabel").textContent=`${list.length}/${Object.keys(casualties).length}`;
-  const container=g("casualtyList");
-  Object.values(elapsedTimers).forEach(clearInterval); elapsedTimers={};
-
-  if(!list.length){
-    container.innerHTML=`<div style="text-align:center;padding:40px;color:#0D2133;font-family:'Courier Prime',monospace;font-size:0.8rem">${!Object.keys(casualties).length?"No casualties registered.":"No casualties match the filter."}</div>`;
+  if(timelineEvents.length===0) {
+    body.innerHTML = '<div class="empty-state">[ NO EVENTS LOGGED ]<br>Add first milestone below</div>';
     return;
   }
 
-  container.innerHTML=list.map(c=>{
-    const pr=PRIORITY[c.priority],id=c._id;
-    const canEdit=isCommand||c.post===myStation;
-    const isDischarged=c.status==="Discharged from Post";
-    const isEvac=c.status==="Evacuated"||c.status==="Arrived at Hospital";
-    const isArrived=c.status==="Arrived at Hospital";
-    const stCfg={"At Post":"background:#0A2A40;color:#2E86C1;border:1px solid #1A4A6A","Discharged from Post":"background:#0A2A18;color:#1DB954;border:1px solid #1A5030","Evacuated":"background:#2A1A40;color:#9B59B6;border:1px solid #4A2A60","Arrived at Hospital":"background:#2A1A10;color:#E67E22;border:1px solid #5A3010"}[c.status]||"";
-    const tocDisplay=c.typeOfCasualty==="Others (NDP Working Party personnel)"&&c.otherUnit?`NDP WP — ${c.otherUnit}`:c.typeOfCasualty||"—";
-    const editBtns=canEdit?`<button onclick="openEditModal('${id}')" style="background:#0D1E2E;border:1px solid #1A4060;color:#4A8AB0;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.7rem;font-family:'Courier Prime',monospace">✎ Edit</button><button onclick="deleteCasualty('${id}')" style="background:#1A0808;border:1px solid #441111;color:#994444;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.7rem">✕</button>`:"";
-    const quickBtns=canEdit?`<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-      ${c.status==="At Post"?`<button onclick="dischargeQuick('${id}')" class="quick-btn" style="background:#1DB95418;border-color:#1DB95466;color:#1DB954">✓ Discharge</button><button onclick="openEvacModal('${id}')" class="quick-btn" style="background:#9B59B618;border-color:#9B59B666;color:#9B59B6">🚑 Evacuate</button>`:""}
-      ${c.status==="Evacuated"?`<button onclick="openArrivalModal('${id}')" class="quick-btn" style="background:#E67E2218;border-color:#E67E2266;color:#E67E22">🏥 Confirm Arrival</button>`:""}
-    </div>`:"";
-
-    return `<div class="card" style="border:1px solid ${pr.border};border-left:5px solid ${pr.bg};box-shadow:0 0 14px ${pr.glow};opacity:${isDischarged?0.75:1}">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;flex-wrap:wrap;gap:4px">
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span style="font-family:'Courier Prime',monospace;font-weight:700;font-size:0.78rem;color:#8AAFC8">#${id.slice(-5)}</span>
-          <span class="tag" style="background:${pr.bg};color:${pr.text}">${c.priority}</span>
-          <span class="tag" style="background:#0A2030;color:#4A90D9;border:1px solid #1A4060">${c.post}</span>
-          <span class="tag" style="${stCfg}">${c.status}</span>
-          <span style="font-family:'Courier Prime',monospace;font-size:0.62rem;color:#2A4A6A">via ${c.registeredBy||"?"}</span>
+  let html = '';
+  timelineEvents.forEach((ev, idx) => {
+    const isLast = idx === timelineEvents.length - 1;
+    html += `
+      <div class="tl-entry">
+        <div class="tl-time">${ev.time}<span class="tl-date">${ev.date||''}</span></div>
+        <div class="tl-spine">
+          <div class="tl-dot ${ev.priority}"></div>
+          ${!isLast ? '<div class="tl-line"></div>' : ''}
         </div>
-        <div style="display:flex;gap:5px;align-items:center">
-          ${c.status==="At Post"?`<span id="el-${id}" style="font-family:'Courier Prime',monospace;font-size:0.75rem;color:#2E86C1">⏱ 00:00</span>`:""}
-          ${editBtns}
+        <div class="tl-content">
+          <div class="tl-milestone">${escHtml(ev.milestone)}</div>
+          ${ev.desc ? `<div class="tl-desc">${escHtml(ev.desc)}</div>` : ''}
+          <span class="tl-tag ${ev.priority}">${P_LABELS[ev.priority]||ev.priority}</span>
+          <div class="tl-entry-actions">
+            <button class="btn-ghost edit-btn" onclick="editTL(${ev.id})">✎</button>
+            <button class="btn-ghost" onclick="deleteTL(${ev.id})">✕</button>
+          </div>
         </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px 14px">
-        ${cell("Partial NRIC",c.nric||"—")}${cell("Name Initials",c.name||"—")}${cell("Age / Gender",[c.age&&`${c.age}y`,c.gender].filter(Boolean).join(" / ")||"—")}
-        ${cell("Chief Complaint",c.chiefComplaint||"—")}${cell("Diagnosis",c.diagnosis||"—")}${cell("Type of Casualty",tocDisplay)}
-        ${cell("MO Attending",c.mo||"—")}${cell("Time In",c.timeIn)}
-        ${isDischarged?cell("Discharged At",c.dischargeTime||"—","#1DB954"):""}
-        ${isEvac?cell("Evacuated At",c.evacuationTime||"—","#9B59B6"):""}
-        ${isEvac?cell("Hospital",c.hospital||"—","#C39BD3"):""}
-        ${isArrived?cell("Arrived At",c.arrivalTime||"—","#E67E22"):""}
-        ${c.notes?`<div style="grid-column:1/-1">${cell("Notes",c.notes)}</div>`:""}
-      </div>
-      ${quickBtns}
-    </div>`;
-  }).join("");
-
-  list.filter(c=>c.status==="At Post").forEach(c=>{
-    const el=document.getElementById(`el-${c._id}`); if(!el) return;
-    const tick=()=>{const s=Math.floor((Date.now()-c.createdAt)/1000),m=Math.floor(s/60),sec=s%60;
-      el.textContent=`⏱ ${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;el.style.color=m>=20?"#FF4136":"#2E86C1";el.style.fontWeight=m>=20?700:400;};
-    tick(); elapsedTimers[c._id]=setInterval(tick,1000);
+      </div>`;
   });
-};
-
-function cell(label,val,hi){
-  return `<div><span style="font-size:0.6rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.1em;font-family:'Courier Prime',monospace">${label} </span><span style="font-size:0.8rem;color:${hi||"#B8CCE0"}">${val}</span></div>`;
+  body.innerHTML = html;
 }
 
-function renderStats(){
-  const C=Object.values(casualties);
-  const byP=k=>C.filter(c=>c.priority===k).length;
-  const stats=[
-    ["Total",C.length,STAT_COLORS.total],["P1",byP("P1"),STAT_COLORS.p1],["P2",byP("P2"),STAT_COLORS.p2],
-    ["P3",byP("P3"),STAT_COLORS.p3],["P4",byP("P4"),STAT_COLORS.p4],
-    ["At Post",C.filter(c=>c.status==="At Post").length,STAT_COLORS.atPost],
-    ["Discharged",C.filter(c=>c.status==="Discharged from Post").length,STAT_COLORS.discharged],
-    ["Evacuated",C.filter(c=>c.status==="Evacuated").length,STAT_COLORS.evacuated],
-    ["At Hospital",C.filter(c=>c.status==="Arrived at Hospital").length,STAT_COLORS.hospital],
-  ];
-  g("statsRow").innerHTML=stats.map(([l,v,c])=>`
-    <div style="text-align:center;padding:7px 6px;background:${c}14;border-radius:6px;border:1px solid ${c}55">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:2.55rem;font-weight:700;color:${c};line-height:1">${v}</div>
-      <div style="font-family:'Courier Prime',monospace;font-size:0.81rem;color:${c}AA;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px">${l}</div>
-    </div>`).join("");
+function addTimelineEvent() {
+  const milestone = document.getElementById('tl-milestone').value.trim();
+  if(!milestone) { const el=document.getElementById('tl-milestone'); el.focus(); el.style.borderColor='var(--red)'; setTimeout(()=>el.style.borderColor='',1200); return; }
+  const ev = {
+    id: Date.now(), time: document.getElementById('tl-time').value||nowTime(),
+    date: nowDate(), milestone, desc: document.getElementById('tl-desc').value.trim(), priority: selectedPriority
+  };
+  timelineEvents.push(ev);
+  timelineEvents.sort((a,b)=>a.time.localeCompare(b.time));
+  saveTL(); renderTimeline();
+  document.getElementById('tl-milestone').value=''; document.getElementById('tl-desc').value='';
 }
 
-function renderPostStrips(){
-  const C=Object.values(casualties);
-  const curPost=g("fPost")?.value||"ALL";
-  g("postStrips").innerHTML=POSTS.map(p=>{
-    const pc=C.filter(c=>c.post===p);
-    const p1=pc.filter(c=>c.priority==="P1"&&c.status==="At Post").length;
-    const p2=pc.filter(c=>c.priority==="P2"&&c.status==="At Post").length;
-    const active=pc.filter(c=>c.status==="At Post").length;
-    const inactive=pc.length-active;
-    const isMyPost=p===myStation,sel=curPost===p;
+function deleteTL(id) { timelineEvents=timelineEvents.filter(e=>e.id!==id); saveTL(); renderTimeline(); }
 
-    // Row 4 data for selected post
-    if(sel){
-      const postDiag=DIAGNOSES.map((d,i)=>({label:d,count:pc.filter(c=>c.diagnosis===d).length,color:DIAGNOSIS_COLORS[i]})).sort((a,b)=>b.count-a.count);
-      g("postDiagRow").style.display="block";
-      g("postDiagLabel").textContent=p;
-      g("postDiagCount").textContent=`${pc.length} casualt${pc.length===1?"y":"ies"}`;
-      g("postDiagGrid").innerHTML=postDiag.map(({label,count,color})=>`
-        <div style="text-align:center;padding:9px 6px;background:${color}18;border-radius:6px;border:1px solid ${color}55">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:700;color:${color};line-height:1">${count}</div>
-          <div style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:${color}DD;margin-top:3px;line-height:1.3">${label}</div>
-        </div>`).join("");
+function editTL(id) {
+  const ev=timelineEvents.find(e=>e.id===id); if(!ev) return;
+  const nm=prompt('Edit milestone:',ev.milestone); if(nm===null) return;
+  const nd=prompt('Edit notes:',ev.desc||'');
+  ev.milestone=nm.trim()||ev.milestone; ev.desc=(nd||'').trim();
+  saveTL(); renderTimeline();
+}
+
+// ─── OPS RENDER ───────────────────────────────────────────────────────────────
+const R_LABELS = { resolved:'RESOLVED', ongoing:'ONGOING', pending:'PENDING' };
+
+function renderOps() {
+  const body = document.getElementById('ops-body');
+  const total = opsEntries.length;
+  const open = opsEntries.filter(e=>e.resolve==='pending').length;
+  const ongoing = opsEntries.filter(e=>e.resolve==='ongoing').length;
+  const resolved = opsEntries.filter(e=>e.resolve==='resolved').length;
+  document.getElementById('ops-count').textContent    = `${total} ENTR${total!==1?'IES':'Y'}`;
+  document.getElementById('ops-total').textContent    = total;
+  document.getElementById('ops-open').textContent     = open;
+  document.getElementById('ops-ongoing').textContent  = ongoing;
+  document.getElementById('ops-resolved').textContent = resolved;
+
+  if(total===0) {
+    body.innerHTML = '<div class="empty-state">[ NO ENTRIES ]<br>Log first activity below</div>';
+    return;
+  }
+
+  let html = '';
+  [...opsEntries].reverse().forEach(en => {
+    html += `
+      <div class="ops-card card-${en.resolve}">
+        <div class="ops-card-header">
+          <span class="ops-seq">#${String(en.seq).padStart(3,'0')}</span>
+          <span class="ops-time-badge">${en.time} ${en.date||''}</span>
+          <span></span>
+          <span class="ops-priority-badge ${en.priority}">${P_LABELS[en.priority]}</span>
+          <span class="ops-resolved-badge ${en.resolve}">${R_LABELS[en.resolve]||en.resolve.toUpperCase()}</span>
+        </div>
+        <div class="ops-card-grid">
+          <div class="ops-field full">
+            <span class="ops-field-lbl">Issue</span>
+            <span class="ops-field-val" style="font-size:13px;font-weight:600;">${escHtml(en.issue||'—')}</span>
+          </div>
+          <div class="ops-field">
+            <span class="ops-field-lbl">Location</span>
+            <span class="ops-field-val">${escHtml(en.location||'—')}</span>
+          </div>
+          <div class="ops-field">
+            <span class="ops-field-lbl">Assigned To</span>
+            <span class="ops-field-val">${escHtml(en.assigned||'—')}</span>
+          </div>
+          ${en.desc ? `<div class="ops-field full"><span class="ops-field-lbl">Description</span><span class="ops-field-val" style="color:var(--text-secondary);">${escHtml(en.desc)}</span></div>` : ''}
+          ${en.actions ? `<div class="ops-field full"><span class="ops-field-lbl">Actions Taken / To Be Taken</span><span class="ops-field-val">${escHtml(en.actions)}</span></div>` : ''}
+        </div>
+        <div class="ops-card-footer">
+          <span class="ops-assigned">Logged by: ${escHtml(en.loggedby||'CMD POST')}</span>
+          <div class="ops-card-actions">
+            <button class="btn-ghost edit-btn" onclick="editOps(${en.id})">✎ EDIT</button>
+            <button class="btn-ghost" onclick="deleteOps(${en.id})">✕</button>
+          </div>
+        </div>
+      </div>`;
+  });
+  body.innerHTML = html;
+}
+
+// ─── OPS CRUD ─────────────────────────────────────────────────────────────────
+function quickAddOps() {
+  const issue    = document.getElementById('qi-issue').value.trim();
+  const location = document.getElementById('qi-location').value.trim();
+  const assigned = document.getElementById('qi-assigned').value.trim();
+  if(!issue){ const el=document.getElementById('qi-issue'); el.focus(); el.style.borderColor='var(--red)'; setTimeout(()=>el.style.borderColor='',1200); return; }
+  opsSeq++;
+  opsEntries.push({
+    id:Date.now(), seq:opsSeq, time:nowTime(), date:nowDate(),
+    issue, location, desc:'', actions:'', assigned: assigned||'—',
+    loggedby:'CMD POST', priority:qSelectedPriority, resolve:'pending'
+  });
+  saveOps(); renderOps();
+  document.getElementById('qi-issue').value='';
+  document.getElementById('qi-location').value='';
+  document.getElementById('qi-assigned').value='';
+}
+
+function openOpsModal(id) {
+  editingOpsId = id;
+  const modal = document.getElementById('ops-modal');
+  if(id) {
+    const en = opsEntries.find(e=>e.id===id); if(!en) return;
+    document.getElementById('modal-title-label').textContent='EDIT OPS LOG ENTRY';
+    document.getElementById('m-issue').value     = en.issue||'';
+    document.getElementById('m-location').value  = en.location||'';
+    document.getElementById('m-desc').value      = en.desc||'';
+    document.getElementById('m-actions').value   = en.actions||'';
+    document.getElementById('m-assigned').value  = en.assigned||'';
+    document.getElementById('m-loggedby').value  = en.loggedby||'';
+    document.getElementById('m-priority').value  = en.priority||'p-normal';
+    document.getElementById('m-resolve').value   = en.resolve||'pending';
+    // Pre-fill from quick fields if editing new entry
+    if(document.getElementById('qi-issue').value && !id){
+      document.getElementById('m-issue').value = document.getElementById('qi-issue').value;
+      document.getElementById('m-location').value = document.getElementById('qi-location').value;
+      document.getElementById('m-assigned').value = document.getElementById('qi-assigned').value;
     }
-    if(curPost==="ALL") g("postDiagRow").style.display="none";
-
-    return `<div onclick="filterPost('${p}')" style="background:${sel?"#0A2A40":"#050D14"};border:${sel?"1px solid #2E86C1":isMyPost?"1px solid #1A4060":"1px solid #0D2133"};border-radius:6px;padding:8px 6px;cursor:pointer;min-width:0">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;color:${sel?"#5DADE2":isMyPost?"#4A90D9":"#2E5A7A"};letter-spacing:0.03em;line-height:1.2;min-height:2.4em">${p}${isMyPost&&!COMMAND_STATIONS.includes(myStation)?'<span style="font-size:0.5rem;color:#4A90D9;margin-left:3px">●</span>':""}</div>
-      <div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#8AAFC8;margin-top:3px">${pc.length} total</div>
-      <div style="display:flex;gap:6px;margin-top:2px">
-        <span style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:#16A085">▲ ${active}</span>
-        <span style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:#7F8C8D">● ${inactive}</span>
-      </div>
-      <div style="display:flex;gap:3px;margin-top:3px;flex-wrap:wrap">
-        ${p1>0?`<span style="background:#C0392B;color:#fff;border-radius:3px;padding:0 4px;font-size:0.55rem;font-family:'Courier Prime',monospace">P1:${p1}</span>`:""}
-        ${p2>0?`<span style="background:#D35400;color:#fff;border-radius:3px;padding:0 4px;font-size:0.55rem;font-family:'Courier Prime',monospace">P2:${p2}</span>`:""}
-      </div>
-    </div>`;
-  }).join("");
-}
-
-function renderDiagRow(){
-  const C=Object.values(casualties);
-  const counts=DIAGNOSES.map((d,i)=>({label:d,count:C.filter(c=>c.diagnosis===d).length,color:DIAGNOSIS_COLORS[i]})).sort((a,b)=>b.count-a.count);
-  g("diagRow").innerHTML=counts.map(({label,count,color})=>`
-    <div style="text-align:center;padding:9px 6px;background:${color}12;border-radius:6px;border:1px solid ${color}44">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:700;color:${color};line-height:1">${count}</div>
-      <div style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:${color}CC;margin-top:3px;line-height:1.3">${label}</div>
-    </div>`).join("");
-}
-
-function renderPie(){
-  const C=Object.values(casualties);
-  const counts=DIAGNOSES.map(d=>C.filter(c=>c.diagnosis===d).length);
-  const total=counts.reduce((a,b)=>a+b,0);
-  const cv=g("diagPie"); const ctx=cv.getContext("2d");
-  ctx.clearRect(0,0,250,250);
-  const cx=125,cy=125,r=95;
-  if(!total){
-    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle="#1C3347";ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle="#1A4060";ctx.font="11px 'Courier Prime',monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("No data yet",cx,cy);
   } else {
-    let start=-Math.PI/2;
-    counts.forEach((n,i)=>{ if(!n) return; const ang=(n/total)*Math.PI*2;
-      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+ang);ctx.closePath();
-      ctx.fillStyle=DIAGNOSIS_COLORS[i];ctx.fill();ctx.strokeStyle="#07111C";ctx.lineWidth=2;ctx.stroke();start+=ang;});
-    ctx.beginPath();ctx.arc(cx,cy,r*0.52,0,Math.PI*2);ctx.fillStyle="#050D14";ctx.fill();
-    ctx.fillStyle="#B8CCE0";ctx.font="bold 24px 'Barlow Condensed',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(total,cx,cy-5);
-    ctx.fillStyle="#2E5A7A";ctx.font="8px 'Courier Prime',monospace";ctx.fillText("CASUALTIES",cx,cy+11);
+    document.getElementById('modal-title-label').textContent='NEW OPS LOG ENTRY';
+    document.getElementById('m-issue').value     = document.getElementById('qi-issue').value||'';
+    document.getElementById('m-location').value  = document.getElementById('qi-location').value||'';
+    document.getElementById('m-assigned').value  = document.getElementById('qi-assigned').value||'';
+    document.getElementById('m-desc').value      = '';
+    document.getElementById('m-actions').value   = '';
+    document.getElementById('m-loggedby').value  = '';
+    document.getElementById('m-priority').value  = qSelectedPriority;
+    document.getElementById('m-resolve').value   = 'ongoing';
   }
-  const sorted=[...DIAGNOSES.map((d,i)=>({d,n:counts[i],c:DIAGNOSIS_COLORS[i]}))].sort((a,b)=>b.n-a.n);
-  g("pieLegend").innerHTML=sorted.map(({d,n,c})=>{
-    const pct=total?Math.round(n/total*100):0;
-    return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><div style="width:10px;height:10px;border-radius:2px;background:${c};flex-shrink:0"></div><span style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#7A9AB8;flex:1;line-height:1.3">${d}</span><span style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#4A7090">${n} (${pct}%)</span></div>`;
-  }).join("");
+  modal.classList.add('show');
+  document.getElementById('m-issue').focus();
 }
 
-function renderLog(){
-  g("logCount").textContent=logs.length?`[${logs.length}]`:"";
-  g("logList").innerHTML=logs.length
-    ?logs.map(l=>`<div style="margin-bottom:5px;border-bottom:1px solid #0A1A27;padding-bottom:4px"><span style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060">${l.t} </span><span style="font-family:'Courier Prime',monospace;font-size:0.62rem;color:#2E86C1;font-weight:700">[${l.by}] </span><span style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#5A8AAA">${l.msg}</span></div>`).join("")
-    :`<div style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#0D2133">No activity yet.</div>`;
+function closeOpsModal() {
+  document.getElementById('ops-modal').classList.remove('show');
+  editingOpsId = null;
 }
 
-
-// ── Export to CSV ─────────────────────────────────────────────────────────
-window.exportData = function() {
-  const C = Object.entries(casualties).map(([id,c])=>({...c,_id:id}));
-  if(!C.length){ alert("No casualties to export."); return; }
-
-  const headers = [
-    "Record ID","Partial NRIC","Name Initials","Age","Gender","Medical Post",
-    "Priority","Chief Complaint","Diagnosis","Type of Casualty","Unit / Parent Org",
-    "MO Attending","Status","Time In","Discharge Time","Evacuation Time",
-    "Hospital","Arrival Time","Notes","Registered By"
-  ];
-
-  const escape = v => `"${String(v||"").replace(/"/g,'""')}"`;
-
-  const rows = C
-    .sort((a,b)=>a.createdAt-b.createdAt)
-    .map(c=>[
-      c._id||"", c.nric||"", c.name||"", c.age||"", c.gender||"", c.post||"",
-      c.priority||"", c.chiefComplaint||"", c.diagnosis||"",
-      c.typeOfCasualty||"",
-      c.typeOfCasualty==="Others (NDP Working Party personnel)"?c.otherUnit||"":"",
-      c.mo||"", c.status||"", c.timeIn||"", c.dischargeTime||"",
-      c.evacuationTime||"", c.hospital||"", c.arrivalTime||"",
-      c.notes||"", c.registeredBy||""
-    ].map(escape).join(","));
-
-  const csv = [headers.map(escape).join(","), ...rows].join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement("a");
-  const ts   = new Date().toLocaleString("en-SG",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).replace(/[/:, ]/g,"-");
-  a.href=url; a.download=`CASREP_Export_${ts}.csv`;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
-  addLog(`Data exported by ${myStation} — ${C.length} records`);
-};
-
-// ── Reset Data (command post only) ────────────────────────────────────────
-window.resetData = async function() {
-  const C = Object.values(casualties);
-  if(!C.length){ alert("No data to reset."); return; }
-
-  // Double confirmation
-  const first = confirm(`⚠ RESET ALL DATA?\n\nThis will permanently delete all ${C.length} casualty records and the activity log from the database.\n\nThis action cannot be undone.\n\nClick OK to proceed to final confirmation.`);
-  if(!first) return;
-
-  const code = prompt(`FINAL CONFIRMATION\n\nType  RESET  (all caps) to confirm data reset:`);
-  if(code !== "RESET"){ alert("Reset cancelled — text did not match."); return; }
-
-  try {
-    await db.ref("casualties").remove();
-    await db.ref("log").remove();
-    casualties = {};
-    logs = [];
-    renderAll();
-    renderLog();
-    alert("✓ All data has been reset. Database is now empty.");
-  } catch(e) {
-    alert("Error resetting data: " + e.message);
+function submitOpsModal() {
+  const issue = document.getElementById('m-issue').value.trim();
+  if(!issue){ const el=document.getElementById('m-issue'); el.focus(); el.style.borderColor='var(--red)'; setTimeout(()=>el.style.borderColor='',1200); return; }
+  if(editingOpsId) {
+    const en = opsEntries.find(e=>e.id===editingOpsId); if(!en) return;
+    en.issue    = issue;
+    en.location = document.getElementById('m-location').value.trim();
+    en.desc     = document.getElementById('m-desc').value.trim();
+    en.actions  = document.getElementById('m-actions').value.trim();
+    en.assigned = document.getElementById('m-assigned').value.trim()||'—';
+    en.loggedby = document.getElementById('m-loggedby').value.trim()||'CMD POST';
+    en.priority = document.getElementById('m-priority').value;
+    en.resolve  = document.getElementById('m-resolve').value;
+  } else {
+    opsSeq++;
+    opsEntries.push({
+      id:Date.now(), seq:opsSeq, time:nowTime(), date:nowDate(),
+      issue,
+      location : document.getElementById('m-location').value.trim(),
+      desc     : document.getElementById('m-desc').value.trim(),
+      actions  : document.getElementById('m-actions').value.trim(),
+      assigned : document.getElementById('m-assigned').value.trim()||'—',
+      loggedby : document.getElementById('m-loggedby').value.trim()||'CMD POST',
+      priority : document.getElementById('m-priority').value,
+      resolve  : document.getElementById('m-resolve').value,
+    });
+    // Clear quick-add fields
+    document.getElementById('qi-issue').value='';
+    document.getElementById('qi-location').value='';
+    document.getElementById('qi-assigned').value='';
   }
-};
+  saveOps(); renderOps(); closeOpsModal();
+}
 
-window.toggleLog = () => { showLog=!showLog; g("logBox").classList.toggle("hidden",!showLog); };
-window.toggleAddForm = () => { showAddForm=!showAddForm; g("addForm").classList.toggle("hidden",!showAddForm); g("addToggleBtn").textContent=showAddForm?"▲ Hide Form":"▼ New Casualty"; };
+function editOps(id) { openOpsModal(id); }
+function deleteOps(id) { opsEntries=opsEntries.filter(e=>e.id!==id); saveOps(); renderOps(); }
+
+// ─── CLEAR ────────────────────────────────────────────────────────────────────
+function confirmClear(target) {
+  clearTarget=target;
+  document.getElementById('confirm-msg').textContent = target==='timeline'
+    ? 'All timeline events will be permanently erased.' : 'All ops log entries will be permanently erased.';
+  document.getElementById('confirm-overlay').classList.add('show');
+}
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('show'); clearTarget=null; }
+function executeClear() {
+  if(clearTarget==='timeline'){ timelineEvents=[]; saveTL(); renderTimeline(); }
+  else if(clearTarget==='ops'){ opsEntries=[]; opsSeq=0; saveOps(); renderOps(); }
+  closeConfirm();
+}
+
+// ─── EXPORT & REHEARSAL RESET ────────────────────────────────────────────────
+function openRehearsalModal() {
+  document.getElementById('reset-confirm-checkbox').checked = false;
+  toggleResetBtn();
+  document.getElementById('rehearsal-modal').classList.add('show');
+}
+function closeRehearsalModal() {
+  document.getElementById('rehearsal-modal').classList.remove('show');
+}
+function toggleResetBtn() {
+  const checked = document.getElementById('reset-confirm-checkbox').checked;
+  const btn = document.getElementById('reset-exec-btn');
+  btn.disabled = !checked;
+  btn.style.opacity = checked ? '1' : '0.35';
+  btn.style.cursor  = checked ? 'pointer' : 'not-allowed';
+}
+
+function csvEscape(val) {
+  if(val === null || val === undefined) return '';
+  const s = String(val).replace(/"/g, '""');
+  return /[",
+]/.test(s) ? `"${s}"` : s;
+}
+
+function downloadFile(filename, content, type) {
+  const blob = new Blob([content], { type });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+function getRehearsalLabel() {
+  const now = new Date();
+  return `${String(now.getDate()).padStart(2,'0')}${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()]}${now.getFullYear()}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+}
+
+function exportCSV(target) {
+  const label = getRehearsalLabel();
+
+  if(target === 'timeline' || target === 'all') {
+    const tlHeader = ['Time','Date','Milestone / Event','Notes','Priority'];
+    const tlRows = timelineEvents.map(e => [
+      csvEscape(e.time), csvEscape(e.date), csvEscape(e.milestone),
+      csvEscape(e.desc), csvEscape(({'p-critical':'CRITICAL','p-high':'HIGH','p-normal':'NORMAL','p-info':'INFO'})[e.priority]||e.priority)
+    ].join(','));
+    const tlCsv = [tlHeader.join(','), ...tlRows].join('\n');
+
+    if(target === 'timeline') {
+      downloadFile(`NDP_MedCP_Timeline_${label}.csv`, tlCsv, 'text/csv');
+      return;
+    }
+  }
+
+  if(target === 'ops' || target === 'all') {
+    const opHeader = ['#','Time','Date','Issue','Location','Description','Actions Taken / To Be Taken','Assigned To','Logged By','Priority','Status'];
+    const opRows = opsEntries.map(e => [
+      csvEscape(String(e.seq).padStart(3,'0')), csvEscape(e.time), csvEscape(e.date),
+      csvEscape(e.issue), csvEscape(e.location), csvEscape(e.desc),
+      csvEscape(e.actions), csvEscape(e.assigned), csvEscape(e.loggedby),
+      csvEscape(({'p-critical':'CRITICAL','p-high':'HIGH','p-normal':'NORMAL','p-info':'INFO'})[e.priority]||e.priority),
+      csvEscape((e.resolve||'pending').toUpperCase())
+    ].join(','));
+    const opCsv = [opHeader.join(','), ...opRows].join('\n');
+
+    if(target === 'ops') {
+      downloadFile(`NDP_MedCP_OpsLog_${label}.csv`, opCsv, 'text/csv');
+      return;
+    }
+
+    if(target === 'all') {
+      const tlHeader = ['Time','Date','Milestone / Event','Notes','Priority'];
+      const tlRows = timelineEvents.map(e => [
+        csvEscape(e.time), csvEscape(e.date), csvEscape(e.milestone),
+        csvEscape(e.desc), csvEscape(({'p-critical':'CRITICAL','p-high':'HIGH','p-normal':'NORMAL','p-info':'INFO'})[e.priority]||e.priority)
+      ].join(','));
+      const combined = [
+        '=== CRITICAL EVENT TIMELINE ===',
+        tlHeader.join(','), ...tlRows,
+        '',
+        '=== OPERATIONS LOG ===',
+        opHeader.join(','), ...opRows
+      ].join('\n');
+      downloadFile(`NDP_MedCP_Combined_${label}.csv`, combined, 'text/csv');
+    }
+  }
+}
+
+function exportJSON() {
+  const label = getRehearsalLabel();
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    rehearsalLabel: label,
+    timeline: timelineEvents,
+    ops: opsEntries
+  };
+  downloadFile(`NDP_MedCP_Backup_${label}.json`, JSON.stringify(backup, null, 2), 'application/json');
+}
+
+function executeRehearsalReset() {
+  if(!document.getElementById('reset-confirm-checkbox').checked) return;
+  timelineEvents = []; opsEntries = []; opsSeq = 0;
+  saveTL(); saveOps();
+  renderTimeline(); renderOps();
+  closeRehearsalModal();
+  // Brief flash to confirm reset
+  const hdr = document.querySelector('.header');
+  hdr.style.borderBottom = '1px solid var(--green)';
+  setTimeout(() => hdr.style.borderBottom = '', 1800);
+}
+
+// ─── KEYBOARD ─────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape'){ closeOpsModal(); closeConfirm(); closeRehearsalModal(); }
+});
+document.getElementById('tl-milestone').addEventListener('keydown', e => { if(e.key==='Enter') addTimelineEvent(); });
+document.getElementById('qi-issue').addEventListener('keydown', e => { if(e.key==='Enter') quickAddOps(); });
+
+// ─── TIME FIELD ───────────────────────────────────────────────────────────────
+document.getElementById('tl-time').value = nowTime();
+document.getElementById('tl-time').addEventListener('input', function(){ this.dataset.touched='1'; });
+setInterval(()=>{ const f=document.getElementById('tl-time'); if(!f.dataset.touched) f.value=nowTime(); }, 30000);
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+setPriority('p-high');
+setQPriority('p-high');
+renderTimeline();
+renderOps();
 </script>
 </body>
 </html>
