@@ -293,21 +293,16 @@
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<!-- Firebase REST API — no SDK needed -->
 <script>
-// ── Firebase config ───────────────────────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyDeIkP-T-KUkAHCCMUl_juB8d_dI9xnKV8",
-  authDomain: "ndp-monitoring-casrep.firebaseapp.com",
-  databaseURL: "https://ndp-monitoring-casrep-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "ndp-monitoring-casrep",
-  storageBucket: "ndp-monitoring-casrep.firebasestorage.app",
-  messagingSenderId: "580779975259",
-  appId: "1:580779975259:web:90f654b4c80c04e8b9557e"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// Firebase REST API — no SDK config needed
+const DB = "https://ndp-monitoring-casrep-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+// REST API helpers
+async function dbGet(path){ const r=await fetch(`${DB}/${path}.json`); return r.json(); }
+async function dbPush(path,data){ const r=await fetch(`${DB}/${path}.json`,{method:"POST",body:JSON.stringify(data)}); return r.json(); }
+async function dbUpdate(path,data){ await fetch(`${DB}/${path}.json`,{method:"PATCH",body:JSON.stringify(data)}); }
+async function dbDelete(path){ await fetch(`${DB}/${path}.json`,{method:"DELETE"}); }
 
 // ── Station PIN mapping ── change these PINs before deployment ────────────
 const STATION_PINS = {
@@ -416,6 +411,24 @@ window.doLogout = function() {
   myStation=null;
 };
 
+// ── Poll Firebase REST API ────────────────────────────────────────────────
+async function pollData(){
+  try {
+    const [cas, logData] = await Promise.all([
+      dbGet("casualties"),
+      dbGet("log")
+    ]);
+    casualties = cas || {};
+    const rawLog = logData || {};
+    logs = Object.values(rawLog).sort((a,b)=>b.ts-a.ts).slice(0,100);
+    renderAll();
+    renderLog();
+    setSyncState("live");
+  } catch(e) {
+    console.warn("Poll error:", e);
+  }
+}
+
 // ── App init ──────────────────────────────────────────────────────────────
 function initApp() {
   const isCommand = COMMAND_STATIONS.includes(myStation);
@@ -449,11 +462,10 @@ function initApp() {
   g("topDate").textContent=todayStr()+" "+nowT();
 
   // Firebase listeners
-  // Render immediately with empty data so rows show on login
+  // Render immediately then start polling
   renderAll();
-
-  db.ref("casualties").on("value",snap=>{ casualties=snap.val()||{}; renderAll(); setSyncState("live"); });
-  db.ref("log").on("value",snap=>{ const r=snap.val()||{}; logs=Object.values(r).sort((a,b)=>b.ts-a.ts).slice(0,100); renderLog(); });
+  pollData();
+  setInterval(pollData, 4000);
 }
 
 function setSyncState(s){
@@ -482,7 +494,7 @@ window.registerCasualty = async function() {
     status:"At Post", timeIn:nowT(), createdAt:Date.now(),
     registeredBy:myStation, dischargeTime:"",evacuationTime:"",arrivalTime:"",hospital:""
   };
-  await db.ref("casualties").push(c);
+  await dbPush("casualties", c);
   await addLog(`[${c.post}] New ${c.priority} ${c.nric||c.name||"casualty"} — ${c.chiefComplaint}`);
   ["fNric","fName","fAge","fMO","fNotes","fOtherUnit"].forEach(id=>g(id).value="");
   g("fGender").value="";g("fPri2").value="P3";g("fToc").value="";g("fOtherWrap").classList.add("hidden");
@@ -490,17 +502,17 @@ window.registerCasualty = async function() {
 };
 
 async function updateCasualty(id,updates){
-  await db.ref(`casualties/${id}`).update(updates);
+  await dbUpdate(`casualties/${id}`, updates);
   const c={...casualties[id],...updates};
   await addLog(`#${id.slice(-5)} → ${updates.status||c.status}${updates.hospital?" → "+updates.hospital.split(" ")[0]:""}${updates.arrivalTime?" (arrived "+updates.arrivalTime+")":""}`);
 }
 window.deleteCasualty = async function(id){
   const c=casualties[id];
   if(!confirm(`Remove ${c?.nric||c?.name||"casualty #"+id.slice(-5)}?`)) return;
-  await db.ref(`casualties/${id}`).remove();
+  await dbDelete(`casualties/${id}`);
   await addLog(`${c?.nric||c?.name||"Casualty"} removed by ${myStation}`);
 };
-async function addLog(msg){ await db.ref("log").push({msg,by:myStation,ts:Date.now(),t:nowT()}); }
+async function addLog(msg){ await dbPush("log", {msg,by:myStation,ts:Date.now(),t:nowT()}); }
 
 // ── Modals ────────────────────────────────────────────────────────────────
 window.closeModal = id => { g(id).style.display="none"; };
@@ -808,8 +820,8 @@ window.resetData = async function() {
   if(code !== "RESET"){ alert("Reset cancelled — text did not match."); return; }
 
   try {
-    await db.ref("casualties").remove();
-    await db.ref("log").remove();
+    await dbDelete("casualties");
+    await dbDelete("log");
     casualties = {};
     logs = [];
     renderAll();
