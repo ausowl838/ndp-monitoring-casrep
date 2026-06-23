@@ -296,25 +296,31 @@
 <!-- Firebase REST API — no SDK needed -->
 <script>
 // Firebase REST API — no SDK config needed
-const DB = "https://ndp-monitoring-casrep-default-rtdb.asia-southeast1.firebasedatabase.app";
-
-// REST API helpers
-async function dbGet(path){
-  const r=await fetch(`${DB}/${path}.json?auth=FrbzJDsBMjRHBcpf5cm9LjU6SIVxgYp64NeKcgUG`,{headers:{"Accept":"application/json"}});
-  if(!r.ok) throw new Error(`GET ${path} failed: ${r.status}`);
-  return r.json();
+const SB_URL = "https://ftnwfhjmptedozkwfxiv.supabase.co/rest/v1";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0bndmaGptcHRlZG96a3dmeGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTI0NzIsImV4cCI6MjA5Nzc2ODQ3Mn0.prM-jusZ-unY5JcrHZ0vHTlZGo-cJ9FyZRPI-9UZfWM";
+const SB_H = {
+  "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`,
+  "Content-Type": "application/json", "Prefer": "return=minimal"
+};
+async function sbGetAll(table){
+  const r=await fetch(`${SB_URL}/${table}?select=id,data`,{headers:SB_H});
+  if(!r.ok) throw new Error(`GET ${table} failed: ${r.status}`);
+  const rows=await r.json(); const obj={};
+  rows.forEach(row=>{ obj[row.id]={...row.data,id:row.id}; }); return obj;
 }
-async function dbPush(path,data){
-  const r=await fetch(`${DB}/${path}.json?auth=FrbzJDsBMjRHBcpf5cm9LjU6SIVxgYp64NeKcgUG`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
-  if(!r.ok) throw new Error(`POST ${path} failed: ${r.status}`);
-  return r.json();
+async function sbInsert(table,id,data){
+  const r=await fetch(`${SB_URL}/${table}`,{method:"POST",headers:SB_H,body:JSON.stringify({id,data})});
+  if(!r.ok){ const e=await r.text(); throw new Error(`INSERT ${table} failed: ${r.status} ${e}`); }
 }
-async function dbUpdate(path,data){
-  const r=await fetch(`${DB}/${path}.json?auth=FrbzJDsBMjRHBcpf5cm9LjU6SIVxgYp64NeKcgUG`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
-  if(!r.ok) throw new Error(`PATCH ${path} failed: ${r.status}`);
+async function sbUpdate(table,id,data){
+  const r=await fetch(`${SB_URL}/${table}?id=eq.${id}`,{method:"PATCH",headers:SB_H,body:JSON.stringify({data})});
+  if(!r.ok) throw new Error(`UPDATE ${table} failed: ${r.status}`);
 }
-async function dbDelete(path){
-  await fetch(`${DB}/${path}.json?auth=FrbzJDsBMjRHBcpf5cm9LjU6SIVxgYp64NeKcgUG`,{method:"DELETE"});
+async function sbDelete(table,id){
+  await fetch(`${SB_URL}/${table}?id=eq.${id}`,{method:"DELETE",headers:SB_H});
+}
+async function sbDeleteAll(table){
+  await fetch(`${SB_URL}/${table}?id=not.is.null`,{method:"DELETE",headers:SB_H});
 }
 
 // ── Station PIN mapping ── change these PINs before deployment ────────────
@@ -424,22 +430,14 @@ window.doLogout = function() {
   myStation=null;
 };
 
-// ── Poll Firebase REST API ────────────────────────────────────────────────
+// ── Poll Supabase ─────────────────────────────────────────────────────────
 async function pollData(){
   try {
-    const [cas, logData] = await Promise.all([
-      dbGet("casualties"),
-      dbGet("log")
-    ]);
-    casualties = cas || {};
-    const rawLog = logData || {};
-    logs = Object.values(rawLog).sort((a,b)=>b.ts-a.ts).slice(0,100);
-    renderAll();
-    renderLog();
-    setSyncState("live");
-  } catch(e) {
-    console.warn("Poll error:", e);
-  }
+    const [cas, lg] = await Promise.all([sbGetAll("casualties"), sbGetAll("logs")]);
+    casualties = cas||{};
+    logs = Object.values(lg||{}).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,100);
+    renderAll(); renderLog(); setSyncState("live");
+  } catch(e){ console.warn("Poll error:",e); }
 }
 
 // ── App init ──────────────────────────────────────────────────────────────
@@ -507,8 +505,8 @@ window.registerCasualty = async function() {
     status:"At Post", timeIn:nowT(), createdAt:Date.now(),
     registeredBy:myStation, dischargeTime:"",evacuationTime:"",arrivalTime:"",hospital:""
   };
-  const result = await dbPush("casualties", c);
-  if(result && result.name){ casualties[result.name]=c; renderAll(); }
+  await sbInsert("casualties", c.id, c);
+  casualties[c.id]=c; renderAll();
   await addLog(`[${c.post}] New ${c.priority} ${c.nric||c.name||"casualty"} — ${c.chiefComplaint}`);
   setTimeout(pollData, 500);
   ["fNric","fName","fAge","fMO","fNotes","fOtherUnit"].forEach(id=>g(id).value="");
@@ -517,23 +515,23 @@ window.registerCasualty = async function() {
 };
 
 async function updateCasualty(id,updates){
-  casualties[id] = {...(casualties[id]||{}), ...updates};
-  renderAll();
-  await dbUpdate(`casualties/${id}`, updates);
+  const updated={...(casualties[id]||{}),...updates};
+  casualties[id]=updated; renderAll();
+  await sbUpdate("casualties",id,updated);
   const c={...casualties[id],...updates};
   await addLog(`#${id.slice(-5)} → ${updates.status||c.status}${updates.hospital?" → "+updates.hospital.split(" ")[0]:""}${updates.arrivalTime?" (arrived "+updates.arrivalTime+")":""}`);
 }
 window.deleteCasualty = async function(id){
   const c=casualties[id];
   if(!confirm(`Remove ${c?.nric||c?.name||"casualty #"+id.slice(-5)}?`)) return;
-  delete casualties[id];
-  renderAll();
-  await dbDelete(`casualties/${id}`);
+  delete casualties[id]; renderAll();
+  await sbDelete("casualties",id);
   await addLog(`${c?.nric||c?.name||"Casualty"} removed by ${myStation}`);
 };
 async function addLog(msg){
-  await dbPush("log", {msg,by:myStation,ts:Date.now(),t:nowT()});
-  setTimeout(async()=>{ const r=await dbGet("log"); logs=Object.values(r||{}).sort((a,b)=>b.ts-a.ts).slice(0,100); renderLog(); },600);
+  const entry={msg,by:myStation,ts:Date.now(),t:nowT()};
+  const logId=`log-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+  await sbInsert("logs",logId,entry);
 }
 
 // ── Modals ────────────────────────────────────────────────────────────────
@@ -844,8 +842,8 @@ window.resetData = async function() {
   try {
     casualties = {}; logs = [];
     renderAll(); renderLog();
-    await dbDelete("casualties");
-    await dbDelete("log");
+    await sbDeleteAll("casualties");
+    await sbDeleteAll("logs");
     alert("✓ All data has been reset. Database is now empty.");
   } catch(e) {
     alert("Error resetting data: " + e.message);
