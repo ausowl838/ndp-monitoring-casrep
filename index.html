@@ -299,10 +299,23 @@
 const DB = "https://ndp-monitoring-casrep-default-rtdb.asia-southeast1.firebasedatabase.app";
 
 // REST API helpers
-async function dbGet(path){ const r=await fetch(`${DB}/${path}.json`); return r.json(); }
-async function dbPush(path,data){ const r=await fetch(`${DB}/${path}.json`,{method:"POST",body:JSON.stringify(data)}); return r.json(); }
-async function dbUpdate(path,data){ await fetch(`${DB}/${path}.json`,{method:"PATCH",body:JSON.stringify(data)}); }
-async function dbDelete(path){ await fetch(`${DB}/${path}.json`,{method:"DELETE"}); }
+async function dbGet(path){
+  const r=await fetch(`${DB}/${path}.json?auth=FrbzJDsBMjRHBcpf5cm9LjU6SIVxgYp64NeKcgUG`,{headers:{"Accept":"application/json"}});
+  if(!r.ok) throw new Error(`GET ${path} failed: ${r.status}`);
+  return r.json();
+}
+async function dbPush(path,data){
+  const r=await fetch(`${DB}/${path}.json?auth=FrbzJDsBMjRHBcpf5cm9LjU6SIVxgYp64NeKcgUG`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+  if(!r.ok) throw new Error(`POST ${path} failed: ${r.status}`);
+  return r.json();
+}
+async function dbUpdate(path,data){
+  const r=await fetch(`${DB}/${path}.json?auth=FrbzJDsBMjRHBcpf5cm9LjU6SIVxgYp64NeKcgUG`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+  if(!r.ok) throw new Error(`PATCH ${path} failed: ${r.status}`);
+}
+async function dbDelete(path){
+  await fetch(`${DB}/${path}.json?auth=FrbzJDsBMjRHBcpf5cm9LjU6SIVxgYp64NeKcgUG`,{method:"DELETE"});
+}
 
 // ── Station PIN mapping ── change these PINs before deployment ────────────
 const STATION_PINS = {
@@ -609,7 +622,7 @@ window.renderCasualties = function(){
   const fSt=g("fSt")?.value||"ALL",fComp=g("fComplaint")?.value||"ALL";
   const isCommand=COMMAND_STATIONS.includes(myStation);
 
-  const list=Object.entries(casualties).map(([id,c])=>({...c,_id:id}))
+  const list=Object.entries(casualties).filter(([id,c])=>c&&c.post).map(([id,c])=>({...c,_id:id}))
     .filter(c=>(fPost==="ALL"||c.post===fPost)&&(fPri==="ALL"||c.priority===fPri)
       &&(fSt==="ALL"||c.status===fSt)&&(fComp==="ALL"||c.chiefComplaint===fComp))
     .sort((a,b)=>({P1:0,P2:1,P3:2,P4:3}[a.priority]||9)-({P1:0,P2:1,P3:2,P4:3}[b.priority]||9)||b.createdAt-a.createdAt);
@@ -624,7 +637,7 @@ window.renderCasualties = function(){
   }
 
   container.innerHTML=list.map(c=>{
-    const pr=PRIORITY[c.priority],id=c._id;
+    if(!c||!id) return ''; const pr=PRIORITY[c.priority]||PRIORITY['P3'];
     const canEdit=isCommand||c.post===myStation;
     const isDischarged=c.status==="Discharged from Post";
     const isEvac=c.status==="Evacuated"||c.status==="Arrived at Hospital";
