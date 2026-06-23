@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NDP MEDICAL COMMAND POST</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;900&family=Rajdhani:wght@400;500;600;700&family=Syne:wght@800&family=DM+Mono:wght@400&display=swap');
+
+:root {
+  --bg:      #060d14;
+  --panel:   #080d12;
+  --card:    #0c1318;
+  --raised:  #111b22;
+  --bdr:     #1a2e3a;
+  --bdr2:    #1e4060;
+  --cyan:    #00d4ff;
+  --cyan-d:  #007fa0;
+  --cyan-g:  rgba(0,212,255,0.12);
+  --amber:   #ffb300;
+  --amber-g: rgba(255,179,0,0.12);
+  --red:     #ff3b3b;
+  --red-g:   rgba(255,59,59,0.15);
+  --green:   #00ff88;
+  --green-g: rgba(0,255,136,0.12);
+  --t1:      #c8dde8;
+  --t2:      #5a7a8a;
+  --t3:      #2e4a58;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: radial-gradient(ellipse at top left, rgba(74,158,255,0.05) 0%, transparent 55%),
+              radial-gradient(ellipse at bottom right, rgba(167,139,250,0.04) 0%, transparent 55%),
+              var(--bg);
+  color: var(--t1);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.025) 2px, rgba(0,212,255,0.025) 4px);
+  pointer-events:none; z-index:9999;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--bdr);
+  flex-shrink: 0;
+  position: relative;
+}
+header::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity:0.5;
+}
+.hdr-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#e8f0f7; letter-spacing:0.05em; text-transform:uppercase; }
+.hdr-sub   { font-family:'DM Mono',monospace; font-size:11px; font-weight:400; color:#4a6a7a; margin-top:2px; letter-spacing:0.04em; }
+.hdr-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+.clock     { font-family:'Share Tech Mono',monospace; font-size:26px; color:var(--cyan); text-shadow:0 0 15px rgba(0,212,255,0.4); }
+.date-txt  { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--t2); letter-spacing:0.15em; }
+.hdr-bottom { display:flex; align-items:center; gap:10px; }
+.sys-dot   { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:blink 1.8s ease-in-out infinite; }
+.sys-lbl   { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--green); letter-spacing:0.12em; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.btn-export-hdr {
+  font-family:'Orbitron',monospace; font-size:9px; font-weight:600; letter-spacing:0.12em;
+  padding:4px 12px; border:1px solid var(--amber); background:rgba(255,179,0,0.08);
+  color:var(--amber); cursor:pointer; border-radius:2px; transition:all .15s;
+}
+.btn-export-hdr:hover { background:rgba(255,179,0,0.18); box-shadow:0 0 8px rgba(255,179,0,0.2); }
+
+/* ── MAIN GRID ── */
+.main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 14px 18px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── PANEL ── */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--bdr);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+}
+.panel::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent 0%, var(--cyan) 30%, var(--cyan) 70%, transparent 100%); opacity:0.4;
+  z-index:1;
+}
+.panel-hdr {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:9px 14px; border-bottom:1px solid var(--bdr); background:var(--card); flex-shrink:0;
+}
+.panel-title { display:flex; align-items:center; gap:8px; }
+.panel-icon  { width:18px; height:18px; border:1px solid var(--cyan-d); display:flex; align-items:center; justify-content:center; font-size:9px; color:var(--cyan); }
+.panel-lbl   { font-family:'Orbitron',monospace; font-size:13px; font-weight:600; letter-spacing:0.15em; color:var(--t1); text-transform:uppercase; }
+.panel-badge { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--t2); background:var(--raised); border:1px solid var(--bdr); padding:2px 8px; }
+
+/* ── STATS BAR ── */
+.stats-bar { display:flex; background:var(--card); border-bottom:1px solid var(--bdr); flex-shrink:0; }
+.stat-cell { flex:1; padding:6px 10px; border-right:1px solid var(--bdr); text-align:center; }
+.stat-cell:last-child { border-right:none; }
+.stat-val  { font-family:'Orbitron',monospace; font-size:18px; font-weight:700; line-height:1; }
+.stat-lbl  { font-family:'Share Tech Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--t3); margin-top:2px; text-transform:uppercase; }
+.cyan  { color:var(--cyan);  text-shadow:0 0 8px var(--cyan-g); }
+.amber { color:var(--amber); text-shadow:0 0 8px var(--amber-g); }
+.red   { color:var(--red);   text-shadow:0 0 8px var(--red-g); }
+.green { color:var(--green); text-shadow:0 0 8px var(--green-g); }
+
+/* ── SCROLLABLE BODY ── */
+.scroll-body { flex:1; overflow-y:auto; min-height:0; }
+.scroll-body::-webkit-scrollbar { width:3px; }
+.scroll-body::-webkit-scrollbar-thumb { background:var(--cyan-d); }
+
+/* ── FORM FOOTER ── */
+.form-footer { flex-shrink:0; border-top:1px solid var(--bdr); background:var(--card); padding:10px 14px; }
+
+/* ── FIELD ── */
+.field-lbl { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.14em; color:var(--t3); text-transform:uppercase; display:block; margin-bottom:3px; }
+input, textarea, select {
+  background:var(--bg); border:1px solid var(--bdr2); color:var(--t1);
+  font-family:'Rajdhani',sans-serif; font-size:13px; padding:5px 8px;
+  outline:none; width:100%; border-radius:2px; transition:border-color .2s, box-shadow .2s;
+}
+input::placeholder, textarea::placeholder { color:var(--t3); font-family:'Rajdhani',sans-serif; }
+input:focus, textarea:focus, select:focus { border-color:var(--cyan-d); box-shadow:0 0 0 1px rgba(0,212,255,0.1); }
+textarea { resize:none; line-height:1.5; }
+select { cursor:pointer; appearance:none; }
+select option { background:var(--card); }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family:'Orbitron',monospace; font-size:10px; font-weight:600; letter-spacing:0.14em;
+  padding:7px 16px; border:1px solid var(--cyan-d); background:transparent;
+  color:var(--cyan); cursor:pointer; border-radius:2px; transition:all .15s; white-space:nowrap;
+}
+.btn:hover { background:var(--cyan-g); border-color:var(--cyan); box-shadow:0 0 8px var(--cyan-g); }
+.btn-sm {
+  font-family:'Share Tech Mono',monospace; font-size:10px; padding:3px 8px;
+  border:1px solid var(--bdr); background:transparent; color:var(--t2);
+  cursor:pointer; border-radius:2px; transition:all .15s;
+}
+.btn-sm:hover { border-color:var(--red); color:var(--red); }
+.btn-sm.edit:hover { border-color:var(--amber); color:var(--amber); }
+.btn-danger {
+  font-family:'Orbitron',monospace; font-size:10px; font-weight:600; letter-spacing:0.12em;
+  padding:7px 16px; border:1px solid var(--red); background:rgba(255,59,59,0.1);
+  color:var(--red); cursor:pointer; border-radius:2px;
+}
+.btn-cancel {
+  font-family:'Orbitron',monospace; font-size:10px; font-weight:600; letter-spacing:0.12em;
+  padding:7px 16px; border:1px solid var(--bdr); background:transparent;
+  color:var(--t2); cursor:pointer; border-radius:2px;
+}
+
+/* ── PRIORITY BUTTONS ── */
+.pri-row { display:flex; gap:5px; align-items:center; flex-wrap:wrap; }
+.pri-btn {
+  font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.1em;
+  padding:4px 10px; border:1px solid var(--bdr); background:transparent;
+  cursor:pointer; border-radius:2px; transition:all .15s; text-transform:uppercase;
+  color:var(--t2);
+}
+.pri-btn.crit { color:var(--red); }
+.pri-btn.crit.on { background:rgba(255,59,59,0.12); border-color:var(--red); }
+.pri-btn.high { color:var(--amber); }
+.pri-btn.high.on { background:rgba(255,179,0,0.12); border-color:var(--amber); }
+.pri-btn.norm { color:var(--cyan); }
+.pri-btn.norm.on { background:var(--cyan-g); border-color:var(--cyan); }
+.pri-btn.info { color:var(--t2); }
+.pri-btn.info.on { background:var(--raised); border-color:var(--t2); }
+
+/* ── TIMELINE ── */
+.tl-entry { display:grid; grid-template-columns:72px 14px 1fr; gap:0 10px; padding-bottom:12px; animation:fadeIn .35s ease-out; }
+@keyframes fadeIn { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:translateX(0)} }
+.tl-time { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--cyan); text-align:right; padding-top:2px; line-height:1.2; }
+.tl-date-s { display:block; font-size:9px; color:var(--t3); margin-top:1px; }
+.tl-spine  { display:flex; flex-direction:column; align-items:center; }
+.tl-dot    { width:12px; height:12px; border-radius:50%; border:2px solid var(--cyan); background:var(--bg); flex-shrink:0; margin-top:2px; z-index:1; }
+.tl-dot.p-critical { border-color:var(--red);   background:rgba(255,59,59,0.15); box-shadow:0 0 8px var(--red-g); animation:crit 1.5s ease-in-out infinite; }
+.tl-dot.p-high     { border-color:var(--amber);  background:rgba(255,179,0,0.1);  box-shadow:0 0 6px var(--amber-g); }
+.tl-dot.p-normal   { border-color:var(--cyan);   background:rgba(0,212,255,0.08); box-shadow:0 0 6px var(--cyan-g); }
+.tl-dot.p-info     { border-color:var(--t2);     background:transparent; }
+@keyframes crit { 0%,100%{box-shadow:0 0 6px var(--red-g)} 50%{box-shadow:0 0 16px rgba(255,59,59,0.5)} }
+.tl-line   { flex:1; width:1px; background:linear-gradient(to bottom, var(--bdr2), var(--bdr)); margin-top:2px; }
+.tl-content { position:relative; }
+.tl-ms     { font-weight:600; font-size:13px; color:var(--t1); line-height:1.3; }
+.tl-desc   { font-size:11px; color:var(--t2); margin-top:2px; line-height:1.4; }
+.tl-tag    { display:inline-block; font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.1em; padding:1px 6px; margin-top:4px; border-radius:1px; text-transform:uppercase; }
+.tl-tag.p-critical { background:rgba(255,59,59,0.15); color:var(--red);   border:1px solid rgba(255,59,59,0.3); }
+.tl-tag.p-high     { background:rgba(255,179,0,0.1);  color:var(--amber); border:1px solid rgba(255,179,0,0.3); }
+.tl-tag.p-normal   { background:var(--cyan-g);         color:var(--cyan);  border:1px solid rgba(0,212,255,0.2); }
+.tl-tag.p-info     { background:var(--raised);          color:var(--t2);    border:1px solid var(--bdr); }
+.tl-actions { display:none; position:absolute; top:0; right:0; gap:4px; }
+.tl-entry:hover .tl-actions { display:flex; }
+.empty-state { text-align:center; padding:40px 20px; font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--t3); letter-spacing:0.1em; line-height:2; }
+
+/* ── OPS CARDS ── */
+.ops-card { border-bottom:1px solid rgba(26,46,58,0.5); border-left:3px solid transparent; padding:10px 14px; transition:background .15s; animation:cardIn .3s ease-out; position:relative; }
+@keyframes cardIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+.ops-card.card-pending  { background:rgba(255,59,59,0.06);  border-left-color:var(--red); }
+.ops-card.card-ongoing  { background:rgba(255,179,0,0.05);  border-left-color:var(--amber); }
+.ops-card.card-resolved { background:rgba(0,255,136,0.04);  border-left-color:var(--green); }
+.ops-card:hover.card-pending  { background:rgba(255,59,59,0.1); }
+.ops-card:hover.card-ongoing  { background:rgba(255,179,0,0.09); }
+.ops-card:hover.card-resolved { background:rgba(0,255,136,0.07); }
+.ops-card-hdr { display:flex; align-items:center; gap:7px; margin-bottom:7px; flex-wrap:wrap; }
+.ops-seq  { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--t3); }
+.ops-tbadge { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--cyan); background:rgba(0,212,255,0.07); border:1px solid rgba(0,212,255,0.15); padding:1px 7px; }
+.ops-pbadge { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.1em; padding:1px 7px; border-radius:1px; text-transform:uppercase; }
+.ops-pbadge.p-critical { background:rgba(255,59,59,0.15); color:var(--red);   border:1px solid rgba(255,59,59,0.3); }
+.ops-pbadge.p-high     { background:rgba(255,179,0,0.1);  color:var(--amber); border:1px solid rgba(255,179,0,0.3); }
+.ops-pbadge.p-normal   { background:var(--cyan-g);         color:var(--cyan);  border:1px solid rgba(0,212,255,0.2); }
+.ops-pbadge.p-info     { background:var(--raised);          color:var(--t2);    border:1px solid var(--bdr); }
+.ops-rbadge { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.1em; padding:1px 7px; border-radius:1px; text-transform:uppercase; }
+.ops-rbadge.resolved { color:var(--green); border:1px solid rgba(0,255,136,0.25); background:rgba(0,255,136,0.07); }
+.ops-rbadge.ongoing  { color:var(--amber); border:1px solid rgba(255,179,0,0.25); background:rgba(255,179,0,0.06); }
+.ops-rbadge.pending  { color:var(--t2);    border:1px solid var(--bdr);           background:var(--raised); }
+.ops-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; margin-bottom:5px; }
+.ops-f    { font-size:12px; line-height:1.4; }
+.ops-f.full { grid-column:1/-1; }
+.ops-fl   { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.1em; color:var(--t3); display:block; margin-bottom:1px; text-transform:uppercase; }
+.ops-fv   { color:var(--t1); font-weight:500; }
+.ops-foot { display:flex; justify-content:space-between; align-items:center; margin-top:5px; border-top:1px solid rgba(26,46,58,0.4); padding-top:4px; }
+.ops-by   { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--cyan-d); }
+.ops-actions { display:none; gap:4px; }
+.ops-card:hover .ops-actions { display:flex; }
+
+/* ── OVERLAY / MODAL ── */
+.overlay { display:none; position:fixed; inset:0; background:rgba(3,5,8,0.88); z-index:8000; align-items:center; justify-content:center; }
+.overlay.show { display:flex; }
+.modal { background:var(--panel); border:1px solid var(--bdr2); border-radius:2px; width:min(640px,95vw); max-height:88vh; overflow-y:auto; box-shadow:0 0 40px rgba(0,212,255,0.08); }
+.modal::-webkit-scrollbar { width:3px; }
+.modal::-webkit-scrollbar-thumb { background:var(--cyan-d); }
+.modal-hdr { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid var(--bdr); background:var(--card); }
+.modal-ttl { font-family:'Orbitron',monospace; font-size:12px; font-weight:600; letter-spacing:0.16em; color:var(--cyan); }
+.modal-cls { background:transparent; border:none; color:var(--t2); cursor:pointer; font-size:14px; padding:2px 8px; }
+.modal-cls:hover { color:var(--red); }
+.modal-body { padding:16px 18px; display:flex; flex-direction:column; gap:10px; }
+.modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; }
+.modal-full { grid-column:1/-1; }
+.modal-foot { display:flex; justify-content:flex-end; gap:8px; padding:12px 18px; border-top:1px solid var(--bdr); background:var(--card); }
+
+/* ── CONFIRM BOX ── */
+.cbox { background:var(--panel); border:1px solid var(--red); padding:28px 36px; text-align:center; border-radius:2px; box-shadow:0 0 30px rgba(255,59,59,0.15); min-width:280px; }
+.cbox h3 { font-family:'Orbitron',monospace; font-size:13px; letter-spacing:0.14em; color:var(--red); margin-bottom:10px; }
+.cbox p  { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--t2); margin-bottom:18px; letter-spacing:0.07em; }
+.cbox-btns { display:flex; gap:10px; justify-content:center; }
+
+/* ── REHEARSAL MODAL ── */
+.exp-opt { display:flex; align-items:center; gap:12px; padding:9px 12px; border:1px solid var(--bdr); background:var(--bg); margin-bottom:6px; cursor:pointer; transition:all .15s; border-radius:2px; }
+.exp-opt:hover { border-color:var(--cyan-d); background:var(--cyan-g); }
+.exp-ico { font-size:18px; width:26px; text-align:center; }
+.exp-ttl { font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:600; color:var(--t1); }
+.exp-dsc { font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--t2); margin-top:1px; letter-spacing:0.07em; }
+.sec-ttl { font-family:'Orbitron',monospace; font-size:10px; letter-spacing:0.15em; color:var(--cyan); text-transform:uppercase; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--bdr); }
+.reset-warn { background:rgba(255,59,59,0.07); border:1px solid rgba(255,59,59,0.25); padding:10px 12px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--red); letter-spacing:0.07em; line-height:1.7; border-radius:2px; margin-top:6px; }
+.reset-chk { display:flex; align-items:flex-start; gap:10px; margin-top:10px; cursor:pointer; }
+.reset-chk input { width:14px; height:14px; margin-top:2px; cursor:pointer; accent-color:var(--red); flex-shrink:0; }
+.reset-chk span { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--t2); letter-spacing:0.07em; line-height:1.5; }
+.reset-scope-btn {
+  font-family:'Orbitron',monospace; font-size:9px; font-weight:600; letter-spacing:0.12em;
+  padding:6px 14px; border:1px solid var(--bdr); background:transparent; color:var(--t2);
+  cursor:pointer; border-radius:2px; transition:all .15s; flex:1; text-align:center;
+}
+.reset-scope-btn:hover { border-color:var(--red); color:var(--red); background:rgba(255,59,59,0.07); }
+.reset-scope-btn.active { border-color:var(--red); color:var(--red); background:rgba(255,59,59,0.12); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="hdr-title">Medical Command Post</div>
+    <div class="hdr-sub">OPERATIONS COMMAND &amp; CONTROL SYSTEM · RESTRICTED, SENSITIVE (NORMAL)</div>
+  </div>
+  <div class="hdr-right">
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="date-txt" id="dateDisp">--- -- ----</div>
+    <div class="hdr-bottom">
+      <div class="sys-dot"></div>
+      <span class="sys-lbl">SYSTEM ACTIVE</span>
+      <button class="btn-export-hdr" onclick="openRehearsal()">⬇ EXPORT &amp; RESET</button>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- ══ TIMELINE PANEL ══ -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title">
+        <div class="panel-icon">◈</div>
+        <span class="panel-lbl">Critical Event Timeline</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="panel-badge" id="tl-count">0 EVENTS</span>
+        <button class="btn-sm" onclick="confirmClear('tl')">CLR</button>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-cell"><div class="stat-val red"   id="sc-crit">0</div><div class="stat-lbl">Critical</div></div>
+      <div class="stat-cell"><div class="stat-val amber" id="sc-high">0</div><div class="stat-lbl">High</div></div>
+      <div class="stat-cell"><div class="stat-val cyan"  id="sc-norm">0</div><div class="stat-lbl">Normal</div></div>
+      <div class="stat-cell"><div class="stat-val green" id="sc-info">0</div><div class="stat-lbl">Info</div></div>
+    </div>
+
+    <div class="scroll-body" id="tl-body"></div>
+
+    <div class="form-footer">
+      <div style="display:grid;grid-template-columns:100px 1fr auto;gap:8px;align-items:flex-end;margin-bottom:7px;">
+        <div>
+          <span class="field-lbl">Time</span>
+          <input type="time" id="tl-time">
+        </div>
+        <div>
+          <span class="field-lbl">Milestone / Event *</span>
+          <input type="text" id="tl-ms" placeholder="e.g. Alpha Team deployed to Sector 1" maxlength="120">
+        </div>
+        <button class="btn" onclick="addTL()" style="margin-top:18px;">+ LOG</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:flex-end;">
+        <div>
+          <span class="field-lbl">Notes (optional)</span>
+          <input type="text" id="tl-desc" placeholder="Additional details..." maxlength="200">
+        </div>
+        <div>
+          <span class="field-lbl">Priority</span>
+          <div class="pri-row">
+            <button class="pri-btn crit" id="pb-p-critical" onclick="setTLPri('p-critical')">CRIT</button>
+            <button class="pri-btn high" id="pb-p-high"     onclick="setTLPri('p-high')">HIGH</button>
+            <button class="pri-btn norm" id="pb-p-normal"   onclick="setTLPri('p-normal')">NORM</button>
+            <button class="pri-btn info" id="pb-p-info"     onclick="setTLPri('p-info')">INFO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPS LOG PANEL ══ -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title">
+        <div class="panel-icon">▣</div>
+        <span class="panel-lbl">Operations Log</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="panel-badge" id="ops-count">0 ENTRIES</span>
+        <button class="btn-sm" onclick="confirmClear('ops')">CLR</button>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-cell"><div class="stat-val cyan"  id="os-total">0</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-cell"><div class="stat-val red"   id="os-open">0</div><div class="stat-lbl">Open</div></div>
+      <div class="stat-cell"><div class="stat-val amber" id="os-ongoing">0</div><div class="stat-lbl">Ongoing</div></div>
+      <div class="stat-cell"><div class="stat-val green" id="os-resolved">0</div><div class="stat-lbl">Resolved</div></div>
+    </div>
+
+    <div class="scroll-body" id="ops-body"></div>
+
+    <div class="form-footer">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.15em;color:var(--t3);">QUICK LOG</span>
+        <div style="flex:1;height:1px;background:var(--bdr);"></div>
+        <button class="btn" onclick="openOpsModal(null)">+ FULL LOG</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;">
+        <div>
+          <span class="field-lbl">Issue / Title *</span>
+          <input type="text" id="qi-issue" placeholder="Brief issue title..." maxlength="80">
+        </div>
+        <div>
+          <span class="field-lbl">Location</span>
+          <input type="text" id="qi-loc" placeholder="e.g. Sector B / Gate 3" maxlength="60">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:flex-end;">
+        <div>
+          <span class="field-lbl">Assigned To</span>
+          <input type="text" id="qi-assigned" placeholder="Callsign / Name" maxlength="60">
+        </div>
+        <div>
+          <span class="field-lbl">Priority</span>
+          <div class="pri-row">
+            <button class="pri-btn crit" id="qpb-p-critical" onclick="setOPri('p-critical')">CRIT</button>
+            <button class="pri-btn high" id="qpb-p-high"     onclick="setOPri('p-high')">HIGH</button>
+            <button class="pri-btn norm" id="qpb-p-normal"   onclick="setOPri('p-normal')">NORM</button>
+            <button class="pri-btn info" id="qpb-p-info"     onclick="setOPri('p-info')">INFO</button>
+          </div>
+        </div>
+        <button class="btn" onclick="quickLog()" style="align-self:flex-end;">SUBMIT</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPS FULL LOG MODAL -->
+<div class="overlay" id="ops-modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-ttl" id="modal-ttl">NEW OPS LOG ENTRY</span>
+      <button class="modal-cls" onclick="closeOpsModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid">
+        <div><span class="field-lbl">Issue / Title *</span><input type="text" id="m-issue" placeholder="Brief issue title..." maxlength="100"></div>
+        <div><span class="field-lbl">Location</span><input type="text" id="m-loc" placeholder="e.g. Sector B, Gate 3" maxlength="80"></div>
+        <div class="modal-full"><span class="field-lbl">Description</span><textarea id="m-desc" rows="2" placeholder="Detailed description..."></textarea></div>
+        <div class="modal-full"><span class="field-lbl">Actions Taken / To Be Taken</span><textarea id="m-actions" rows="2" placeholder="Actions taken or planned response..."></textarea></div>
+        <div><span class="field-lbl">Assigned To</span><input type="text" id="m-assigned" placeholder="Callsign / Name / Unit" maxlength="80"></div>
+        <div><span class="field-lbl">Logged By</span><input type="text" id="m-loggedby" placeholder="Your name / callsign" maxlength="60"></div>
+        <div>
+          <span class="field-lbl">Priority</span>
+          <select id="m-priority">
+            <option value="p-critical">CRITICAL</option>
+            <option value="p-high" selected>HIGH</option>
+            <option value="p-normal">NORMAL</option>
+            <option value="p-info">INFO</option>
+          </select>
+        </div>
+        <div>
+          <span class="field-lbl">Status</span>
+          <select id="m-resolve">
+            <option value="pending">PENDING</option>
+            <option value="ongoing" selected>ONGOING</option>
+            <option value="resolved">RESOLVED</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeOpsModal()">Cancel</button>
+      <button class="btn" onclick="submitOps()">SUBMIT ENTRY</button>
+    </div>
+  </div>
+</div>
+
+<!-- REHEARSAL MODAL -->
+<div class="overlay" id="reh-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-hdr">
+      <span class="modal-ttl">REHEARSAL EXPORT &amp; RESET</span>
+      <button class="modal-cls" onclick="closeRehearsal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="sec-ttl">① Export Current Data</div>
+        <div class="exp-opt" onclick="exportCSV('tl')">
+          <div class="exp-ico">📋</div>
+          <div><div class="exp-ttl">Export Timeline (CSV)</div><div class="exp-dsc">All critical events as a spreadsheet-ready CSV</div></div>
+        </div>
+        <div class="exp-opt" onclick="exportCSV('ops')">
+          <div class="exp-ico">📋</div>
+          <div><div class="exp-ttl">Export Operations Log (CSV)</div><div class="exp-dsc">All ops entries with all fields</div></div>
+        </div>
+        <div class="exp-opt" onclick="exportCSV('all')">
+          <div class="exp-ico">📦</div>
+          <div><div class="exp-ttl">Export All — Combined (CSV)</div><div class="exp-dsc">Both panels in one file</div></div>
+        </div>
+        <div class="exp-opt" onclick="exportJSON()">
+          <div class="exp-ico">💾</div>
+          <div><div class="exp-ttl">Full Backup (JSON)</div><div class="exp-dsc">Raw backup — restorable later</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-ttl">② Reset for Next Rehearsal</div>
+        <div class="reset-warn">⚠ RESET permanently clears selected data. Export first. This cannot be undone.</div>
+        <label class="reset-chk">
+          <input type="checkbox" id="reh-chk" onchange="toggleResetBtn()">
+          <span>I confirm I have exported the data and authorise the reset below.</span>
+        </label>
+        <div id="reset-options" style="display:none;margin-top:10px;display:none;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.12em;color:var(--t3);margin-bottom:6px;">SELECT WHAT TO RESET:</div>
+          <div style="display:flex;gap:8px;">
+            <button class="reset-scope-btn" id="rst-ops-only" onclick="setResetScope('ops')">OPS LOG ONLY</button>
+            <button class="reset-scope-btn" id="rst-all"      onclick="setResetScope('all')">BOTH PANELS</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot" style="justify-content:space-between;">
+      <button class="btn-cancel" onclick="closeRehearsal()">Close</button>
+      <button class="btn-danger" id="reset-btn" onclick="doReset()" disabled style="opacity:.35;cursor:not-allowed;">RESET</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM CLEAR -->
+<div class="overlay" id="confirm-overlay">
+  <div class="cbox">
+    <h3>⚠ CONFIRM CLEAR</h3>
+    <p id="confirm-msg">All entries will be permanently erased.</p>
+    <div class="cbox-btns">
+      <button class="btn-danger" onclick="doClear()">CONFIRM</button>
+      <button class="btn-cancel" onclick="closeConfirm()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STORAGE SAFE WRAPPER ──────────────────────────────────────────────────────
+const Store = (() => {
+  let ok = null;
+  function test() {
+    if (ok !== null) return ok;
+    try { localStorage.setItem('_t','1'); localStorage.removeItem('_t'); ok = true; }
+    catch(e) { ok = false; }
+    return ok;
+  }
+  return {
+    get(k)    { if (!test()) return null; try { return localStorage.getItem(k); } catch(e) { return null; } },
+    set(k, v) { if (!test()) return;      try { localStorage.setItem(k, v); }     catch(e) {} },
+    del(k)    { if (!test()) return;      try { localStorage.removeItem(k); }      catch(e) {} }
+  };
+})();
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let tlEvents  = JSON.parse(Store.get('ndp_tl')   || '[]');
+let opsLog    = JSON.parse(Store.get('ndp_ops')   || '[]');
+let tlPri     = 'p-high';
+let opsPri    = 'p-high';
+let clearTgt  = null;
+let editOpsId = null;
+let opsSeq    = opsLog.length > 0 ? Math.max(...opsLog.map(e => e.seq)) : 0;
+
+const P_LABEL = { 'p-critical':'CRITICAL', 'p-high':'HIGH', 'p-normal':'NORMAL', 'p-info':'INFO' };
+const R_LABEL = { pending:'PENDING', ongoing:'ONGOING', resolved:'RESOLVED' };
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+function tick() {
+  const n = new Date();
+  const pad = v => String(v).padStart(2,'0');
+  document.getElementById('clock').textContent = `${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  const days   = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  document.getElementById('dateDisp').textContent = `${days[n.getDay()]} ${pad(n.getDate())} ${months[n.getMonth()]} ${n.getFullYear()}`;
+}
+setInterval(tick, 1000); tick();
+
+function nowTime() { const n=new Date(); return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`; }
+function nowDate() { const n=new Date(); const m=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']; return `${String(n.getDate()).padStart(2,'0')} ${m[n.getMonth()]}`; }
+function esc(s)    { if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── PRIORITY ─────────────────────────────────────────────────────────────────
+function setTLPri(p) {
+  tlPri = p;
+  ['p-critical','p-high','p-normal','p-info'].forEach(x => {
+    const el = document.getElementById('pb-' + x);
+    if (el) el.classList.toggle('on', x === p);
+  });
+}
+function setOPri(p) {
+  opsPri = p;
+  ['p-critical','p-high','p-normal','p-info'].forEach(x => {
+    const el = document.getElementById('qpb-' + x);
+    if (el) el.classList.toggle('on', x === p);
+  });
+}
+
+// ── TIMELINE RENDER ───────────────────────────────────────────────────────────
+function saveTL() { Store.set('ndp_tl', JSON.stringify(tlEvents)); }
+
+function renderTL() {
+  const st = {'p-critical':0,'p-high':0,'p-normal':0,'p-info':0};
+  tlEvents.forEach(e => { if (st[e.pri] !== undefined) st[e.pri]++; });
+  document.getElementById('sc-crit').textContent = st['p-critical'];
+  document.getElementById('sc-high').textContent = st['p-high'];
+  document.getElementById('sc-norm').textContent = st['p-normal'];
+  document.getElementById('sc-info').textContent = st['p-info'];
+  document.getElementById('tl-count').textContent = `${tlEvents.length} EVENT${tlEvents.length !== 1 ? 'S' : ''}`;
+
+  const body = document.getElementById('tl-body');
+  if (tlEvents.length === 0) {
+    body.innerHTML = '<div class="empty-state">[ NO EVENTS LOGGED ]<br>Add first milestone below</div>';
+    return;
+  }
+  let html = '';
+  tlEvents.forEach((ev, i) => {
+    const last = i === tlEvents.length - 1;
+    html += `<div class="tl-entry" style="padding:10px 14px 0 14px;">
+      <div class="tl-time">${esc(ev.time)}<span class="tl-date-s">${esc(ev.date)}</span></div>
+      <div class="tl-spine">
+        <div class="tl-dot ${ev.pri}"></div>
+        ${!last ? '<div class="tl-line"></div>' : ''}
+      </div>
+      <div class="tl-content" style="padding-bottom:12px;">
+        <div class="tl-ms">${esc(ev.ms)}</div>
+        ${ev.desc ? `<div class="tl-desc">${esc(ev.desc)}</div>` : ''}
+        <span class="tl-tag ${ev.pri}">${P_LABEL[ev.pri] || ev.pri}</span>
+        <div class="tl-actions">
+          <button class="btn-sm edit" onclick="editTL(${ev.id})">✎</button>
+          <button class="btn-sm" onclick="delTL(${ev.id})">✕</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  body.innerHTML = html;
+}
+
+function addTL() {
+  const ms = document.getElementById('tl-ms').value.trim();
+  if (!ms) {
+    const el = document.getElementById('tl-ms');
+    el.style.borderColor = 'var(--red)';
+    el.focus();
+    setTimeout(() => el.style.borderColor = '', 1400);
+    return;
+  }
+  tlEvents.push({
+    id:   Date.now(),
+    time: document.getElementById('tl-time').value || nowTime(),
+    date: nowDate(),
+    ms,
+    desc: document.getElementById('tl-desc').value.trim(),
+    pri:  tlPri
+  });
+  tlEvents.sort((a, b) => a.time.localeCompare(b.time));
+  saveTL(); renderTL();
+  document.getElementById('tl-ms').value   = '';
+  document.getElementById('tl-desc').value = '';
+}
+
+function delTL(id) { tlEvents = tlEvents.filter(e => e.id !== id); saveTL(); renderTL(); }
+
+function editTL(id) {
+  const ev = tlEvents.find(e => e.id === id); if (!ev) return;
+  const nm = prompt('Edit milestone:', ev.ms);   if (nm === null) return;
+  const nd = prompt('Edit notes:',    ev.desc || '');
+  ev.ms   = nm.trim() || ev.ms;
+  ev.desc = (nd || '').trim();
+  saveTL(); renderTL();
+}
+
+// ── OPS RENDER ────────────────────────────────────────────────────────────────
+function saveOps() { Store.set('ndp_ops', JSON.stringify(opsLog)); }
+
+function renderOps() {
+  const total    = opsLog.length;
+  const open     = opsLog.filter(e => e.resolve === 'pending').length;
+  const ongoing  = opsLog.filter(e => e.resolve === 'ongoing').length;
+  const resolved = opsLog.filter(e => e.resolve === 'resolved').length;
+  document.getElementById('ops-count').textContent  = `${total} ENTR${total !== 1 ? 'IES' : 'Y'}`;
+  document.getElementById('os-total').textContent   = total;
+  document.getElementById('os-open').textContent    = open;
+  document.getElementById('os-ongoing').textContent = ongoing;
+  document.getElementById('os-resolved').textContent= resolved;
+
+  const body = document.getElementById('ops-body');
+  if (total === 0) {
+    body.innerHTML = '<div class="empty-state">[ NO ENTRIES ]<br>Log first activity below</div>';
+    return;
+  }
+  let html = '';
+  [...opsLog].reverse().forEach(en => {
+    html += `<div class="ops-card card-${en.resolve}">
+      <div class="ops-card-hdr">
+        <span class="ops-seq">#${String(en.seq).padStart(3,'0')}</span>
+        <span class="ops-tbadge">${esc(en.time)} ${esc(en.date)}</span>
+        <span class="ops-pbadge ${en.pri}">${P_LABEL[en.pri] || en.pri}</span>
+        <span class="ops-rbadge ${en.resolve}">${R_LABEL[en.resolve] || en.resolve.toUpperCase()}</span>
+      </div>
+      <div class="ops-grid">
+        <div class="ops-f full"><span class="ops-fl">Issue</span><span class="ops-fv" style="font-size:13px;font-weight:700;">${esc(en.issue || '—')}</span></div>
+        <div class="ops-f"><span class="ops-fl">Location</span><span class="ops-fv">${esc(en.loc || '—')}</span></div>
+        <div class="ops-f"><span class="ops-fl">Assigned To</span><span class="ops-fv">${esc(en.assigned || '—')}</span></div>
+        ${en.desc    ? `<div class="ops-f full"><span class="ops-fl">Description</span><span class="ops-fv" style="color:var(--t2);">${esc(en.desc)}</span></div>` : ''}
+        ${en.actions ? `<div class="ops-f full"><span class="ops-fl">Actions Taken / To Be Taken</span><span class="ops-fv">${esc(en.actions)}</span></div>` : ''}
+      </div>
+      <div class="ops-foot">
+        <span class="ops-by">Logged by: ${esc(en.loggedby || 'CMD POST')}</span>
+        <div class="ops-actions">
+          <button class="btn-sm edit" onclick="editOps(${en.id})">✎ EDIT</button>
+          <button class="btn-sm" onclick="delOps(${en.id})">✕</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  body.innerHTML = html;
+}
+
+function quickLog() {
+  const issue = document.getElementById('qi-issue').value.trim();
+  if (!issue) {
+    const el = document.getElementById('qi-issue');
+    el.style.borderColor = 'var(--red)'; el.focus();
+    setTimeout(() => el.style.borderColor = '', 1400); return;
+  }
+  opsSeq++;
+  opsLog.push({
+    id: Date.now(), seq: opsSeq, time: nowTime(), date: nowDate(),
+    issue,
+    loc:      document.getElementById('qi-loc').value.trim(),
+    assigned: document.getElementById('qi-assigned').value.trim() || '—',
+    desc: '', actions: '', loggedby: 'CMD POST',
+    pri: opsPri, resolve: 'pending'
+  });
+  saveOps(); renderOps();
+  document.getElementById('qi-issue').value    = '';
+  document.getElementById('qi-loc').value      = '';
+  document.getElementById('qi-assigned').value = '';
+}
+
+function openOpsModal(id) {
+  editOpsId = id;
+  document.getElementById('modal-ttl').textContent = id ? 'EDIT OPS LOG ENTRY' : 'NEW OPS LOG ENTRY';
+  if (id) {
+    const en = opsLog.find(e => e.id === id); if (!en) return;
+    document.getElementById('m-issue').value   = en.issue    || '';
+    document.getElementById('m-loc').value     = en.loc      || '';
+    document.getElementById('m-desc').value    = en.desc     || '';
+    document.getElementById('m-actions').value = en.actions  || '';
+    document.getElementById('m-assigned').value= en.assigned || '';
+    document.getElementById('m-loggedby').value= en.loggedby || '';
+    document.getElementById('m-priority').value= en.pri      || 'p-high';
+    document.getElementById('m-resolve').value = en.resolve  || 'ongoing';
+  } else {
+    document.getElementById('m-issue').value   = document.getElementById('qi-issue').value || '';
+    document.getElementById('m-loc').value     = document.getElementById('qi-loc').value   || '';
+    document.getElementById('m-assigned').value= document.getElementById('qi-assigned').value || '';
+    document.getElementById('m-desc').value    = '';
+    document.getElementById('m-actions').value = '';
+    document.getElementById('m-loggedby').value= '';
+    document.getElementById('m-priority').value= opsPri;
+    document.getElementById('m-resolve').value = 'ongoing';
+  }
+  document.getElementById('ops-modal').classList.add('show');
+  setTimeout(() => document.getElementById('m-issue').focus(), 50);
+}
+
+function closeOpsModal() { document.getElementById('ops-modal').classList.remove('show'); editOpsId = null; }
+
+function submitOps() {
+  const issue = document.getElementById('m-issue').value.trim();
+  if (!issue) {
+    const el = document.getElementById('m-issue');
+    el.style.borderColor = 'var(--red)'; el.focus();
+    setTimeout(() => el.style.borderColor = '', 1400); return;
+  }
+  if (editOpsId) {
+    const en = opsLog.find(e => e.id === editOpsId); if (!en) return;
+    en.issue    = issue;
+    en.loc      = document.getElementById('m-loc').value.trim();
+    en.desc     = document.getElementById('m-desc').value.trim();
+    en.actions  = document.getElementById('m-actions').value.trim();
+    en.assigned = document.getElementById('m-assigned').value.trim() || '—';
+    en.loggedby = document.getElementById('m-loggedby').value.trim() || 'CMD POST';
+    en.pri      = document.getElementById('m-priority').value;
+    en.resolve  = document.getElementById('m-resolve').value;
+  } else {
+    opsSeq++;
+    opsLog.push({
+      id: Date.now(), seq: opsSeq, time: nowTime(), date: nowDate(),
+      issue,
+      loc:      document.getElementById('m-loc').value.trim(),
+      desc:     document.getElementById('m-desc').value.trim(),
+      actions:  document.getElementById('m-actions').value.trim(),
+      assigned: document.getElementById('m-assigned').value.trim() || '—',
+      loggedby: document.getElementById('m-loggedby').value.trim() || 'CMD POST',
+      pri:      document.getElementById('m-priority').value,
+      resolve:  document.getElementById('m-resolve').value
+    });
+    ['qi-issue','qi-loc','qi-assigned'].forEach(id => { document.getElementById(id).value = ''; });
+  }
+  saveOps(); renderOps(); closeOpsModal();
+}
+
+function editOps(id) { openOpsModal(id); }
+function delOps(id)  { opsLog = opsLog.filter(e => e.id !== id); saveOps(); renderOps(); }
+
+// ── CLEAR ─────────────────────────────────────────────────────────────────────
+function confirmClear(t) {
+  clearTgt = t;
+  document.getElementById('confirm-msg').textContent = t === 'tl'
+    ? 'All timeline events will be permanently erased.'
+    : 'All ops log entries will be permanently erased.';
+  document.getElementById('confirm-overlay').classList.add('show');
+}
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('show'); clearTgt = null; }
+function doClear() {
+  if (clearTgt === 'tl')  { tlEvents = []; saveTL();  renderTL(); }
+  if (clearTgt === 'ops') { opsLog = []; opsSeq = 0; saveOps(); renderOps(); }
+  closeConfirm();
+}
+
+// ── REHEARSAL EXPORT & RESET ──────────────────────────────────────────────────
+let resetScope = null;
+
+function openRehearsal() {
+  document.getElementById('reh-chk').checked = false;
+  resetScope = null;
+  document.getElementById('reset-options').style.display = 'none';
+  document.querySelectorAll('.reset-scope-btn').forEach(b => b.classList.remove('active'));
+  toggleResetBtn();
+  document.getElementById('reh-modal').classList.add('show');
+}
+function closeRehearsal() { document.getElementById('reh-modal').classList.remove('show'); }
+
+function toggleResetBtn() {
+  const checked = document.getElementById('reh-chk').checked;
+  const optsDiv = document.getElementById('reset-options');
+  optsDiv.style.display = checked ? 'block' : 'none';
+  const btn = document.getElementById('reset-btn');
+  const ready = checked && resetScope !== null;
+  btn.disabled = !ready;
+  btn.style.opacity = ready ? '1' : '.35';
+  btn.style.cursor  = ready ? 'pointer' : 'not-allowed';
+  if (checked && resetScope === null) {
+    btn.textContent = 'SELECT SCOPE ABOVE';
+  } else if (resetScope === 'ops') {
+    btn.textContent = 'RESET OPS LOG';
+  } else if (resetScope === 'all') {
+    btn.textContent = 'RESET BOTH PANELS';
+  } else {
+    btn.textContent = 'RESET';
+  }
+}
+
+function setResetScope(scope) {
+  resetScope = scope;
+  document.getElementById('rst-ops-only').classList.toggle('active', scope === 'ops');
+  document.getElementById('rst-all').classList.toggle('active',      scope === 'all');
+  toggleResetBtn();
+}
+
+function doReset() {
+  if (!document.getElementById('reh-chk').checked || !resetScope) return;
+  if (resetScope === 'ops' || resetScope === 'all') {
+    opsLog = []; opsSeq = 0; Store.del('ndp_ops'); renderOps();
+  }
+  if (resetScope === 'all') {
+    tlEvents = []; Store.del('ndp_tl'); renderTL();
+  }
+  closeRehearsal();
+}
+
+function csvEsc(v) {
+  const s = String(v === null || v === undefined ? '' : v).replace(/"/g,'""');
+  return /[",\n\r]/.test(s) ? `"${s}"` : s;
+}
+function label() {
+  const n = new Date();
+  return `${String(n.getDate()).padStart(2,'0')}${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][n.getMonth()]}${n.getFullYear()}_${String(n.getHours()).padStart(2,'0')}${String(n.getMinutes()).padStart(2,'0')}`;
+}
+function dlFile(name, text, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type }));
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(a.href);
+}
+function tlCSV() {
+  const hdr = ['Time','Date','Milestone','Notes','Priority'];
+  const rows = tlEvents.map(e => [csvEsc(e.time),csvEsc(e.date),csvEsc(e.ms),csvEsc(e.desc),csvEsc(P_LABEL[e.pri])].join(','));
+  return [hdr.join(','), ...rows].join('\n');
+}
+function opsCSV() {
+  const hdr = ['#','Time','Date','Issue','Location','Description','Actions','Assigned To','Logged By','Priority','Status'];
+  const rows = opsLog.map(e => [
+    csvEsc(String(e.seq).padStart(3,'0')),csvEsc(e.time),csvEsc(e.date),
+    csvEsc(e.issue),csvEsc(e.loc),csvEsc(e.desc),csvEsc(e.actions),
+    csvEsc(e.assigned),csvEsc(e.loggedby),csvEsc(P_LABEL[e.pri]),csvEsc(R_LABEL[e.resolve])
+  ].join(','));
+  return [hdr.join(','), ...rows].join('\n');
+}
+function exportCSV(t) {
+  const lb = label();
+  if (t === 'tl')  { dlFile(`NDP_MedCP_Timeline_${lb}.csv`, tlCSV(), 'text/csv'); return; }
+  if (t === 'ops') { dlFile(`NDP_MedCP_OpsLog_${lb}.csv`,   opsCSV(),'text/csv'); return; }
+  if (t === 'all') { dlFile(`NDP_MedCP_Combined_${lb}.csv`, `=== CRITICAL EVENT TIMELINE ===\n${tlCSV()}\n\n=== OPERATIONS LOG ===\n${opsCSV()}`, 'text/csv'); }
+}
+function exportJSON() {
+  dlFile(`NDP_MedCP_Backup_${label()}.json`, JSON.stringify({ exportedAt: new Date().toISOString(), timeline: tlEvents, ops: opsLog }, null, 2), 'application/json');
+}
+
+// ── KEYBOARD ──────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeOpsModal(); closeConfirm(); closeRehearsal(); }
+});
+document.getElementById('tl-ms').addEventListener('keydown',   e => { if (e.key === 'Enter') addTL(); });
+document.getElementById('qi-issue').addEventListener('keydown', e => { if (e.key === 'Enter') quickLog(); });
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.getElementById('tl-time').value = nowTime();
+setInterval(() => {
+  const f = document.getElementById('tl-time');
+  if (!f.dataset.touched) f.value = nowTime();
+}, 30000);
+document.getElementById('tl-time').addEventListener('input', function () { this.dataset.touched = '1'; });
+
+setTLPri('p-high');
+setOPri('p-high');
+renderTL();
+renderOps();
+</script>
+</body>
+</html>
