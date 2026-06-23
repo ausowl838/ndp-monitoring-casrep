@@ -6,33 +6,30 @@
 <title>CASREP — NDP Medical Command</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@700&family=Courier+Prime:wght@400;700&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:radial-gradient(ellipse at top left,rgba(74,158,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at bottom right,rgba(167,139,250,0.04) 0%,transparent 60%),#030A12;color:#B8CCE0;font-family:'DM Sans',sans-serif;min-height:100vh}
-  ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#1C3347;border-radius:2px}
-  input::placeholder{color:#1C3A52}select option{background:#050D14}
-  .inp{background:#050D14;border:1px solid #1C3347;border-radius:4px;color:#B8CCE0;padding:5px 8px;font-size:0.82rem;font-family:'Courier Prime',monospace;width:100%;outline:none}
-  .inp:focus{border-color:#2E86C1}
-  .lbl{display:block;font-size:0.6rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.1em;font-family:'Courier Prime',monospace;margin-bottom:3px}
-  .btn{cursor:pointer;border-radius:4px;font-family:'Courier Prime',monospace;font-size:0.78rem;font-weight:700;padding:6px 14px;border:1px solid}
-  .card{background:#07111C;border-radius:6px;padding:10px 13px;margin-bottom:8px;animation:fadeIn 0.2s ease}
-  .hidden{display:none}
-  .modal-bg{position:fixed;inset:0;z-index:999;background:rgba(2,8,14,0.92);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-  .modal{background:#07111C;border-radius:8px;padding:24px;width:500px;max-width:94vw}
-  .sidebar-box{background:#050D14;border:1px solid #0D2133;border-radius:8px;padding:12px;margin-bottom:10px}
-  .sidebar-title{font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px}
-  .tag{border-radius:3px;padding:1px 8px;font-family:'Courier Prime',monospace;font-size:0.7rem;font-weight:700}
-  .quick-btn{border-radius:4px;padding:3px 12px;cursor:pointer;font-family:'Courier Prime',monospace;font-size:0.72rem;font-weight:700;border:1px solid}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .spinner{width:18px;height:18px;border:2px solid #1C3347;border-top-color:#2E86C1;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
-  input[type=password]{font-family:'Courier Prime',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(ellipse at top left,rgba(74,158,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at bottom right,rgba(167,139,250,0.04) 0%,transparent 60%),#030A12;color:#B8CCE0;font-family:'DM Sans',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#1C3347;border-radius:2px}
+input::placeholder{color:#1C3A52}select option{background:#050D14}
+.inp{background:#050D14;border:1px solid #1C3347;border-radius:4px;color:#B8CCE0;padding:5px 8px;font-size:0.82rem;font-family:'Courier Prime',monospace;width:100%;outline:none}
+.inp:focus{border-color:#2E86C1}
+.lbl{display:block;font-size:0.6rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.1em;font-family:'Courier Prime',monospace;margin-bottom:3px}
+.btn{cursor:pointer;border-radius:4px;font-family:'Courier Prime',monospace;font-size:0.78rem;font-weight:700;padding:6px 14px;border:1px solid}
+.card{background:#07111C;border-radius:6px;padding:10px 13px;margin-bottom:8px}
+.hidden{display:none}
+.modal-bg{position:fixed;inset:0;z-index:999;background:rgba(2,8,14,0.92);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal{background:#07111C;border-radius:8px;padding:24px;width:500px;max-width:94vw}
+.sb{background:#050D14;border:1px solid #0D2133;border-radius:8px;padding:12px;margin-bottom:10px}
+.sbt{font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px}
+.tag{border-radius:3px;padding:1px 8px;font-family:'Courier Prime',monospace;font-size:0.7rem;font-weight:700}
+.qbtn{border-radius:4px;padding:3px 12px;cursor:pointer;font-family:'Courier Prime',monospace;font-size:0.72rem;font-weight:700;border:1px solid}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 </style>
 </head>
 <body>
 
-<!-- ═══ AUTH SCREEN ═══ -->
-<div id="authScreen" style="display:block">
+<!-- AUTH SCREEN -->
+<div id="authScreen">
   <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
     <div style="width:440px;max-width:100%">
       <div style="margin-bottom:28px">
@@ -62,22 +59,16 @@
           <input class="inp" type="password" id="authPin" placeholder="Enter your station PIN" style="font-size:0.9rem;padding:8px;letter-spacing:0.15em" onkeydown="if(event.key==='Enter')doLogin()"/>
         </div>
         <div id="authError" style="font-family:'Courier Prime',monospace;font-size:0.72rem;color:#E74C3C;margin-bottom:14px;display:none"></div>
-        <button onclick="doLogin()" id="loginBtn" style="width:100%;padding:11px 0;background:#0A3A5A;border:1px solid #2E86C1;color:#5DADE2;border-radius:6px;cursor:pointer;font-family:'Courier Prime',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.1em">
-          ENTER COMMAND SYSTEM
-        </button>
+        <button onclick="doLogin()" style="width:100%;padding:11px 0;background:#0A3A5A;border:1px solid #2E86C1;color:#5DADE2;border-radius:6px;cursor:pointer;font-family:'Courier Prime',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.1em">ENTER COMMAND SYSTEM</button>
       </div>
-      <div style="text-align:center;margin-top:12px;font-family:'Courier Prime',monospace;font-size:0.58rem;color:#0D2133">
-        Authorised personnel only · All access is logged · NDP 2026 Medical Operations
-      </div>
+      <div style="text-align:center;margin-top:12px;font-family:'Courier Prime',monospace;font-size:0.58rem;color:#0D2133">Authorised personnel only · All access is logged · NDP 2026 Medical Operations</div>
     </div>
   </div>
 </div>
 
-<!-- ═══ MAIN APP ═══ -->
+<!-- MAIN APP -->
 <div id="mainApp" style="display:none">
-
-  <!-- Topbar -->
-  <div style="background:rgba(3,10,18,0.92);border-bottom:1px solid #0D2133;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)">
+  <div style="background:rgba(3,10,18,0.95);border-bottom:1px solid #0D2133;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)">
     <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#e8f0f7;letter-spacing:0.02em;line-height:1.15">MEDICAL COMMAND POST</div>
       <div style="font-family:'DM Mono',monospace;font-weight:400;font-size:13px;color:#4a6a7a;letter-spacing:0.02em">CASUALTY DASHBOARD · RESTRICTED, SENSITIVE (NORMAL)</div>
@@ -86,7 +77,7 @@
         <span id="stationNote" style="font-family:'Courier Prime',monospace;font-size:0.62rem;color:#1A4060;padding-top:2px"></span>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:14px">
+    <div style="display:flex;align-items:center;gap:10px">
       <span id="topDate" style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#1A4060"></span>
       <div style="display:flex;align-items:center;gap:5px">
         <div id="syncDot" style="width:7px;height:7px;border-radius:50%;background:#1DB954;box-shadow:0 0 6px #1DB954;transition:all 0.3s"></div>
@@ -94,29 +85,21 @@
       </div>
       <button onclick="toggleLog()" class="btn" style="background:transparent;border-color:#1C3347;color:#4A8AB0;font-size:0.68rem;padding:3px 10px">LOG <span id="logCount"></span></button>
       <button onclick="exportData()" class="btn" style="background:#0A3A1A;border-color:#1DB954;color:#1DB954;font-size:0.68rem;padding:3px 10px">⬇ Export</button>
-      <span id="resetBtn" class="hidden"><button onclick="resetData()" class="btn" style="background:#3A0A0A;border-color:#C0392B;color:#C0392B;font-size:0.68rem;padding:3px 10px">⚠ Reset Data</button></span>
+      <span id="resetWrap" style="display:none"><button onclick="resetData()" class="btn" style="background:#3A0A0A;border-color:#C0392B;color:#C0392B;font-size:0.68rem;padding:3px 10px">⚠ Reset</button></span>
       <button onclick="doLogout()" class="btn" style="background:#1A0808;border-color:#441111;color:#994444;font-size:0.68rem;padding:3px 10px">⏏ Logout</button>
     </div>
   </div>
 
   <div style="max-width:1380px;margin:0 auto;padding:12px 16px">
-
-    <!-- Row 1: Stats -->
-    <div style="display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-bottom:12px" id="statsRow"></div>
-
-    <!-- Row 2: Post strips -->
-    <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:12px" id="postStrips"></div>
-
-    <!-- Row 3: Diagnosis breakdown (all posts) — 2 rows of 8 -->
+    <div id="statsRow" style="display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-bottom:12px"></div>
+    <div id="postStrips" style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:12px"></div>
     <div style="background:#05111C;border:1px solid #0D2133;border-radius:8px;padding:10px 12px;margin-bottom:8px">
-      <div style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px">Diagnosis Breakdown — All Posts · Sorted by Count</div>
+      <div class="sbt">Diagnosis Breakdown — All Posts · Sorted by Count</div>
       <div id="diagRow" style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px"></div>
     </div>
-
-    <!-- Row 4: Per-post diagnosis (only when post selected) -->
-    <div id="postDiagRow" style="display:none" style="background:#05111C;border:1px solid #1A3A5A;border-radius:8px;padding:10px 12px;margin-bottom:12px;box-shadow:0 0 16px rgba(74,158,255,0.06)">
+    <div id="postDiagRow" style="display:none;background:#05111C;border:1px solid #1A3A5A;border-radius:8px;padding:10px 12px;margin-bottom:12px;box-shadow:0 0 16px rgba(74,158,255,0.06)">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <div style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#2E86C1;text-transform:uppercase;letter-spacing:0.12em">Diagnosis Breakdown</div>
+        <div class="sbt" style="margin-bottom:0">Diagnosis Breakdown</div>
         <div id="postDiagLabel" style="background:#2E86C122;border:1px solid #2E86C155;border-radius:3px;padding:1px 8px;font-family:'Courier Prime',monospace;font-size:0.62rem;color:#2E86C1;font-weight:700"></div>
         <div id="postDiagCount" style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060"></div>
       </div>
@@ -124,33 +107,28 @@
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 290px;gap:12px">
-
-      <!-- Main panel -->
       <div>
-        <!-- Filters -->
         <div style="display:flex;gap:7px;margin-bottom:10px;align-items:center;flex-wrap:wrap">
           <select class="inp" id="fPost" onchange="applyFilters()" style="width:auto">
             <option value="ALL">All Posts</option>
+            <option>MP North</option><option>MP South</option><option>MP Arena</option>
+            <option>MP WACA</option><option>MP VVIP</option><option>FAP(E) Show</option>
+            <option>FAP(E) Beneficiaries</option><option>FAP(E) Celebrations</option>
           </select>
           <select class="inp" id="fPri" onchange="applyFilters()" style="width:auto">
             <option value="ALL">All Priority</option>
-            <option value="P1">P1</option><option value="P2">P2</option>
-            <option value="P3">P3</option><option value="P4">P4</option>
+            <option value="P1">P1</option><option value="P2">P2</option><option value="P3">P3</option><option value="P4">P4</option>
           </select>
           <select class="inp" id="fSt" onchange="applyFilters()" style="width:auto">
             <option value="ALL">All Status</option>
-            <option>At Post</option><option>Discharged from Post</option>
-            <option>Evacuated</option><option>Arrived at Hospital</option>
+            <option>At Post</option><option>Discharged from Post</option><option>Evacuated</option><option>Arrived at Hospital</option>
           </select>
-          <select class="inp" id="fComplaint" onchange="applyFilters()" style="width:auto">
-            <option value="ALL">All Chief Complaints</option>
-          </select>
+          <select class="inp" id="fComp" onchange="applyFilters()" style="width:auto"><option value="ALL">All Chief Complaints</option></select>
           <span id="countLabel" style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#1A4060;margin-left:auto"></span>
-          <button onclick="toggleAddForm()" class="btn" id="addToggleBtn" style="background:#0A2A40;border-color:#1A4A6A;color:#4A90D9;font-size:0.68rem;padding:4px 10px">▲ Hide Form</button>
+          <button onclick="toggleAddForm()" id="addToggleBtn" class="btn" style="background:#0A2A40;border-color:#1A4A6A;color:#4A90D9;font-size:0.68rem;padding:4px 10px">▲ Hide Form</button>
         </div>
 
-        <!-- Add form -->
-        <div id="addForm" style="display:block;background:#050D14;border:1px solid #1C3347;border-radius:8px;padding:14px;margin-bottom:14px">
+        <div id="addForm" style="background:#050D14;border:1px solid #1C3347;border-radius:8px;padding:14px;margin-bottom:14px">
           <div style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#2E86C1;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.12em">⊕ Register New Casualty</div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px 12px;margin-bottom:8px">
             <div><label class="lbl">Partial NRIC</label><input class="inp" id="fNric" placeholder="XXXX123A" maxlength="9" oninput="this.value=this.value.toUpperCase()"/></div>
@@ -158,28 +136,13 @@
             <div><label class="lbl">Age</label><input class="inp" id="fAge" type="number" min="0" max="120"/></div>
             <div><label class="lbl">Gender</label><select class="inp" id="fGender"><option value="">—</option><option>Male</option><option>Female</option></select></div>
             <div><label class="lbl">Medical Post</label><select class="inp" id="fPostSel"></select></div>
-            <div><label class="lbl">Priority</label>
-              <select class="inp" id="fPri2">
-                <option value="P1">P1</option><option value="P2">P2</option>
-                <option value="P3" selected>P3</option><option value="P4">P4</option>
-              </select>
-            </div>
+            <div><label class="lbl">Priority</label><select class="inp" id="fPri2"><option value="P1">P1</option><option value="P2">P2</option><option value="P3" selected>P3</option><option value="P4">P4</option></select></div>
             <div><label class="lbl">Chief Complaint</label><select class="inp" id="fComplaint2"></select></div>
             <div><label class="lbl">Diagnosis</label><select class="inp" id="fDiagnosis"></select></div>
           </div>
-          <div id="fTocWrap" style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:8px">
-            <div>
-              <label class="lbl">Type of Casualty</label>
-              <select class="inp" id="fToc" onchange="toggleOtherUnit('f')">
-                <option value="">—</option>
-                <option>Show</option><option>P&amp;C</option><option>Spectator</option>
-                <option value="Others (NDP Working Party personnel)">Others (NDP Working Party personnel)</option>
-              </select>
-            </div>
-            <div id="fOtherWrap" class="hidden">
-              <label class="lbl">Unit / Parent Organisation</label>
-              <input class="inp" id="fOtherUnit" placeholder="e.g. 3 SIR, MINDEF OPS"/>
-            </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:8px" id="fTocGrid">
+            <div><label class="lbl">Type of Casualty</label><select class="inp" id="fToc" onchange="toggleOther('f')"><option value="">—</option><option>Show</option><option>P&amp;C</option><option>Spectator</option><option value="Others (NDP Working Party personnel)">Others (NDP Working Party personnel)</option></select></div>
+            <div id="fOtherWrap" style="display:none"><label class="lbl">Unit / Parent Organisation</label><input class="inp" id="fOtherUnit" placeholder="e.g. 3 SIR"/></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:10px">
             <div><label class="lbl">MO Attending</label><input class="inp" id="fMO" placeholder="Dr. Name"/></div>
@@ -191,17 +154,14 @@
         <div id="casualtyList"></div>
       </div>
 
-      <!-- Sidebar -->
       <div>
-        <!-- Pie chart -->
-        <div class="sidebar-box">
-          <div class="sidebar-title">Diagnosis Distribution</div>
+        <div class="sb">
+          <div class="sbt">Diagnosis Distribution</div>
           <canvas id="diagPie" width="250" height="250" style="display:block;margin:0 auto"></canvas>
           <div id="pieLegend" style="margin-top:10px"></div>
         </div>
-        <!-- Log -->
-        <div class="sidebar-box" id="logBox" style="display:none">
-          <div class="sidebar-title">Shared Activity Log</div>
+        <div class="sb hidden" id="logBox">
+          <div class="sbt">Shared Activity Log</div>
           <div id="logList" style="max-height:320px;overflow-y:auto"></div>
         </div>
       </div>
@@ -209,44 +169,30 @@
   </div>
 </div>
 
-<!-- ═══ EVAC MODAL ═══ -->
+<!-- EVAC MODAL -->
 <div id="evacModal" class="modal-bg" style="display:none">
-  <div class="modal" id="evacModalInner" style="max-height:90vh;overflow-y:auto">
+  <div class="modal" id="evacInner" style="max-height:90vh;overflow-y:auto">
     <div style="display:flex;justify-content:space-between;margin-bottom:16px">
-      <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;color:#9B59B6;letter-spacing:0.12em">🚑 EVACUATE CASUALTY</div>
-        <div id="evacSub" style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#4A7090;margin-top:2px"></div>
-      </div>
+      <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;color:#9B59B6;letter-spacing:0.12em">🚑 EVACUATE CASUALTY</div><div id="evacSub" style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#4A7090;margin-top:2px"></div></div>
       <button onclick="closeModal('evacModal')" style="background:none;border:none;color:#4A7090;cursor:pointer;font-size:1rem">✕</button>
     </div>
-    <div style="margin-bottom:14px">
-      <label class="lbl">Select Destination Hospital *</label>
-      <div id="hospBtns" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px"></div>
-      <input class="inp" id="evacHosp" list="evacHospList" placeholder="Or type destination..."/>
-      <datalist id="evacHospList"></datalist>
-    </div>
+    <div style="margin-bottom:14px"><label class="lbl">Select Destination Hospital *</label><div id="hospBtns" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px"></div></div>
     <div style="margin-bottom:14px"><label class="lbl">Evacuation Time</label><input class="inp" id="evacTime"/></div>
-    <div style="display:flex;gap:8px">
-      <button onclick="closeModal('evacModal')" class="btn" style="flex:1;background:#0D1E2E;border-color:#1C3347;color:#4A7090">Cancel</button>
-      <button onclick="confirmEvac()" class="btn" id="evacConfirmBtn" style="flex:2;background:#1A0A30;border-color:#9B59B6;color:#C39BD3">🚑 CONFIRM EVACUATION</button>
-    </div>
+    <div style="display:flex;gap:8px"><button onclick="closeModal('evacModal')" class="btn" style="flex:1;background:#0D1E2E;border-color:#1C3347;color:#4A7090">Cancel</button><button onclick="confirmEvac()" class="btn" style="flex:2;background:#1A0A30;border-color:#9B59B6;color:#C39BD3">🚑 CONFIRM EVACUATION</button></div>
   </div>
 </div>
 
-<!-- ═══ ARRIVAL MODAL ═══ -->
+<!-- ARRIVAL MODAL -->
 <div id="arrivalModal" class="modal-bg" style="display:none">
   <div class="modal">
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;color:#E67E22;letter-spacing:0.12em;margin-bottom:6px">🏥 CONFIRM HOSPITAL ARRIVAL</div>
     <div id="arrivalSub" style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#4A7090;margin-bottom:16px"></div>
     <div style="margin-bottom:14px"><label class="lbl">Time Arrived at Hospital</label><input class="inp" id="arrivalTime"/></div>
-    <div style="display:flex;gap:8px">
-      <button onclick="closeModal('arrivalModal')" class="btn" style="flex:1;background:#0D1E2E;border-color:#1C3347;color:#4A7090">Cancel</button>
-      <button onclick="confirmArrival()" class="btn" id="arrivalConfirmBtn" style="flex:2;background:#200E00;border-color:#E67E22;color:#E67E22">✓ CONFIRM ARRIVAL</button>
-    </div>
+    <div style="display:flex;gap:8px"><button onclick="closeModal('arrivalModal')" class="btn" style="flex:1;background:#0D1E2E;border-color:#1C3347;color:#4A7090">Cancel</button><button onclick="confirmArrival()" id="arrivalBtn" class="btn" style="flex:2;background:#200E00;border-color:#E67E22;color:#E67E22">✓ CONFIRM ARRIVAL</button></div>
   </div>
 </div>
 
-<!-- ═══ EDIT MODAL ═══ -->
+<!-- EDIT MODAL -->
 <div id="editModal" class="modal-bg" style="display:none">
   <div class="modal" style="width:640px;max-height:90vh;overflow-y:auto">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -263,27 +209,15 @@
       <div><label class="lbl">Chief Complaint</label><select class="inp" id="eComplaint"></select></div>
       <div><label class="lbl">Diagnosis</label><select class="inp" id="eDiagnosis"></select></div>
       <div><label class="lbl">MO Attending</label><input class="inp" id="eMO"/></div>
-      <div style="grid-column:1/-1">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <div><label class="lbl">Type of Casualty</label>
-            <select class="inp" id="eToc" onchange="toggleOtherUnit('e')">
-              <option value="">—</option>
-              <option>Show</option><option>P&amp;C</option><option>Spectator</option>
-              <option value="Others (NDP Working Party personnel)">Others (NDP Working Party personnel)</option>
-            </select>
-          </div>
-          <div id="eOtherWrap" class="hidden"><label class="lbl">Unit / Parent Organisation</label><input class="inp" id="eOtherUnit" placeholder="e.g. 3 SIR, MINDEF OPS"/></div>
-        </div>
-      </div>
-      <div><label class="lbl">Status</label>
-        <select class="inp" id="eStatus" onchange="toggleEditFields()">
-          <option>At Post</option><option>Discharged from Post</option><option>Evacuated</option><option>Arrived at Hospital</option>
-        </select>
-      </div>
-      <div id="eDischargeWrap" class="hidden"><label class="lbl">Discharge Time</label><input class="inp" id="eDischargeTime" placeholder="HH:MM"/></div>
-      <div id="eEvacWrap" class="hidden"><label class="lbl">Evacuation Time</label><input class="inp" id="eEvacTime" placeholder="HH:MM"/></div>
-      <div id="eHospWrap" class="hidden" style="grid-column:1/-1"><label class="lbl">Destination Hospital</label><input class="inp" id="eHospital" list="editHospList"/><datalist id="editHospList"></datalist></div>
-      <div id="eArrivalWrap" class="hidden"><label class="lbl">Arrival Time</label><input class="inp" id="eArrivalTime" placeholder="HH:MM"/></div>
+      <div style="grid-column:1/-1"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label class="lbl">Type of Casualty</label><select class="inp" id="eToc" onchange="toggleOther('e')"><option value="">—</option><option>Show</option><option>P&amp;C</option><option>Spectator</option><option value="Others (NDP Working Party personnel)">Others (NDP Working Party personnel)</option></select></div>
+        <div id="eOtherWrap" style="display:none"><label class="lbl">Unit / Parent Organisation</label><input class="inp" id="eOtherUnit" placeholder="e.g. 3 SIR"/></div>
+      </div></div>
+      <div><label class="lbl">Status</label><select class="inp" id="eStatus" onchange="toggleEditFields()"><option>At Post</option><option>Discharged from Post</option><option>Evacuated</option><option>Arrived at Hospital</option></select></div>
+      <div id="eDisWrap" style="display:none"><label class="lbl">Discharge Time</label><input class="inp" id="eDisTime" placeholder="HH:MM"/></div>
+      <div id="eEvWrap" style="display:none"><label class="lbl">Evacuation Time</label><input class="inp" id="eEvTime" placeholder="HH:MM"/></div>
+      <div id="eHospWrap" style="display:none;grid-column:1/-1"><label class="lbl">Destination Hospital</label><input class="inp" id="eHospital" list="editHospList"/><datalist id="editHospList"></datalist></div>
+      <div id="eArrWrap" style="display:none"><label class="lbl">Arrival Time</label><input class="inp" id="eArrTime" placeholder="HH:MM"/></div>
       <div style="grid-column:1/-1"><label class="lbl">Notes / Treatment</label><input class="inp" id="eNotes"/></div>
     </div>
     <div style="display:flex;gap:8px;margin-top:8px">
@@ -293,565 +227,340 @@
   </div>
 </div>
 
-<!-- Firebase REST API — no SDK needed -->
 <script>
-// Firebase REST API — no SDK config needed
-const SB_URL = "https://ftnwfhjmptedozkwfxiv.supabase.co/rest/v1";
-const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0bndmaGptcHRlZG96a3dmeGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTI0NzIsImV4cCI6MjA5Nzc2ODQ3Mn0.prM-jusZ-unY5JcrHZ0vHTlZGo-cJ9FyZRPI-9UZfWM";
-const SB_H = {
-  "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`,
-  "Content-Type": "application/json", "Prefer": "return=minimal"
-};
-async function sbGetAll(table){
-  const r=await fetch(`${SB_URL}/${table}?select=id,data`,{headers:SB_H});
-  if(!r.ok) throw new Error(`GET ${table} failed: ${r.status}`);
-  const rows=await r.json(); const obj={};
-  rows.forEach(row=>{ obj[row.id]={...row.data,id:row.id}; }); return obj;
-}
-async function sbInsert(table,id,data){
-  const r=await fetch(`${SB_URL}/${table}`,{method:"POST",headers:SB_H,body:JSON.stringify({id,data})});
-  if(!r.ok){ const e=await r.text(); throw new Error(`INSERT ${table} failed: ${r.status} ${e}`); }
-}
-async function sbUpdate(table,id,data){
-  const r=await fetch(`${SB_URL}/${table}?id=eq.${id}`,{method:"PATCH",headers:SB_H,body:JSON.stringify({data})});
-  if(!r.ok) throw new Error(`UPDATE ${table} failed: ${r.status}`);
-}
-async function sbDelete(table,id){
-  await fetch(`${SB_URL}/${table}?id=eq.${id}`,{method:"DELETE",headers:SB_H});
-}
-async function sbDeleteAll(table){
-  await fetch(`${SB_URL}/${table}?id=not.is.null`,{method:"DELETE",headers:SB_H});
-}
+// ── CONFIG ────────────────────────────────────────────────────────────────
+const POSTS=["MP North","MP South","MP Arena","MP WACA","MP VVIP","FAP(E) Show","FAP(E) Beneficiaries","FAP(E) Celebrations"];
+const STATION_PINS={"CP1":"cp1@Ndp2026","CP2":"cp2@Ndp2026","MP North":"mpN@Ndp2026","MP South":"mpS@Ndp2026","MP Arena":"mpA@Ndp2026","MP WACA":"mpW@Ndp2026","MP VVIP":"mpV@Ndp2026","FAP(E) Show":"fapSh@Ndp2026","FAP(E) Beneficiaries":"fapBe@Ndp2026","FAP(E) Celebrations":"fapCe@Ndp2026"};
+const PRIORITY={P1:{bg:"#C0392B",text:"#fff",border:"#922B21",glow:"#C0392B33"},P2:{bg:"#D35400",text:"#fff",border:"#A04000",glow:"#D3540033"},P3:{bg:"#1E8449",text:"#fff",border:"#196F3D",glow:"#1E844933"},P4:{bg:"#424949",text:"#AAB7B8",border:"#616A6B",glow:"#42494922"}};
+const HOSPITALS=["SGH (Singapore General Hospital)","TTSH (Tan Tock Seng Hospital)","NUH (National University Hospital)","KKH (KK Women's and Children's Hospital)","AH (Alexandra Hospital)","CGH (Changi General Hospital)","KTPH (Khoo Teck Puat Hospital)","NTFGH (Ng Teng Fong General Hospital)","SKH (Sengkang General Hospital)","WC (Woodlands Health)"];
+const COMPLAINTS=["Abdominal Pain","Back Pain","Body Ache","Chest Pain or Discomfort","Eye Symptoms","Fatigue","Fever / Chills","Giddiness","Headache","Joint Pain / MSK Pain","Nausea / Vomiting","Others","Respiratory Symptoms","Shortness of Breath","Wounds / Bruises"];
+const DIAGNOSES=["Pending","Cardiac","Respiratory","Dermatology","Dental","Gastroenterology","Neurological (inc Headaches)","Musculoskeletal","Ophthalmology","Otolaryngology","Physical Exhaustion","Heat-related Illnesses","Wounds / Bruises","Psychiatric","Gynae","Others"];
+const DCOLS=["#4A5568","#E74C3C","#E67E22","#F39C12","#2ECC71","#1ABC9C","#3498DB","#9B59B6","#E84393","#16A085","#95A5A6","#F1C40F","#C0392B","#7D3C98","#E91E8C","#7F8C8D"];
+const SCOLS={total:"#4A90D9",p1:"#C0392B",p2:"#D35400",p3:"#1E8449",p4:"#8E44AD",atPost:"#16A085",discharged:"#1DB954",evacuated:"#2980B9",hospital:"#E67E22"};
+const TOC=["Show","P&C","Spectator","Others (NDP Working Party personnel)"];
+const SB="https://ftnwfhjmptedozkwfxiv.supabase.co/rest/v1";
+const SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0bndmaGptcHRlZG96a3dmeGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTI0NzIsImV4cCI6MjA5Nzc2ODQ3Mn0.prM-jusZ-unY5JcrHZ0vHTlZGo-cJ9FyZRPI-9UZfWM";
+const SH={"apikey":SK,"Authorization":"Bearer "+SK,"Content-Type":"application/json","Prefer":"return=minimal"};
 
-// ── Station PIN mapping ── change these PINs before deployment ────────────
-const STATION_PINS = {
-  "CP1":                  "cp1@Ndp2026",
-  "CP2":                  "cp2@Ndp2026",
-  "MP North":             "mpN@Ndp2026",
-  "MP South":             "mpS@Ndp2026",
-  "MP Arena":             "mpA@Ndp2026",
-  "MP WACA":              "mpW@Ndp2026",
-  "MP VVIP":              "mpV@Ndp2026",
-  "FAP(E) Show":          "fapSh@Ndp2026",
-  "FAP(E) Beneficiaries": "fapBe@Ndp2026",
-  "FAP(E) Celebrations":  "fapCe@Ndp2026",
-};
+// ── SUPABASE API ──────────────────────────────────────────────────────────
+async function sbAll(t){const r=await fetch(SB+"/"+t+"?select=id,data",{headers:SH});if(!r.ok)throw new Error("GET "+t+" "+r.status);const rows=await r.json();const o={};rows.forEach(row=>{if(row&&row.id)o[row.id]={...row.data,id:row.id};});return o;}
+async function sbIns(t,id,data){const r=await fetch(SB+"/"+t,{method:"POST",headers:SH,body:JSON.stringify({id,data})});if(!r.ok){const e=await r.text();throw new Error("INSERT "+t+" "+r.status+": "+e);}}
+async function sbUpd(t,id,data){await fetch(SB+"/"+t+"?id=eq."+id,{method:"PATCH",headers:SH,body:JSON.stringify({data})});}
+async function sbDel(t,id){await fetch(SB+"/"+t+"?id=eq."+id,{method:"DELETE",headers:SH});}
+async function sbDelAll(t){await fetch(SB+"/"+t+"?id=not.is.null",{method:"DELETE",headers:SH});}
 
-const COMMAND_STATIONS = ["CP1","CP2"];
-const POSTS = ["MP North","MP South","MP Arena","MP WACA","MP VVIP","FAP(E) Show","FAP(E) Beneficiaries","FAP(E) Celebrations"];
+// ── STATE ─────────────────────────────────────────────────────────────────
+let myStation=null,casualties={},logs=[],evacId=null,arrId=null,editId=null,showLog=false,showAdd=true,elapsedTimers={};
+const g=id=>document.getElementById(id);
+const nowT=()=>new Date().toLocaleTimeString("en-SG",{hour:"2-digit",minute:"2-digit",hour12:false});
+const todayStr=()=>new Date().toLocaleDateString("en-SG",{day:"2-digit",month:"short",year:"numeric"});
+const genId=()=>"cas"+Date.now()+Math.random().toString(36).slice(2,6);
 
-const PRIORITY = {
-  P1:{bg:"#C0392B",text:"#fff",border:"#922B21",glow:"#C0392B44"},
-  P2:{bg:"#D35400",text:"#fff",border:"#A04000",glow:"#D3540044"},
-  P3:{bg:"#1E8449",text:"#fff",border:"#196F3D",glow:"#1E844944"},
-  P4:{bg:"#424949",text:"#AAB7B8",border:"#616A6B",glow:"#42494922"},
-};
-
-const HOSPITALS = [
-  "SGH (Singapore General Hospital)",
-  "TTSH (Tan Tock Seng Hospital)",
-  "NUH (National University Hospital)",
-  "KKH (KK Women's and Children's Hospital)",
-  "AH (Alexandra Hospital)",
-  "CGH (Changi General Hospital)",
-  "KTPH (Khoo Teck Puat Hospital)",
-  "NTFGH (Ng Teng Fong General Hospital)",
-  "SKH (Sengkang General Hospital)",
-  "WC (Woodlands Health)",
-];
-
-// ── CHIEF COMPLAINTS (15) ── update here when list changes
-const CHIEF_COMPLAINTS = [
-  "Abdominal Pain","Back Pain","Body Ache",
-  "Chest Pain or Discomfort","Eye Symptoms","Fatigue",
-  "Fever / Chills","Giddiness","Headache",
-  "Joint Pain / MSK Pain","Nausea / Vomiting","Others",
-  "Respiratory Symptoms","Shortness of Breath","Wounds / Bruises",
-];
-
-// ── DIAGNOSES (16) ── update here when list changes
-const DIAGNOSES = [
-  "Pending",
-  "Cardiac","Respiratory","Dermatology","Dental",
-  "Gastroenterology","Neurological (inc Headaches)","Musculoskeletal",
-  "Ophthalmology","Otolaryngology","Physical Exhaustion",
-  "Heat-related Illnesses","Wounds / Bruises","Psychiatric","Gynae",
-  "Others",
-];
-const DIAGNOSIS_COLORS = [
-  "#4A5568","#E74C3C","#E67E22","#F39C12","#2ECC71",
-  "#1ABC9C","#3498DB","#9B59B6","#E84393","#16A085",
-  "#95A5A6","#F1C40F","#C0392B","#7D3C98","#E91E8C","#7F8C8D",
-];
-
-const STAT_COLORS = {
-  total:"#4A90D9",p1:"#C0392B",p2:"#D35400",p3:"#1E8449",p4:"#8E44AD",
-  atPost:"#16A085",discharged:"#1DB954",evacuated:"#2980B9",hospital:"#E67E22"
-};
-
-// ── State ─────────────────────────────────────────────────────────────────
-let myStation=null, casualties={}, logs=[], elapsedTimers={};
-let evacId=null, arrivalId=null, editId=null;
-let showLog=false, showAddForm=true;
-
-const nowT = () => new Date().toLocaleTimeString("en-SG",{hour:"2-digit",minute:"2-digit",hour12:false});
-const todayStr = () => new Date().toLocaleDateString("en-SG",{day:"2-digit",month:"short",year:"numeric"});
-const g = id => document.getElementById(id);
-const fillSel = (id, arr, blank) => {
-  const el=g(id); if(!el) return;
-  el.innerHTML=(blank?'<option value="">—</option>':'')+arr.map(x=>`<option value="${x}">${x}</option>`).join('');
-};
-
-// ── Auth — PIN only, no Firebase Auth SDK ────────────────────────────────
-window.doLogin = function() {
-  const station = g("authStation").value;
-  const pin     = g("authPin").value;
-  const errEl   = g("authError");
-  errEl.style.display="none";
-  if(!station){ errEl.textContent="Please select your station."; errEl.style.display="block"; return; }
-  if(!pin)    { errEl.textContent="Please enter your station PIN."; errEl.style.display="block"; return; }
-  if(STATION_PINS[station] !== pin){
-    errEl.textContent="Incorrect PIN. Please try again.";
-    errEl.style.display="block"; return;
-  }
+// ── AUTH ──────────────────────────────────────────────────────────────────
+function doLogin(){
+  const station=g("authStation").value,pin=g("authPin").value,err=g("authError");
+  err.style.display="none";
+  if(!station){err.textContent="Please select your station.";err.style.display="block";return;}
+  if(!pin){err.textContent="Please enter your PIN.";err.style.display="block";return;}
+  if(STATION_PINS[station]!==pin){err.textContent="Incorrect PIN. Please try again.";err.style.display="block";return;}
   myStation=station;
   g("authScreen").style.display="none";
   g("mainApp").style.display="block";
   g("authPin").value="";
   initApp();
-};
-
-window.doLogout = function() {
-  if(!confirm("Log out of CASREP?")) return;
-  Object.values(elapsedTimers).forEach(clearInterval); elapsedTimers={};
+}
+function doLogout(){
+  if(!confirm("Log out of CASREP?"))return;
+  Object.values(elapsedTimers).forEach(clearInterval);elapsedTimers={};
+  myStation=null;casualties={};logs=[];
   g("mainApp").style.display="none";
   g("authScreen").style.display="block";
-  g("authStation").value=""; g("authPin").value="";
-  myStation=null;
-};
-
-// ── Poll Supabase ─────────────────────────────────────────────────────────
-async function pollData(){
-  try {
-    const [cas, lg] = await Promise.all([sbGetAll("casualties"), sbGetAll("logs")]);
-    casualties = cas||{};
-    logs = Object.values(lg||{}).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,100);
-    renderAll(); renderLog(); setSyncState("live");
-  } catch(e){ console.warn("Poll error:",e); }
+  g("authStation").value="";g("authPin").value="";
 }
 
-// ── App init ──────────────────────────────────────────────────────────────
-function initApp() {
-  const isCommand = COMMAND_STATIONS.includes(myStation);
-  const stColor = isCommand?"#F1C40F":"#2E86C1";
-  const badge=g("stationBadge");
-  badge.textContent=myStation; badge.style.cssText=`background:${stColor}22;border:1px solid ${stColor}55;border-radius:4px;padding:2px 10px;font-family:'Courier Prime',monospace;font-size:0.75rem;color:${stColor};font-weight:700`;
-  g("stationNote").textContent = isCommand?"Full access · All posts":`Editing: ${myStation} only · Viewing: all posts`;
-  if(isCommand) g("resetBtn").style.display="inline";
-
-  // Populate selects
-  fillSel("fPostSel",POSTS); fillSel("ePost",POSTS);
-  fillSel("fComplaint2",CHIEF_COMPLAINTS); fillSel("eComplaint",CHIEF_COMPLAINTS);
-  fillSel("fDiagnosis",DIAGNOSES); fillSel("eDiagnosis",DIAGNOSES);
-  g("fPost").innerHTML='<option value="ALL">All Posts</option>'+POSTS.map(p=>`<option>${p}</option>`).join('');
-  g("fComplaint").innerHTML='<option value="ALL">All Chief Complaints</option>'+CHIEF_COMPLAINTS.map(c=>`<option>${c}</option>`).join('');
-
-  if(!isCommand) g("fPostSel").value=myStation;
-
-  // Hospital datalists + evac buttons
-  ["evacHospList","editHospList"].forEach(id=>{ const dl=g(id); HOSPITALS.forEach(h=>{const o=document.createElement("option");o.value=h;dl.appendChild(o);}); });
-  const hb=g("hospBtns");
-  HOSPITALS.forEach(h=>{
-    const abbr=h.split(" ")[0],full=h.replace(/^[^ ]+ /,"").replace(/[()]/g,"");
-    const b=document.createElement("button"); b.className="hosp-btn"; b.dataset.hosp=h;
-    b.style.cssText="background:#050D14;border:1px solid #1C3347;border-radius:5px;padding:7px 10px;cursor:pointer;text-align:left;width:100%";
-    b.innerHTML=`<div style="font-family:'Courier Prime',monospace;font-size:0.78rem;font-weight:700;color:#5D8AA8">${abbr}</div><div style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:#2E5A7A;margin-top:1px">${full}</div>`;
-    b.onclick=()=>selectHosp(h); hb.appendChild(b);
-  });
-
+// ── INIT ──────────────────────────────────────────────────────────────────
+function initApp(){
+  const isCmd=["CP1","CP2"].includes(myStation);
+  const col=isCmd?"#F1C40F":"#2E86C1";
+  const badge=g("stationBadge");badge.textContent=myStation;
+  badge.style.cssText="background:"+col+"22;border:1px solid "+col+"55;border-radius:4px;padding:2px 10px;font-family:'Courier Prime',monospace;font-size:0.75rem;color:"+col+";font-weight:700";
+  g("stationNote").textContent=isCmd?"Full access · All posts":"Editing: "+myStation+" only · Viewing: all";
+  if(isCmd)g("resetWrap").style.display="inline";
   setInterval(()=>g("topDate").textContent=todayStr()+" "+nowT(),15000);
   g("topDate").textContent=todayStr()+" "+nowT();
 
-  // Firebase listeners
-  // Render immediately then start polling
+  // Populate selects
+  const fillSel=(id,arr,blank)=>{const el=g(id);if(!el)return;el.innerHTML=(blank?'<option value="">—</option>':'')+arr.map(x=>'<option value="'+x+'">'+x+'</option>').join('');};
+  fillSel("fPostSel",POSTS);fillSel("ePost",POSTS);
+  fillSel("fComplaint2",COMPLAINTS);fillSel("eComplaint",COMPLAINTS);
+  fillSel("fDiagnosis",DIAGNOSES);fillSel("eDiagnosis",DIAGNOSES);
+  g("fComp").innerHTML='<option value="ALL">All Chief Complaints</option>'+COMPLAINTS.map(c=>'<option>'+c+'</option>').join('');
+  if(!isCmd)g("fPostSel").value=myStation;
+
+  // Hospital datalist
+  const dl=g("editHospList");HOSPITALS.forEach(h=>{const o=document.createElement("option");o.value=h;dl.appendChild(o);});
+
+  // Evac hospital buttons
+  const hb=g("hospBtns");
+  HOSPITALS.forEach(h=>{
+    const abbr=h.split(" ")[0],full=h.replace(/^[^ ]+ /,"").replace(/[()]/g,"");
+    const b=document.createElement("button");b.className="hosp-btn";b.dataset.hosp=h;
+    b.style.cssText="background:#050D14;border:1px solid #1C3347;border-radius:5px;padding:7px 10px;cursor:pointer;text-align:left;width:100%";
+    b.innerHTML='<div style="font-family:\'Courier Prime\',monospace;font-size:0.78rem;font-weight:700;color:#5D8AA8">'+abbr+'</div><div style="font-family:\'Courier Prime\',monospace;font-size:0.58rem;color:#2E5A7A;margin-top:1px">'+full+'</div>';
+    b.onclick=()=>selectHosp(h);hb.appendChild(b);
+  });
+
   renderAll();
   pollData();
-  setInterval(pollData, 4000);
+  setInterval(pollData,4000);
 }
 
-function setSyncState(s){
-  const d=g("syncDot"),l=g("syncLabel");
-  d.style.background="#1DB954";d.style.boxShadow="0 0 6px #1DB954";l.style.color="#1DB954";l.textContent="LIVE · "+nowT();
+// ── POLL ──────────────────────────────────────────────────────────────────
+async function pollData(){
+  try{
+    const[cas,lg]=await Promise.all([sbAll("casualties"),sbAll("logs")]);
+    casualties=cas||{};
+    logs=Object.values(lg||{}).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,100);
+    renderAll();renderLog();
+    const d=g("syncDot"),l=g("syncLabel");
+    d.style.background="#1DB954";d.style.boxShadow="0 0 6px #1DB954";l.style.color="#1DB954";l.textContent="LIVE · "+nowT();
+  }catch(e){console.warn("Poll:",e);}
 }
 
-// ── Other unit toggle ─────────────────────────────────────────────────────
-window.toggleOtherUnit = function(prefix) {
-  const toc=g(prefix+"Toc").value;
-  const wrap=g(prefix+"OtherWrap");
-  if(toc==="Others (NDP Working Party personnel)") wrap.classList.remove("hidden");
-  else { wrap.classList.add("hidden"); g(prefix+"OtherUnit").value=""; }
-};
-
-// ── CRUD ──────────────────────────────────────────────────────────────────
-window.registerCasualty = async function() {
- window.registerCasualty = async function() {
+// ── REGISTER ──────────────────────────────────────────────────────────────
+async function registerCasualty(){
   const toc=g("fToc").value;
-  const cid=`cas${Date.now()}${Math.random().toString(36).slice(2,6)}`;
-  const c = {
-    id:cid, nric:g("fNric").value.trim(), name:g("fName").value.trim(),
-    age:g("fAge").value.trim(), gender:g("fGender").value,
-    post:g("fPostSel").value, priority:g("fPri2").value,
-    chiefComplaint:g("fComplaint2").value, diagnosis:g("fDiagnosis").value,
-    typeOfCasualty:toc, otherUnit:toc==="Others (NDP Working Party personnel)"?g("fOtherUnit").value.trim():"",
-    mo:g("fMO").value.trim(), notes:g("fNotes").value.trim(),
-    status:"At Post", timeIn:nowT(), createdAt:Date.now(),
-    registeredBy:myStation, dischargeTime:"",evacuationTime:"",arrivalTime:"",hospital:""
+  const cid=genId();
+  const c={
+    id:cid,nric:g("fNric").value.trim(),name:g("fName").value.trim(),
+    age:g("fAge").value.trim(),gender:g("fGender").value,
+    post:g("fPostSel").value,priority:g("fPri2").value,
+    chiefComplaint:g("fComplaint2").value,diagnosis:g("fDiagnosis").value,
+    typeOfCasualty:toc,otherUnit:toc==="Others (NDP Working Party personnel)"?g("fOtherUnit").value.trim():"",
+    mo:g("fMO").value.trim(),notes:g("fNotes").value.trim(),
+    status:"At Post",timeIn:nowT(),createdAt:Date.now(),
+    registeredBy:myStation,dischargeTime:"",evacuationTime:"",arrivalTime:"",hospital:""
   };
-  await sbInsert("casualties", cid, c);
-  casualties[cid]=c; renderAll();
-  ["fNric","fName","fAge","fMO","fNotes","fOtherUnit"].forEach(id=>g(id).value="");
-  g("fGender").value="";g("fPri2").value="P3";g("fToc").value="";g("fOtherWrap").classList.add("hidden");
-  g("fDiagnosis").value="Pending";
-};
+  try{
+    await sbIns("casualties",cid,c);
+    casualties[cid]=c;renderAll();
+    await addLog("["+c.post+"] New "+c.priority+" "+(c.nric||c.name||"casualty")+" — "+c.chiefComplaint);
+    ["fNric","fName","fAge","fMO","fNotes","fOtherUnit"].forEach(id=>g(id).value="");
+    g("fGender").value="";g("fPri2").value="P3";g("fToc").value="";g("fOtherWrap").style.display="none";
+    g("fDiagnosis").value="Pending";
+    setTimeout(pollData,800);
+  }catch(e){alert("Error registering casualty: "+e.message);}
+}
 
 async function updateCasualty(id,updates){
   const updated={...(casualties[id]||{}),...updates};
-  casualties[id]=updated; renderAll();
-  await sbUpdate("casualties",id,updated);
-  const c={...casualties[id],...updates};
-  await addLog(`#${id.slice(-5)} → ${updates.status||c.status}${updates.hospital?" → "+updates.hospital.split(" ")[0]:""}${updates.arrivalTime?" (arrived "+updates.arrivalTime+")":""}`);
+  casualties[id]=updated;renderAll();
+  await sbUpd("casualties",id,updated);
+  await addLog("#"+id.slice(-5)+" → "+updates.status+(updates.hospital?" → "+updates.hospital.split(" ")[0]:"")+(updates.arrivalTime?" (arrived "+updates.arrivalTime+")":""));
+  setTimeout(pollData,800);
 }
-window.deleteCasualty = async function(id){
+
+async function deleteCasualty(id){
   const c=casualties[id];
-  if(!confirm(`Remove ${c?.nric||c?.name||"casualty #"+id.slice(-5)}?`)) return;
-  delete casualties[id]; renderAll();
-  await sbDelete("casualties",id);
-  await addLog(`${c?.nric||c?.name||"Casualty"} removed by ${myStation}`);
-};
-async function addLog(msg){
-  const entry={msg,by:myStation,ts:Date.now(),t:nowT()};
-  const logId=`log-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
-  await sbInsert("logs",logId,entry);
+  if(!confirm("Remove "+(c&&(c.nric||c.name)||"casualty #"+id.slice(-5))+"?"))return;
+  delete casualties[id];renderAll();
+  await sbDel("casualties",id);
+  await addLog((c&&(c.nric||c.name)||"Casualty")+" removed by "+myStation);
 }
 
-// ── Modals ────────────────────────────────────────────────────────────────
-window.closeModal = id => { g(id).style.display="none"; };
+async function addLog(msg){
+  const lid="log"+Date.now()+Math.random().toString(36).slice(2,5);
+  await sbIns("logs",lid,{msg,by:myStation,ts:Date.now(),t:nowT()});
+}
 
-window.openEvacModal = function(id){
-  evacId=id; const c=casualties[id]; const pr=PRIORITY[c.priority];
-  g("evacModalInner").style.borderTop=`4px solid ${pr.bg}`;
-  g("evacSub").textContent=`${c.nric||"No NRIC"} · ${c.name||"Unknown"} · ${c.priority}`;
-  g("evacTime").value=nowT(); g("evacHosp").value="";
+// ── MODALS ────────────────────────────────────────────────────────────────
+function closeModal(id){g(id).style.display="none";}
+
+function openEvacModal(id){
+  evacId=id;const c=casualties[id]||{};const pr=PRIORITY[c.priority]||PRIORITY.P3;
+  g("evacInner").style.borderTop="4px solid "+pr.bg;
+  g("evacSub").textContent=(c.nric||"No NRIC")+" · "+(c.name||"Unknown")+" · "+c.priority;
+  g("evacTime").value=nowT();
   document.querySelectorAll(".hosp-btn").forEach(b=>{b.style.background="#050D14";b.style.border="1px solid #1C3347";b.querySelector("div").style.color="#5D8AA8";});
   g("evacModal").style.display="flex";
-};
-window.selectHosp = function(h){
-  g("evacHosp").value=h;
-  document.querySelectorAll(".hosp-btn").forEach(b=>{
-    const s=b.dataset.hosp===h;
-    b.style.background=s?"#2A1A40":"#050D14";b.style.border=s?"1.5px solid #9B59B6":"1px solid #1C3347";
-    b.querySelector("div").style.color=s?"#C39BD3":"#5D8AA8";
-  });
-};
-window.confirmEvac = async function(){
-  const hospital=g("evacHosp").value.trim(),evacTime=g("evacTime").value.trim();
-  if(!hospital){alert("Select a hospital destination.");return;}
-  await updateCasualty(evacId,{status:"Evacuated",hospital,evacuationTime:evacTime});
+}
+function selectHosp(h){
+  g("evacTime");// ensure exists
+  document.querySelectorAll(".hosp-btn").forEach(b=>{const s=b.dataset.hosp===h;b.style.background=s?"#2A1A40":"#050D14";b.style.border=s?"1.5px solid #9B59B6":"1px solid #1C3347";b.querySelector("div").style.color=s?"#C39BD3":"#5D8AA8";});
+  g("evacTime").dataset.hosp=h;
+}
+async function confirmEvac(){
+  const hospital=document.querySelector(".hosp-btn[style*='#2A1A40']")?.dataset.hosp||"";
+  const t=g("evacTime").value.trim();
+  if(!hospital){alert("Select a hospital.");return;}
+  await updateCasualty(evacId,{status:"Evacuated",hospital,evacuationTime:t});
   closeModal("evacModal");
-};
-window.openArrivalModal = function(id){
-  arrivalId=id; const c=casualties[id];
-  g("arrivalSub").textContent=`${c.nric||"No NRIC"} · ${c.name||"Unknown"} · ${c.hospital||"Unknown hospital"}`;
-  g("arrivalConfirmBtn").textContent=`✓ ARRIVED AT ${(c.hospital||"HOSPITAL").split(" ")[0]}`;
-  g("arrivalTime").value=nowT(); g("arrivalModal").style.display="flex";
-};
-window.confirmArrival = async function(){
-  await updateCasualty(arrivalId,{status:"Arrived at Hospital",arrivalTime:g("arrivalTime").value.trim()});
+}
+function openArrivalModal(id){
+  arrId=id;const c=casualties[id]||{};
+  g("arrivalSub").textContent=(c.name||"Unknown")+" · "+(c.hospital||"Unknown hospital");
+  g("arrivalBtn").textContent="✓ ARRIVED AT "+((c.hospital||"HOSPITAL").split(" ")[0]);
+  g("arrivalTime").value=nowT();g("arrivalModal").style.display="flex";
+}
+async function confirmArrival(){
+  await updateCasualty(arrId,{status:"Arrived at Hospital",arrivalTime:g("arrivalTime").value.trim()});
   closeModal("arrivalModal");
-};
-window.openEditModal = function(id){
-  editId=id; const c=casualties[id];
-  const sv=(el,v)=>g(el).value=v||"";
-  sv("eNric",c.nric);sv("eName",c.name);sv("eAge",c.age);sv("eGender",c.gender);
-  g("ePri").value=c.priority; g("ePost").value=c.post;
-  g("eComplaint").value=c.chiefComplaint||CHIEF_COMPLAINTS[0];
-  g("eDiagnosis").value=c.diagnosis||"Pending";
-  sv("eMO",c.mo); g("eToc").value=c.typeOfCasualty||"";
-  sv("eOtherUnit",c.otherUnit);
-  toggleOtherUnit("e");
-  g("eStatus").value=c.status;
-  sv("eDischargeTime",c.dischargeTime);sv("eEvacTime",c.evacuationTime);
-  sv("eHospital",c.hospital);sv("eArrivalTime",c.arrivalTime);sv("eNotes",c.notes);
-  toggleEditFields(); g("editModal").style.display="flex";
-};
-window.toggleEditFields = function(){
-  const s=g("eStatus").value;
-  g("eDischargeWrap").classList.toggle("hidden",s!=="Discharged from Post");
-  g("eEvacWrap").classList.toggle("hidden",s!=="Evacuated"&&s!=="Arrived at Hospital");
-  g("eHospWrap").classList.toggle("hidden",s!=="Evacuated"&&s!=="Arrived at Hospital");
-  g("eArrivalWrap").classList.toggle("hidden",s!=="Arrived at Hospital");
-};
-window.saveEdit = async function(){
-  const toc=g("eToc").value;
+}
+function openEditModal(id){
+  editId=id;const c=casualties[id]||{};
+  const sv=(el,v)=>{if(g(el))g(el).value=v||"";};
+  sv("eNric",c.nric);sv("eName",c.name);sv("eAge",c.age);sv("eGender",c.gender||"");
+  if(g("ePri"))g("ePri").value=c.priority||"P3";
+  if(g("ePost"))g("ePost").value=c.post||POSTS[0];
+  if(g("eComplaint"))g("eComplaint").value=c.chiefComplaint||COMPLAINTS[0];
+  if(g("eDiagnosis"))g("eDiagnosis").value=c.diagnosis||"Pending";
+  sv("eMO",c.mo);
+  if(g("eToc"))g("eToc").value=c.typeOfCasualty||"";
+  sv("eOtherUnit",c.otherUnit);toggleOther("e");
+  if(g("eStatus"))g("eStatus").value=c.status||"At Post";
+  sv("eDisTime",c.dischargeTime);sv("eEvTime",c.evacuationTime);sv("eHospital",c.hospital);sv("eArrTime",c.arrivalTime);sv("eNotes",c.notes);
+  toggleEditFields();g("editModal").style.display="flex";
+}
+function toggleEditFields(){
+  const s=g("eStatus")&&g("eStatus").value;
+  const show=(id,cond)=>{if(g(id))g(id).style.display=cond?"block":"none";};
+  show("eDisWrap",s==="Discharged from Post");
+  show("eEvWrap",s==="Evacuated"||s==="Arrived at Hospital");
+  show("eHospWrap",s==="Evacuated"||s==="Arrived at Hospital");
+  show("eArrWrap",s==="Arrived at Hospital");
+}
+async function saveEdit(){
+  const toc=g("eToc")&&g("eToc").value;
   const updates={
     nric:g("eNric").value.trim(),name:g("eName").value.trim(),age:g("eAge").value.trim(),
     gender:g("eGender").value,priority:g("ePri").value,post:g("ePost").value,
     chiefComplaint:g("eComplaint").value,diagnosis:g("eDiagnosis").value,
     mo:g("eMO").value.trim(),typeOfCasualty:toc,
     otherUnit:toc==="Others (NDP Working Party personnel)"?g("eOtherUnit").value.trim():"",
-    status:g("eStatus").value,dischargeTime:g("eDischargeTime").value.trim(),
-    evacuationTime:g("eEvacTime").value.trim(),hospital:g("eHospital").value.trim(),
-    arrivalTime:g("eArrivalTime").value.trim(),notes:g("eNotes").value.trim(),
+    status:g("eStatus").value,dischargeTime:g("eDisTime").value.trim(),
+    evacuationTime:g("eEvTime").value.trim(),hospital:g("eHospital").value.trim(),
+    arrivalTime:g("eArrTime").value.trim(),notes:g("eNotes").value.trim()
   };
-  await updateCasualty(editId,updates); closeModal("editModal");
-};
-window.dischargeQuick = async id => updateCasualty(id,{status:"Discharged from Post",dischargeTime:nowT()});
-
-// ── Render ────────────────────────────────────────────────────────────────
-function renderAll(){ renderStats();renderPostStrips();renderDiagRow();renderCasualties();renderPie(); }
-
-window.applyFilters = function(){ renderCasualties();renderDiagRow();renderPostStrips(); };
-window.filterPost = function(p){
-  const sel=g("fPost"); sel.value=sel.value===p?"ALL":p; applyFilters();
-};
-
-window.renderCasualties = function(){
-  const fPost=g("fPost")?.value||"ALL",fPri=g("fPri")?.value||"ALL";
-  const fSt=g("fSt")?.value||"ALL",fComp=g("fComplaint")?.value||"ALL";
-  const isCommand=COMMAND_STATIONS.includes(myStation);
-
-  const list=Object.entries(casualties).filter(([id,c])=>c&&c.post).map(([id,c])=>({...c,_id:id}))
-    .filter(c=>(fPost==="ALL"||c.post===fPost)&&(fPri==="ALL"||c.priority===fPri)
-      &&(fSt==="ALL"||c.status===fSt)&&(fComp==="ALL"||c.chiefComplaint===fComp))
-    .sort((a,b)=>({P1:0,P2:1,P3:2,P4:3}[a.priority]||9)-({P1:0,P2:1,P3:2,P4:3}[b.priority]||9)||b.createdAt-a.createdAt);
-
-  g("countLabel").textContent=`${list.length}/${Object.keys(casualties).length}`;
-  const container=g("casualtyList");
-  Object.values(elapsedTimers).forEach(clearInterval); elapsedTimers={};
-
-  if(!list.length){
-    container.innerHTML=`<div style="text-align:center;padding:40px;color:#0D2133;font-family:'Courier Prime',monospace;font-size:0.8rem">${!Object.keys(casualties).length?"No casualties registered.":"No casualties match the filter."}</div>`;
-    return;
-  }
-
-  container.innerHTML=list.map(c=>{
-    if(!c||!id) return ''; const pr=PRIORITY[c.priority]||PRIORITY['P3'];
-    const canEdit=isCommand||c.post===myStation;
-    const isDischarged=c.status==="Discharged from Post";
-    const isEvac=c.status==="Evacuated"||c.status==="Arrived at Hospital";
-    const isArrived=c.status==="Arrived at Hospital";
-    const stCfg={"At Post":"background:#0A2A40;color:#2E86C1;border:1px solid #1A4A6A","Discharged from Post":"background:#0A2A18;color:#1DB954;border:1px solid #1A5030","Evacuated":"background:#2A1A40;color:#9B59B6;border:1px solid #4A2A60","Arrived at Hospital":"background:#2A1A10;color:#E67E22;border:1px solid #5A3010"}[c.status]||"";
-    const tocDisplay=c.typeOfCasualty==="Others (NDP Working Party personnel)"&&c.otherUnit?`NDP WP — ${c.otherUnit}`:c.typeOfCasualty||"—";
-    const editBtns=canEdit?`<button onclick="openEditModal('${id}')" style="background:#0D1E2E;border:1px solid #1A4060;color:#4A8AB0;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.7rem;font-family:'Courier Prime',monospace">✎ Edit</button><button onclick="deleteCasualty('${id}')" style="background:#1A0808;border:1px solid #441111;color:#994444;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.7rem">✕</button>`:"";
-    const quickBtns=canEdit?`<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-      ${c.status==="At Post"?`<button onclick="dischargeQuick('${id}')" class="quick-btn" style="background:#1DB95418;border-color:#1DB95466;color:#1DB954">✓ Discharge</button><button onclick="openEvacModal('${id}')" class="quick-btn" style="background:#9B59B618;border-color:#9B59B666;color:#9B59B6">🚑 Evacuate</button>`:""}
-      ${c.status==="Evacuated"?`<button onclick="openArrivalModal('${id}')" class="quick-btn" style="background:#E67E2218;border-color:#E67E2266;color:#E67E22">🏥 Confirm Arrival</button>`:""}
-    </div>`:"";
-
-    return `<div class="card" style="border:1px solid ${pr.border};border-left:5px solid ${pr.bg};box-shadow:0 0 14px ${pr.glow};opacity:${isDischarged?0.75:1}">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;flex-wrap:wrap;gap:4px">
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span style="font-family:'Courier Prime',monospace;font-weight:700;font-size:0.78rem;color:#8AAFC8">#${id.slice(-5)}</span>
-          <span class="tag" style="background:${pr.bg};color:${pr.text}">${c.priority}</span>
-          <span class="tag" style="background:#0A2030;color:#4A90D9;border:1px solid #1A4060">${c.post}</span>
-          <span class="tag" style="${stCfg}">${c.status}</span>
-          <span style="font-family:'Courier Prime',monospace;font-size:0.62rem;color:#2A4A6A">via ${c.registeredBy||"?"}</span>
-        </div>
-        <div style="display:flex;gap:5px;align-items:center">
-          ${c.status==="At Post"?`<span id="el-${id}" style="font-family:'Courier Prime',monospace;font-size:0.75rem;color:#2E86C1">⏱ 00:00</span>`:""}
-          ${editBtns}
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px 14px">
-        ${cell("Partial NRIC",c.nric||"—")}${cell("Name Initials",c.name||"—")}${cell("Age / Gender",[c.age&&`${c.age}y`,c.gender].filter(Boolean).join(" / ")||"—")}
-        ${cell("Chief Complaint",c.chiefComplaint||"—")}${cell("Diagnosis",c.diagnosis||"—")}${cell("Type of Casualty",tocDisplay)}
-        ${cell("MO Attending",c.mo||"—")}${cell("Time In",c.timeIn)}
-        ${isDischarged?cell("Discharged At",c.dischargeTime||"—","#1DB954"):""}
-        ${isEvac?cell("Evacuated At",c.evacuationTime||"—","#9B59B6"):""}
-        ${isEvac?cell("Hospital",c.hospital||"—","#C39BD3"):""}
-        ${isArrived?cell("Arrived At",c.arrivalTime||"—","#E67E22"):""}
-        ${c.notes?`<div style="grid-column:1/-1">${cell("Notes",c.notes)}</div>`:""}
-      </div>
-      ${quickBtns}
-    </div>`;
-  }).join("");
-
-  list.filter(c=>c.status==="At Post").forEach(c=>{
-    const el=document.getElementById(`el-${c._id}`); if(!el) return;
-    const tick=()=>{const s=Math.floor((Date.now()-c.createdAt)/1000),m=Math.floor(s/60),sec=s%60;
-      el.textContent=`⏱ ${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;el.style.color=m>=20?"#FF4136":"#2E86C1";el.style.fontWeight=m>=20?700:400;};
-    tick(); elapsedTimers[c._id]=setInterval(tick,1000);
-  });
-};
-
-function cell(label,val,hi){
-  return `<div><span style="font-size:0.6rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.1em;font-family:'Courier Prime',monospace">${label} </span><span style="font-size:0.8rem;color:${hi||"#B8CCE0"}">${val}</span></div>`;
+  await updateCasualty(editId,updates);closeModal("editModal");
 }
+function toggleOther(p){
+  const v=g(p+"Toc")&&g(p+"Toc").value;
+  if(g(p+"OtherWrap"))g(p+"OtherWrap").style.display=v==="Others (NDP Working Party personnel)"?"block":"none";
+}
+async function dischargeQuick(id){await updateCasualty(id,{status:"Discharged from Post",dischargeTime:nowT()});}
+
+// ── FILTERS ───────────────────────────────────────────────────────────────
+function applyFilters(){renderCasualties();renderPostStrips();renderDiagRow();}
+function filterPost(p){const s=g("fPost");s.value=s.value===p?"ALL":p;applyFilters();}
+function toggleAddForm(){showAdd=!showAdd;g("addForm").style.display=showAdd?"block":"none";g("addToggleBtn").textContent=showAdd?"▲ Hide Form":"▼ New Casualty";}
+function toggleLog(){showLog=!showLog;g("logBox").style.display=showLog?"block":"none";}
+
+// ── EXPORT & RESET ────────────────────────────────────────────────────────
+function exportData(){
+  const C=Object.entries(casualties).map(([id,c])=>({...c,_id:id}));
+  if(!C.length){alert("No casualties to export.");return;}
+  const hdrs=["ID","Partial NRIC","Name Initials","Age","Gender","Medical Post","Priority","Chief Complaint","Diagnosis","Type of Casualty","Unit/Org","MO Attending","Status","Time In","Discharge Time","Evacuation Time","Hospital","Arrival Time","Notes","Registered By"];
+  const esc=v=>'"'+String(v||"").replace(/"/g,'""')+'"';
+  const rows=C.sort((a,b)=>a.createdAt-b.createdAt).map(c=>[c._id,c.nric,c.name,c.age,c.gender,c.post,c.priority,c.chiefComplaint,c.diagnosis,c.typeOfCasualty,c.typeOfCasualty==="Others (NDP Working Party personnel)"?c.otherUnit:"",c.mo,c.status,c.timeIn,c.dischargeTime,c.evacuationTime,c.hospital,c.arrivalTime,c.notes,c.registeredBy].map(esc).join(","));
+  const csv=[hdrs.map(esc).join(","),...rows].join("\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");const ts=new Date().toISOString().slice(0,16).replace(/[:T]/g,"-");
+  a.href=url;a.download="CASREP_"+ts+".csv";document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  addLog("Data exported by "+myStation+" — "+C.length+" records");
+}
+async function resetData(){
+  const n=Object.keys(casualties).length;if(!n){alert("No data to reset.");return;}
+  if(!confirm("⚠ RESET ALL DATA?\n\nThis will permanently delete all "+n+" casualty records.\n\nClick OK to proceed."))return;
+  const code=prompt("Type RESET (all caps) to confirm:");if(code!=="RESET"){alert("Reset cancelled.");return;}
+  await sbDelAll("casualties");await sbDelAll("logs");
+  casualties={};logs=[];renderAll();renderLog();
+  alert("✓ All data has been reset.");
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+function renderAll(){renderStats();renderPostStrips();renderDiagRow();renderCasualties();renderPie();}
 
 function renderStats(){
   const C=Object.values(casualties);
   const byP=k=>C.filter(c=>c.priority===k).length;
-  const stats=[
-    ["Total",C.length,STAT_COLORS.total],["P1",byP("P1"),STAT_COLORS.p1],["P2",byP("P2"),STAT_COLORS.p2],
-    ["P3",byP("P3"),STAT_COLORS.p3],["P4",byP("P4"),STAT_COLORS.p4],
-    ["At Post",C.filter(c=>c.status==="At Post").length,STAT_COLORS.atPost],
-    ["Discharged",C.filter(c=>c.status==="Discharged from Post").length,STAT_COLORS.discharged],
-    ["Evacuated",C.filter(c=>c.status==="Evacuated").length,STAT_COLORS.evacuated],
-    ["At Hospital",C.filter(c=>c.status==="Arrived at Hospital").length,STAT_COLORS.hospital],
-  ];
-  g("statsRow").innerHTML=stats.map(([l,v,c])=>`
-    <div style="text-align:center;padding:7px 6px;background:${c}14;border-radius:6px;border:1px solid ${c}55">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:2.55rem;font-weight:700;color:${c};line-height:1">${v}</div>
-      <div style="font-family:'Courier Prime',monospace;font-size:0.81rem;color:${c}AA;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px">${l}</div>
-    </div>`).join("");
+  const stats=[["Total",C.length,SCOLS.total],["P1",byP("P1"),SCOLS.p1],["P2",byP("P2"),SCOLS.p2],["P3",byP("P3"),SCOLS.p3],["P4",byP("P4"),SCOLS.p4],["At Post",C.filter(c=>c.status==="At Post").length,SCOLS.atPost],["Discharged",C.filter(c=>c.status==="Discharged from Post").length,SCOLS.discharged],["Evacuated",C.filter(c=>c.status==="Evacuated").length,SCOLS.evacuated],["At Hospital",C.filter(c=>c.status==="Arrived at Hospital").length,SCOLS.hospital]];
+  g("statsRow").innerHTML=stats.map(([l,v,c])=>'<div style="text-align:center;padding:7px 6px;background:'+c+'14;border-radius:6px;border:1px solid '+c+'55"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:2.55rem;font-weight:700;color:'+c+';line-height:1">'+v+'</div><div style="font-family:\'Courier Prime\',monospace;font-size:0.81rem;color:'+c+'AA;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px">'+l+'</div></div>').join("");
 }
 
 function renderPostStrips(){
-  const C=Object.values(casualties);
-  const curPost=g("fPost")?.value||"ALL";
+  const C=Object.values(casualties);const cur=g("fPost")&&g("fPost").value||"ALL";
   g("postStrips").innerHTML=POSTS.map(p=>{
     const pc=C.filter(c=>c.post===p);
     const p1=pc.filter(c=>c.priority==="P1"&&c.status==="At Post").length;
     const p2=pc.filter(c=>c.priority==="P2"&&c.status==="At Post").length;
     const active=pc.filter(c=>c.status==="At Post").length;
-    const inactive=pc.length-active;
-    const isMyPost=p===myStation,sel=curPost===p;
-
-    // Row 4 data for selected post
+    const sel=cur===p,isMyPost=p===myStation,isCmd=["CP1","CP2"].includes(myStation);
     if(sel){
-      const postDiag=DIAGNOSES.map((d,i)=>({label:d,count:pc.filter(c=>c.diagnosis===d).length,color:DIAGNOSIS_COLORS[i]})).sort((a,b)=>b.count-a.count);
-      g("postDiagRow").style.display="block";
-      g("postDiagLabel").textContent=p;
-      g("postDiagCount").textContent=`${pc.length} casualt${pc.length===1?"y":"ies"}`;
-      g("postDiagGrid").innerHTML=postDiag.map(({label,count,color})=>`
-        <div style="text-align:center;padding:9px 6px;background:${color}18;border-radius:6px;border:1px solid ${color}55">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:700;color:${color};line-height:1">${count}</div>
-          <div style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:${color}DD;margin-top:3px;line-height:1.3">${label}</div>
-        </div>`).join("");
+      const pd=DIAGNOSES.map((d,i)=>({label:d,count:pc.filter(c=>c.diagnosis===d).length,color:DCOLS[i]})).sort((a,b)=>b.count-a.count);
+      g("postDiagRow").style.display="block";g("postDiagLabel").textContent=p;
+      g("postDiagCount").textContent=pc.length+" casualt"+(pc.length===1?"y":"ies");
+      g("postDiagGrid").innerHTML=pd.map(({label,count,color})=>'<div style="text-align:center;padding:9px 6px;background:'+color+'18;border-radius:6px;border:1px solid '+color+'55"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.7rem;font-weight:700;color:'+color+';line-height:1">'+count+'</div><div style="font-family:\'Courier Prime\',monospace;font-size:0.58rem;color:'+color+'DD;margin-top:3px;line-height:1.3">'+label+'</div></div>').join("");
     }
-    if(curPost==="ALL") g("postDiagRow").style.display="none";
-
-    return `<div onclick="filterPost('${p}')" style="background:${sel?"#0A2A40":"#050D14"};border:${sel?"1px solid #2E86C1":isMyPost?"1px solid #1A4060":"1px solid #0D2133"};border-radius:6px;padding:8px 6px;cursor:pointer;min-width:0">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;color:${sel?"#5DADE2":isMyPost?"#4A90D9":"#2E5A7A"};letter-spacing:0.03em;line-height:1.2;min-height:2.4em">${p}${isMyPost&&!COMMAND_STATIONS.includes(myStation)?'<span style="font-size:0.5rem;color:#4A90D9;margin-left:3px">●</span>':""}</div>
-      <div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#8AAFC8;margin-top:3px">${pc.length} total</div>
-      <div style="display:flex;gap:6px;margin-top:2px">
-        <span style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:#16A085">▲ ${active}</span>
-        <span style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:#7F8C8D">● ${inactive}</span>
-      </div>
-      <div style="display:flex;gap:3px;margin-top:3px;flex-wrap:wrap">
-        ${p1>0?`<span style="background:#C0392B;color:#fff;border-radius:3px;padding:0 4px;font-size:0.55rem;font-family:'Courier Prime',monospace">P1:${p1}</span>`:""}
-        ${p2>0?`<span style="background:#D35400;color:#fff;border-radius:3px;padding:0 4px;font-size:0.55rem;font-family:'Courier Prime',monospace">P2:${p2}</span>`:""}
-      </div>
-    </div>`;
+    if(cur==="ALL")g("postDiagRow").style.display="none";
+    return '<div onclick="filterPost(\''+p+'\')" style="background:'+(sel?"#0A2A40":"#050D14")+';border:'+(sel?"1px solid #2E86C1":isMyPost?"1px solid #1A4060":"1px solid #0D2133")+';border-radius:6px;padding:8px 6px;cursor:pointer;min-width:0"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.9rem;color:'+(sel?"#5DADE2":isMyPost?"#4A90D9":"#2E5A7A")+';letter-spacing:0.03em;line-height:1.2;min-height:2.2em">'+p+(isMyPost&&!isCmd?'<span style="font-size:0.5rem;color:#4A90D9;margin-left:3px">●</span>':'')+'</div><div style="font-family:\'Courier Prime\',monospace;font-size:0.65rem;color:#8AAFC8;margin-top:3px">'+pc.length+' total</div><div style="display:flex;gap:6px;margin-top:2px"><span style="font-family:\'Courier Prime\',monospace;font-size:0.58rem;color:#16A085">▲ '+active+'</span><span style="font-family:\'Courier Prime\',monospace;font-size:0.58rem;color:#7F8C8D">● '+(pc.length-active)+'</span></div><div style="display:flex;gap:3px;margin-top:3px;flex-wrap:wrap">'+(p1>0?'<span style="background:#C0392B;color:#fff;border-radius:3px;padding:0 4px;font-size:0.55rem;font-family:\'Courier Prime\',monospace">P1:'+p1+'</span>':'')+(p2>0?'<span style="background:#D35400;color:#fff;border-radius:3px;padding:0 4px;font-size:0.55rem;font-family:\'Courier Prime\',monospace">P2:'+p2+'</span>':'')+'</div></div>';
   }).join("");
 }
 
 function renderDiagRow(){
   const C=Object.values(casualties);
-  const counts=DIAGNOSES.map((d,i)=>({label:d,count:C.filter(c=>c.diagnosis===d).length,color:DIAGNOSIS_COLORS[i]})).sort((a,b)=>b.count-a.count);
-  g("diagRow").innerHTML=counts.map(({label,count,color})=>`
-    <div style="text-align:center;padding:9px 6px;background:${color}12;border-radius:6px;border:1px solid ${color}44">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:700;color:${color};line-height:1">${count}</div>
-      <div style="font-family:'Courier Prime',monospace;font-size:0.58rem;color:${color}CC;margin-top:3px;line-height:1.3">${label}</div>
-    </div>`).join("");
+  const counts=DIAGNOSES.map((d,i)=>({label:d,count:C.filter(c=>c.diagnosis===d).length,color:DCOLS[i]})).sort((a,b)=>b.count-a.count);
+  g("diagRow").innerHTML=counts.map(({label,count,color})=>'<div style="text-align:center;padding:9px 6px;background:'+color+'12;border-radius:6px;border:1px solid '+color+'44"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.7rem;font-weight:700;color:'+color+';line-height:1">'+count+'</div><div style="font-family:\'Courier Prime\',monospace;font-size:0.58rem;color:'+color+'CC;margin-top:3px;line-height:1.3">'+label+'</div></div>').join("");
 }
+
+function renderCasualties(){
+  const fPost=g("fPost")&&g("fPost").value||"ALL",fPri=g("fPri")&&g("fPri").value||"ALL";
+  const fSt=g("fSt")&&g("fSt").value||"ALL",fComp=g("fComp")&&g("fComp").value||"ALL";
+  const isCmd=["CP1","CP2"].includes(myStation);
+  const list=Object.entries(casualties).map(([id,c])=>({...c,_id:id}))
+    .filter(c=>c&&c.post&&(fPost==="ALL"||c.post===fPost)&&(fPri==="ALL"||c.priority===fPri)&&(fSt==="ALL"||c.status===fSt)&&(fComp==="ALL"||c.chiefComplaint===fComp))
+    .sort((a,b)=>({P1:0,P2:1,P3:2,P4:3}[a.priority]||9)-({P1:0,P2:1,P3:2,P4:3}[b.priority]||9)||b.createdAt-a.createdAt);
+  g("countLabel").textContent=list.length+"/"+Object.keys(casualties).length;
+  const container=g("casualtyList");
+  Object.values(elapsedTimers).forEach(clearInterval);elapsedTimers={};
+  if(!list.length){container.innerHTML='<div style="text-align:center;padding:40px;color:#0D2133;font-family:\'Courier Prime\',monospace;font-size:0.8rem">'+(Object.keys(casualties).length===0?"No casualties registered.":"No casualties match the filter.")+'</div>';return;}
+  container.innerHTML=list.map(c=>{
+    const pr=PRIORITY[c.priority]||PRIORITY.P3,id=c._id;
+    const canEdit=isCmd||c.post===myStation;
+    const isDis=c.status==="Discharged from Post",isEv=c.status==="Evacuated"||c.status==="Arrived at Hospital",isArr=c.status==="Arrived at Hospital";
+    const stCfg={"At Post":"background:#0A2A40;color:#2E86C1;border:1px solid #1A4A6A","Discharged from Post":"background:#0A2A18;color:#1DB954;border:1px solid #1A5030","Evacuated":"background:#2A1A40;color:#9B59B6;border:1px solid #4A2A60","Arrived at Hospital":"background:#2A1A10;color:#E67E22;border:1px solid #5A3010"}[c.status]||"";
+    const toc=c.typeOfCasualty==="Others (NDP Working Party personnel)"&&c.otherUnit?"NDP WP — "+c.otherUnit:c.typeOfCasualty||"—";
+    const editBtns=canEdit?'<button onclick="openEditModal(\''+id+'\')" style="background:#0D1E2E;border:1px solid #1A4060;color:#4A8AB0;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.7rem;font-family:\'Courier Prime\',monospace">✎ Edit</button><button onclick="deleteCasualty(\''+id+'\')" style="background:#1A0808;border:1px solid #441111;color:#994444;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.7rem">✕</button>':"";
+    const qbtn=canEdit?'<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">'+(c.status==="At Post"?'<button onclick="dischargeQuick(\''+id+'\')" class="qbtn" style="background:#1DB95418;border-color:#1DB95466;color:#1DB954">✓ Discharge</button><button onclick="openEvacModal(\''+id+'\')" class="qbtn" style="background:#9B59B618;border-color:#9B59B666;color:#9B59B6">🚑 Evacuate</button>':"")+(c.status==="Evacuated"?'<button onclick="openArrivalModal(\''+id+'\')" class="qbtn" style="background:#E67E2218;border-color:#E67E2266;color:#E67E22">🏥 Confirm Arrival</button>':"")+'</div>':"";
+    return '<div class="card" style="border:1px solid '+pr.border+';border-left:5px solid '+pr.bg+';box-shadow:0 0 14px '+pr.glow+';opacity:'+(isDis?0.75:1)+';animation:fadeIn 0.2s ease"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;flex-wrap:wrap;gap:4px"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-family:\'Courier Prime\',monospace;font-weight:700;font-size:0.78rem;color:#8AAFC8">#'+id.slice(-5)+'</span><span class="tag" style="background:'+pr.bg+';color:'+pr.text+'">'+c.priority+'</span><span class="tag" style="background:#0A2030;color:#4A90D9;border:1px solid #1A4060">'+c.post+'</span><span class="tag" style="'+stCfg+'">'+c.status+'</span><span style="font-family:\'Courier Prime\',monospace;font-size:0.62rem;color:#2A4A6A">via '+(c.registeredBy||"?")+'</span></div><div style="display:flex;gap:5px;align-items:center">'+(c.status==="At Post"?'<span id="el-'+id+'" style="font-family:\'Courier Prime\',monospace;font-size:0.75rem;color:#2E86C1">⏱ 00:00</span>':"")+editBtns+'</div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px 14px">'+cell("Partial NRIC",c.nric)+cell("Name Initials",c.name)+cell("Age / Gender",[c.age&&c.age+"y",c.gender].filter(Boolean).join(" / ")||"—")+cell("Chief Complaint",c.chiefComplaint)+cell("Diagnosis",c.diagnosis)+cell("Type of Casualty",toc)+cell("MO Attending",c.mo)+cell("Time In",c.timeIn)+(isDis?cell("Discharged At",c.dischargeTime,"#1DB954"):"")+( isEv?cell("Evacuated At",c.evacuationTime,"#9B59B6"):"")+( isEv?cell("Hospital",c.hospital,"#C39BD3"):"")+( isArr?cell("Arrived At",c.arrivalTime,"#E67E22"):"")+(c.notes?'<div style="grid-column:1/-1">'+cell("Notes",c.notes)+'</div>':'')+'</div>'+qbtn+'</div>';
+  }).join("");
+  list.filter(c=>c.status==="At Post").forEach(c=>{
+    const el=document.getElementById("el-"+c._id);if(!el)return;
+    const tick=()=>{const s=Math.floor((Date.now()-c.createdAt)/1000),m=Math.floor(s/60),sc=s%60;el.textContent="⏱ "+String(m).padStart(2,"0")+":"+String(sc).padStart(2,"0");el.style.color=m>=20?"#FF4136":"#2E86C1";el.style.fontWeight=m>=20?700:400;};
+    tick();elapsedTimers[c._id]=setInterval(tick,1000);
+  });
+}
+
+function cell(label,val,hi){return '<div><span style="font-size:0.6rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.1em;font-family:\'Courier Prime\',monospace">'+label+' </span><span style="font-size:0.8rem;color:'+(hi||"#B8CCE0")+'">'+(val||"—")+'</span></div>';}
 
 function renderPie(){
   const C=Object.values(casualties);
   const counts=DIAGNOSES.map(d=>C.filter(c=>c.diagnosis===d).length);
   const total=counts.reduce((a,b)=>a+b,0);
-  const cv=g("diagPie"); const ctx=cv.getContext("2d");
-  ctx.clearRect(0,0,250,250);
+  const cv=g("diagPie");if(!cv)return;const ctx=cv.getContext("2d");ctx.clearRect(0,0,250,250);
   const cx=125,cy=125,r=95;
-  if(!total){
-    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle="#1C3347";ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle="#1A4060";ctx.font="11px 'Courier Prime',monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("No data yet",cx,cy);
-  } else {
-    let start=-Math.PI/2;
-    counts.forEach((n,i)=>{ if(!n) return; const ang=(n/total)*Math.PI*2;
-      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+ang);ctx.closePath();
-      ctx.fillStyle=DIAGNOSIS_COLORS[i];ctx.fill();ctx.strokeStyle="#07111C";ctx.lineWidth=2;ctx.stroke();start+=ang;});
+  if(!total){ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle="#1C3347";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#1A4060";ctx.font="10px 'Courier Prime',monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("No data yet",cx,cy);}
+  else{let start=-Math.PI/2;counts.forEach((n,i)=>{if(!n)return;const ang=(n/total)*Math.PI*2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+ang);ctx.closePath();ctx.fillStyle=DCOLS[i];ctx.fill();ctx.strokeStyle="#07111C";ctx.lineWidth=2;ctx.stroke();start+=ang;});
     ctx.beginPath();ctx.arc(cx,cy,r*0.52,0,Math.PI*2);ctx.fillStyle="#050D14";ctx.fill();
-    ctx.fillStyle="#B8CCE0";ctx.font="bold 24px 'Barlow Condensed',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(total,cx,cy-5);
-    ctx.fillStyle="#2E5A7A";ctx.font="8px 'Courier Prime',monospace";ctx.fillText("CASUALTIES",cx,cy+11);
-  }
-  const sorted=[...DIAGNOSES.map((d,i)=>({d,n:counts[i],c:DIAGNOSIS_COLORS[i]}))].sort((a,b)=>b.n-a.n);
-  g("pieLegend").innerHTML=sorted.map(({d,n,c})=>{
-    const pct=total?Math.round(n/total*100):0;
-    return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><div style="width:10px;height:10px;border-radius:2px;background:${c};flex-shrink:0"></div><span style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#7A9AB8;flex:1;line-height:1.3">${d}</span><span style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#4A7090">${n} (${pct}%)</span></div>`;
-  }).join("");
+    ctx.fillStyle="#B8CCE0";ctx.font="bold 22px 'Barlow Condensed',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(total,cx,cy-5);
+    ctx.fillStyle="#2E5A7A";ctx.font="8px 'Courier Prime',monospace";ctx.fillText("CASUALTIES",cx,cy+11);}
+  const sorted=[...DIAGNOSES.map((d,i)=>({d,n:counts[i],c:DCOLS[i]}))].sort((a,b)=>b.n-a.n);
+  g("pieLegend").innerHTML=sorted.map(({d,n,c})=>{const pct=total?Math.round(n/total*100):0;return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><div style="width:10px;height:10px;border-radius:2px;background:'+c+';flex-shrink:0"></div><span style="font-family:\'Courier Prime\',monospace;font-size:0.6rem;color:#7A9AB8;flex:1">'+d+'</span><span style="font-family:\'Courier Prime\',monospace;font-size:0.6rem;color:#4A7090">'+n+' ('+pct+'%)</span></div>';}).join("");
 }
 
 function renderLog(){
-  g("logCount").textContent=logs.length?`[${logs.length}]`:"";
-  g("logList").innerHTML=logs.length
-    ?logs.map(l=>`<div style="margin-bottom:5px;border-bottom:1px solid #0A1A27;padding-bottom:4px"><span style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:#1A4060">${l.t} </span><span style="font-family:'Courier Prime',monospace;font-size:0.62rem;color:#2E86C1;font-weight:700">[${l.by}] </span><span style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#5A8AAA">${l.msg}</span></div>`).join("")
-    :`<div style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:#0D2133">No activity yet.</div>`;
+  g("logCount").textContent=logs.length?"["+logs.length+"]":"";
+  g("logList").innerHTML=logs.length?logs.map(l=>'<div style="margin-bottom:5px;border-bottom:1px solid #0A1A27;padding-bottom:4px"><span style="font-family:\'Courier Prime\',monospace;font-size:0.6rem;color:#1A4060">'+l.t+' </span><span style="font-family:\'Courier Prime\',monospace;font-size:0.62rem;color:#2E86C1;font-weight:700">['+l.by+'] </span><span style="font-family:\'Courier Prime\',monospace;font-size:0.65rem;color:#5A8AAA">'+l.msg+'</span></div>').join(''):'<div style="font-family:\'Courier Prime\',monospace;font-size:0.7rem;color:#0D2133">No activity yet.</div>';
 }
-
-
-// ── Export to CSV ─────────────────────────────────────────────────────────
-window.exportData = function() {
-  const C = Object.entries(casualties).map(([id,c])=>({...c,_id:id}));
-  if(!C.length){ alert("No casualties to export."); return; }
-
-  const headers = [
-    "Record ID","Partial NRIC","Name Initials","Age","Gender","Medical Post",
-    "Priority","Chief Complaint","Diagnosis","Type of Casualty","Unit / Parent Org",
-    "MO Attending","Status","Time In","Discharge Time","Evacuation Time",
-    "Hospital","Arrival Time","Notes","Registered By"
-  ];
-
-  const escape = v => `"${String(v||"").replace(/"/g,'""')}"`;
-
-  const rows = C
-    .sort((a,b)=>a.createdAt-b.createdAt)
-    .map(c=>[
-      c._id||"", c.nric||"", c.name||"", c.age||"", c.gender||"", c.post||"",
-      c.priority||"", c.chiefComplaint||"", c.diagnosis||"",
-      c.typeOfCasualty||"",
-      c.typeOfCasualty==="Others (NDP Working Party personnel)"?c.otherUnit||"":"",
-      c.mo||"", c.status||"", c.timeIn||"", c.dischargeTime||"",
-      c.evacuationTime||"", c.hospital||"", c.arrivalTime||"",
-      c.notes||"", c.registeredBy||""
-    ].map(escape).join(","));
-
-  const csv = [headers.map(escape).join(","), ...rows].join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement("a");
-  const ts   = new Date().toLocaleString("en-SG",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).replace(/[/:, ]/g,"-");
-  a.href=url; a.download=`CASREP_Export_${ts}.csv`;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
-  addLog(`Data exported by ${myStation} — ${C.length} records`);
-};
-
-// ── Reset Data (command post only) ────────────────────────────────────────
-window.resetData = async function() {
-  const C = Object.values(casualties);
-  if(!C.length){ alert("No data to reset."); return; }
-
-  // Double confirmation
-  const first = confirm(`⚠ RESET ALL DATA?\n\nThis will permanently delete all ${C.length} casualty records and the activity log from the database.\n\nThis action cannot be undone.\n\nClick OK to proceed to final confirmation.`);
-  if(!first) return;
-
-  const code = prompt(`FINAL CONFIRMATION\n\nType  RESET  (all caps) to confirm data reset:`);
-  if(code !== "RESET"){ alert("Reset cancelled — text did not match."); return; }
-
-  try {
-    casualties = {}; logs = [];
-    renderAll(); renderLog();
-    await sbDeleteAll("casualties");
-    await sbDeleteAll("logs");
-    alert("✓ All data has been reset. Database is now empty.");
-  } catch(e) {
-    alert("Error resetting data: " + e.message);
-  }
-};
-
-window.toggleLog = () => { showLog=!showLog; g("logBox").classList.toggle("hidden",!showLog); };
-window.toggleAddForm = () => { showAddForm=!showAddForm; g("addForm").classList.toggle("hidden",!showAddForm); g("addToggleBtn").textContent=showAddForm?"▲ Hide Form":"▼ New Casualty"; };
 </script>
 </body>
 </html>
