@@ -292,7 +292,6 @@
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
 <script>
 // ── Firebase config ───────────────────────────────────────────────────────
@@ -306,8 +305,7 @@ const firebaseConfig = {
   appId: "1:580779975259:web:90f654b4c80c04e8b9557e"
 };
 firebase.initializeApp(firebaseConfig);
-const db   = firebase.database();
-const auth = firebase.auth();
+const db = firebase.database();
 
 // ── Station PIN mapping ── change these PINs before deployment ────────────
 const STATION_PINS = {
@@ -388,12 +386,11 @@ const fillSel = (id, arr, blank) => {
   el.innerHTML=(blank?'<option value="">—</option>':'')+arr.map(x=>`<option value="${x}">${x}</option>`).join('');
 };
 
-// ── Auth — PIN + Firebase Anonymous ──────────────────────────────────────
-window.doLogin = async function() {
+// ── Auth — PIN only, no Firebase Auth SDK ────────────────────────────────
+window.doLogin = function() {
   const station = g("authStation").value;
   const pin     = g("authPin").value;
   const errEl   = g("authError");
-  const btn     = g("loginBtn");
   errEl.style.display="none";
   if(!station){ errEl.textContent="Please select your station."; errEl.style.display="block"; return; }
   if(!pin)    { errEl.textContent="Please enter your station PIN."; errEl.style.display="block"; return; }
@@ -401,26 +398,16 @@ window.doLogin = async function() {
     errEl.textContent="Incorrect PIN. Please try again.";
     errEl.style.display="block"; return;
   }
-  btn.innerHTML='<span class="spinner"></span>'; btn.disabled=true;
-  try {
-    await auth.signInAnonymously();
-    myStation=station;
-    g("authScreen").style.display="none";
-    g("mainApp").style.display="block";
-    g("authPin").value="";
-    btn.innerHTML="ENTER COMMAND SYSTEM"; btn.disabled=false;
-    initApp();
-  } catch(e) {
-    errEl.textContent="Connection error. Check internet and try again.";
-    errEl.style.display="block";
-    btn.innerHTML="ENTER COMMAND SYSTEM"; btn.disabled=false;
-  }
+  myStation=station;
+  g("authScreen").style.display="none";
+  g("mainApp").style.display="block";
+  g("authPin").value="";
+  initApp();
 };
 
 window.doLogout = function() {
   if(!confirm("Log out of CASREP?")) return;
   Object.values(elapsedTimers).forEach(clearInterval); elapsedTimers={};
-  auth.signOut();
   g("mainApp").style.display="none";
   g("authScreen").style.display="block";
   g("authStation").value=""; g("authPin").value="";
