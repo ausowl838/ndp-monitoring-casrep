@@ -34,20 +34,32 @@
 <!-- ═══ AUTH SCREEN ═══ -->
 <div id="authScreen" style="display:block">
   <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
-    <div style="width:420px;max-width:100%">
+    <div style="width:440px;max-width:100%">
       <div style="margin-bottom:28px">
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#e8f0f7;letter-spacing:0.02em;line-height:1.15">MEDICAL COMMAND POST</div>
         <div style="font-family:'DM Mono',monospace;font-weight:400;font-size:13px;color:#4a6a7a;letter-spacing:0.02em;margin-top:4px">CASUALTY DASHBOARD · RESTRICTED, SENSITIVE (NORMAL)</div>
       </div>
       <div style="background:#07111C;border:1px solid #1C3347;border-radius:10px;padding:28px">
-        <div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:18px">Station Login</div>
+        <div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:#2E5A7A;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:18px">Station Access</div>
         <div style="margin-bottom:14px">
-          <label class="lbl">Email Address</label>
-          <input class="inp" type="email" id="authEmail" placeholder="station@ndp2026.medops" autocomplete="username"/>
+          <label class="lbl">Select Your Station</label>
+          <select class="inp" id="authStation" style="font-size:0.9rem;padding:8px">
+            <option value="">— Select Station —</option>
+            <option value="CP1">Command Post 1 (CP1)</option>
+            <option value="CP2">Command Post 2 (CP2)</option>
+            <option value="MP North">MP North</option>
+            <option value="MP South">MP South</option>
+            <option value="MP Arena">MP Arena</option>
+            <option value="MP WACA">MP WACA</option>
+            <option value="MP VVIP">MP VVIP</option>
+            <option value="FAP(E) Show">FAP(E) Show</option>
+            <option value="FAP(E) Beneficiaries">FAP(E) Beneficiaries</option>
+            <option value="FAP(E) Celebrations">FAP(E) Celebrations</option>
+          </select>
         </div>
         <div style="margin-bottom:20px">
-          <label class="lbl">Password</label>
-          <input class="inp" type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <label class="lbl">Station PIN</label>
+          <input class="inp" type="password" id="authPin" placeholder="Enter your station PIN" style="font-size:0.9rem;padding:8px;letter-spacing:0.15em" onkeydown="if(event.key==='Enter')doLogin()"/>
         </div>
         <div id="authError" style="font-family:'Courier Prime',monospace;font-size:0.72rem;color:#E74C3C;margin-bottom:14px;display:none"></div>
         <button onclick="doLogin()" id="loginBtn" style="width:100%;padding:11px 0;background:#0A3A5A;border:1px solid #2E86C1;color:#5DADE2;border-radius:6px;cursor:pointer;font-family:'Courier Prime',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.1em">
@@ -297,18 +309,18 @@ firebase.initializeApp(firebaseConfig);
 const db   = firebase.database();
 const auth = firebase.auth();
 
-// ── Email → Station mapping ───────────────────────────────────────────────
-const EMAIL_TO_STATION = {
-  "cp1@ndp2026.medops":       "CP1",
-  "cp2@ndp2026.medops":       "CP2",
-  "mp.north@ndp2026.medops":  "MP North",
-  "mp.south@ndp2026.medops":  "MP South",
-  "mp.arena@ndp2026.medops":  "MP Arena",
-  "mp.waca@ndp2026.medops":   "MP WACA",
-  "mp.vvip@ndp2026.medops":   "MP VVIP",
-  "fape.show@ndp2026.medops": "FAP(E) Show",
-  "fape.bene@ndp2026.medops": "FAP(E) Beneficiaries",
-  "fape.celeb@ndp2026.medops":"FAP(E) Celebrations",
+// ── Station PIN mapping ── change these PINs before deployment ────────────
+const STATION_PINS = {
+  "CP1":                  "cp1@Ndp2026",
+  "CP2":                  "cp2@Ndp2026",
+  "MP North":             "mpN@Ndp2026",
+  "MP South":             "mpS@Ndp2026",
+  "MP Arena":             "mpA@Ndp2026",
+  "MP WACA":              "mpW@Ndp2026",
+  "MP VVIP":              "mpV@Ndp2026",
+  "FAP(E) Show":          "fapSh@Ndp2026",
+  "FAP(E) Beneficiaries": "fapBe@Ndp2026",
+  "FAP(E) Celebrations":  "fapCe@Ndp2026",
 };
 
 const COMMAND_STATIONS = ["CP1","CP2"];
@@ -376,53 +388,44 @@ const fillSel = (id, arr, blank) => {
   el.innerHTML=(blank?'<option value="">—</option>':'')+arr.map(x=>`<option value="${x}">${x}</option>`).join('');
 };
 
-// ── Force clean state on every page load ─────────────────────────────────
-auth.signOut().catch(()=>{});
-
-// ── Auth ──────────────────────────────────────────────────────────────────
+// ── Auth — PIN + Firebase Anonymous ──────────────────────────────────────
 window.doLogin = async function() {
-  const email=g("authEmail").value.trim().toLowerCase();
-  const pass=g("authPassword").value;
-  const errEl=g("authError"); const btn=g("loginBtn");
-  if(!email||!pass){errEl.textContent="Please enter email and password.";errEl.style.display="block";return;}
-  btn.innerHTML='<span class="spinner"></span>';btn.disabled=true;
-  try {
-    await auth.signInWithEmailAndPassword(email,pass);
-  } catch(e) {
-    errEl.textContent="Invalid credentials. Please check your email and password.";
-    errEl.style.display="block";
-    btn.innerHTML="ENTER COMMAND SYSTEM";btn.disabled=false;
+  const station = g("authStation").value;
+  const pin     = g("authPin").value;
+  const errEl   = g("authError");
+  const btn     = g("loginBtn");
+  errEl.style.display="none";
+  if(!station){ errEl.textContent="Please select your station."; errEl.style.display="block"; return; }
+  if(!pin)    { errEl.textContent="Please enter your station PIN."; errEl.style.display="block"; return; }
+  if(STATION_PINS[station] !== pin){
+    errEl.textContent="Incorrect PIN. Please try again.";
+    errEl.style.display="block"; return;
   }
-};
-
-window.doLogout = async function() {
-  if(!confirm("Log out of CASREP?")) return;
-  Object.values(elapsedTimers).forEach(clearInterval); elapsedTimers={};
-  g("mainApp").style.display="none";
-  g("authScreen").style.display="block";
-  g("authEmail").value=""; g("authPassword").value="";
-  await auth.signOut();
-};
-
-auth.onAuthStateChanged(user => {
-  if(user) {
-    const stationId = EMAIL_TO_STATION[user.email.toLowerCase()];
-    if(!stationId) {
-      alert("Your account is not mapped to a station. Contact your system admin.");
-      auth.signOut(); return;
-    }
-    myStation = stationId;
+  btn.innerHTML='<span class="spinner"></span>'; btn.disabled=true;
+  try {
+    await auth.signInAnonymously();
+    myStation=station;
     g("authScreen").style.display="none";
     g("mainApp").style.display="block";
-    g("authError").style.display="none";
-    g("authPassword").value="";
+    g("authPin").value="";
+    btn.innerHTML="ENTER COMMAND SYSTEM"; btn.disabled=false;
     initApp();
-  } else {
-    g("authScreen").style.display="block";
-    g("mainApp").style.display="none";
-    myStation=null;
+  } catch(e) {
+    errEl.textContent="Connection error. Check internet and try again.";
+    errEl.style.display="block";
+    btn.innerHTML="ENTER COMMAND SYSTEM"; btn.disabled=false;
   }
-});
+};
+
+window.doLogout = function() {
+  if(!confirm("Log out of CASREP?")) return;
+  Object.values(elapsedTimers).forEach(clearInterval); elapsedTimers={};
+  auth.signOut();
+  g("mainApp").style.display="none";
+  g("authScreen").style.display="block";
+  g("authStation").value=""; g("authPin").value="";
+  myStation=null;
+};
 
 // ── App init ──────────────────────────────────────────────────────────────
 function initApp() {
