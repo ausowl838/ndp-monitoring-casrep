@@ -446,6 +446,9 @@ function initApp() {
   g("topDate").textContent=todayStr()+" "+nowT();
 
   // Firebase listeners
+  // Render immediately with empty data so rows show on login
+  renderAll();
+
   db.ref("casualties").on("value",snap=>{ casualties=snap.val()||{}; renderAll(); setSyncState("live"); });
   db.ref("log").on("value",snap=>{ const r=snap.val()||{}; logs=Object.values(r).sort((a,b)=>b.ts-a.ts).slice(0,100); renderLog(); });
 }
