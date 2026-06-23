@@ -609,8 +609,8 @@ const Store = (() => {
 })();
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-Store.set('ndp_tl', null); let timelineEvents = JSON.parse(Store.get('ndp_tl') || 'null') || [...SAMPLE_TIMELINE];
-Store.set('ndp_ops2', null); let opsEntries     = JSON.parse(Store.get('ndp_ops2') || 'null') || [...SAMPLE_OPS];
+let timelineEvents = JSON.parse(Store.get('ndp_tl') || 'null') || [...SAMPLE_TIMELINE];
+let opsEntries     = JSON.parse(Store.get('ndp_ops2') || 'null') || [...SAMPLE_OPS];
 let selectedPriority = 'p-high';
 let qSelectedPriority = 'p-high';
 let clearTarget = null;
@@ -919,7 +919,8 @@ function csvEscape(val) {
   if(val === null || val === undefined) return '';
   const s = String(val).replace(/"/g, '""');
   return /[",
-]/.test(s) ? `"${s}"` : s;
+
+]/.test(s) ? `"${s}"` : s;
 }
 
 function downloadFile(filename, content, type) {
