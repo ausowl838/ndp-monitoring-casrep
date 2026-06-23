@@ -494,14 +494,18 @@ window.registerCasualty = async function() {
     status:"At Post", timeIn:nowT(), createdAt:Date.now(),
     registeredBy:myStation, dischargeTime:"",evacuationTime:"",arrivalTime:"",hospital:""
   };
-  await dbPush("casualties", c);
+  const result = await dbPush("casualties", c);
+  if(result && result.name){ casualties[result.name]=c; renderAll(); }
   await addLog(`[${c.post}] New ${c.priority} ${c.nric||c.name||"casualty"} — ${c.chiefComplaint}`);
+  setTimeout(pollData, 500);
   ["fNric","fName","fAge","fMO","fNotes","fOtherUnit"].forEach(id=>g(id).value="");
   g("fGender").value="";g("fPri2").value="P3";g("fToc").value="";g("fOtherWrap").classList.add("hidden");
   g("fDiagnosis").value="Pending";
 };
 
 async function updateCasualty(id,updates){
+  casualties[id] = {...(casualties[id]||{}), ...updates};
+  renderAll();
   await dbUpdate(`casualties/${id}`, updates);
   const c={...casualties[id],...updates};
   await addLog(`#${id.slice(-5)} → ${updates.status||c.status}${updates.hospital?" → "+updates.hospital.split(" ")[0]:""}${updates.arrivalTime?" (arrived "+updates.arrivalTime+")":""}`);
@@ -509,10 +513,15 @@ async function updateCasualty(id,updates){
 window.deleteCasualty = async function(id){
   const c=casualties[id];
   if(!confirm(`Remove ${c?.nric||c?.name||"casualty #"+id.slice(-5)}?`)) return;
+  delete casualties[id];
+  renderAll();
   await dbDelete(`casualties/${id}`);
   await addLog(`${c?.nric||c?.name||"Casualty"} removed by ${myStation}`);
 };
-async function addLog(msg){ await dbPush("log", {msg,by:myStation,ts:Date.now(),t:nowT()}); }
+async function addLog(msg){
+  await dbPush("log", {msg,by:myStation,ts:Date.now(),t:nowT()});
+  setTimeout(async()=>{ const r=await dbGet("log"); logs=Object.values(r||{}).sort((a,b)=>b.ts-a.ts).slice(0,100); renderLog(); },600);
+}
 
 // ── Modals ────────────────────────────────────────────────────────────────
 window.closeModal = id => { g(id).style.display="none"; };
@@ -820,12 +829,10 @@ window.resetData = async function() {
   if(code !== "RESET"){ alert("Reset cancelled — text did not match."); return; }
 
   try {
+    casualties = {}; logs = [];
+    renderAll(); renderLog();
     await dbDelete("casualties");
     await dbDelete("log");
-    casualties = {};
-    logs = [];
-    renderAll();
-    renderLog();
     alert("✓ All data has been reset. Database is now empty.");
   } catch(e) {
     alert("Error resetting data: " + e.message);
